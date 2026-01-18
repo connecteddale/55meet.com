@@ -51,12 +51,26 @@
             <p class="control-hint">Close when all participants have submitted.</p>
 
             {% elif session.state.value == 'closed' %}
-            <form method="post" action="/admin/sessions/{{ session.id }}/reveal">
+            {% if synthesis_pending %}
+            <form method="post" action="/admin/sessions/{{ session.id }}/synthesize">
                 <button type="submit" class="btn btn-primary btn-large">
-                    Reveal Synthesis
+                    Generate Synthesis
                 </button>
             </form>
-            <p class="control-hint">Synthesis will be generated and shown to participants.</p>
+            <p class="control-hint">This will analyze responses and generate themes.</p>
+            {% elif synthesis_themes %}
+            <form method="post" action="/admin/sessions/{{ session.id }}/reveal">
+                <button type="submit" class="btn btn-primary btn-large">
+                    Reveal to Participants
+                </button>
+            </form>
+            <p class="control-hint">Shows synthesis to all participants.</p>
+            {% else %}
+            <div class="synthesis-generating">
+                <div class="spinner"></div>
+                <p>Generating synthesis...</p>
+            </div>
+            {% endif %}
 
             {% elif session.state.value == 'revealed' %}
             <div class="session-complete">
@@ -79,6 +93,32 @@
             {% endfor %}
         </div>
     </div>
+
+    {% if synthesis_themes %}
+    <div class="card synthesis-preview">
+        <h3>Synthesis Preview</h3>
+        <div class="synthesis-themes">
+            <h4>Themes</h4>
+            <p>{{ synthesis_themes }}</p>
+        </div>
+        {% if synthesis_gap_type %}
+        <div class="synthesis-gap">
+            <h4>Gap Type</h4>
+            <span class="gap-badge gap-{{ synthesis_gap_type|lower }}">{{ synthesis_gap_type }}</span>
+        </div>
+        {% endif %}
+        {% if synthesis_statements %}
+        <div class="synthesis-statements">
+            <h4>Key Insights</h4>
+            <ul>
+            {% for stmt in synthesis_statements %}
+                <li>{{ stmt.statement }} <em>({{ stmt.participants|join(', ') }})</em></li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
 
     {% if session.state.value == 'revealed' %}
     <div class="card">
@@ -104,7 +144,7 @@
 {% endblock %}
 
 {% block scripts %}
-{% if session.state.value == 'capturing' %}
+{% if session.state.value == 'capturing' or session.state.value == 'closed' %}
 <script src="/static/js/polling.js"></script>
 {% endif %}
 {% endblock %}
