@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.db.database import Base, engine
-from app.routers import images_router, auth_router, admin_router
+from app.routers import images_router, auth_router, admin_router, teams_router
 
 
 # Define paths
@@ -48,6 +48,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 # Include routers
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(teams_router)
 app.include_router(images_router)
 
 
