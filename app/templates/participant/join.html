@@ -1,17 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Join - The 55{% endblock %}
+{% block title %}Join Session - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<h2>Join Session</h2>
+<div class="join-page">
+    <div class="join-card">
+        <h2>Join Your Session</h2>
+        <p class="join-subtitle">Enter your team code to get started</p>
 
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %}
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
 
-<form method="post" action="/join">
-    <label for="code">Team Code</label>
-    <input type="text" id="code" name="code" placeholder="Enter team code" required autofocus>
-    <button type="submit">Join</button>
-</form>
+        <form method="post" action="/join" class="join-form">
+            <div class="form-group">
+                <label for="code" class="visually-hidden">Team Code</label>
+                <input
+                    type="text"
+                    id="code"
+                    name="code"
+                    placeholder="TEAM CODE"
+                    required
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    class="code-input"
+                    maxlength="20"
+                >
+            </div>
+            <button type="submit" class="btn btn-primary btn-large btn-block">
+                Join
+            </button>
+        </form>
+
+        <p class="join-hint">
+            Ask your facilitator for the team code, or scan the QR code.
+        </p>
+    </div>
+</div>
 {% endblock %}
