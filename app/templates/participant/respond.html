@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Select an Image - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="image-browser">
+    <div class="browser-header">
+        <h2>Select an Image, {{ member.name }}</h2>
+        <p class="browser-subtitle">Choose the image that best represents how you feel about where your team is in executing the strategy.</p>
+    </div>
+
+    <form id="respond-form" method="POST" action="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
+        <!-- Hidden inputs for form submission -->
+        <input type="hidden" name="image_number" id="selected-image" value="{% if existing_response %}{{ existing_response.image_number }}{% endif %}">
+        <input type="hidden" name="bullets" id="bullets-json" value="{% if existing_response %}{{ existing_response.bullets }}{% else %}[]{% endif %}">
+
+        <!-- Image Grid Container -->
+        <div class="image-grid" id="image-grid">
+            {% for page_idx in range(image_pages|length) %}
+            {% set start, end = image_pages[page_idx] %}
+            <div class="image-page {% if page_idx == 0 %}active{% endif %}" data-page="{{ page_idx }}">
+                {% for img_num in range(start, end + 1) %}
+                <div class="image-card {% if existing_response and existing_response.image_number == img_num %}selected{% endif %}"
+                     data-image="{{ img_num }}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="Image {{ img_num }}">
+                    <img src="/static/images/55/{{ img_num }}.png"
+                         alt="Image {{ img_num }}"
+                         {% if page_idx == 0 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+                    <span class="image-number">{{ img_num }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-controls">
+            <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
+                <span class="pagination-arrow">&larr;</span> Previous
+            </button>
+            <span class="pagination-info" id="pagination-info">1-6 of 55</span>
+            <button type="button" id="next-btn" class="pagination-btn" aria-label="Next page">
+                Next <span class="pagination-arrow">&rarr;</span>
+            </button>
+        </div>
+
+        <!-- Continue Button -->
+        <div class="browser-actions">
+            <button type="submit" id="continue-btn" class="btn btn-primary btn-large btn-block" disabled>
+                Continue
+            </button>
+            <p class="selection-hint" id="selection-hint">Select an image to continue</p>
+        </div>
+    </form>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // State
+    let currentPage = 0;
+    let selectedImage = null;
+    const totalPages = {{ image_pages|length }};
+    const imagePages = {{ image_pages|tojson }};
+
+    // DOM Elements
+    const pages = document.querySelectorAll('.image-page');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const paginationInfo = document.getElementById('pagination-info');
+    const selectedImageInput = document.getElementById('selected-image');
+    const continueBtn = document.getElementById('continue-btn');
+    const selectionHint = document.getElementById('selection-hint');
+    const imageCards = document.querySelectorAll('.image-card');
+
+    // Initialize from existing response
+    const existingValue = selectedImageInput.value;
+    if (existingValue) {
+        selectedImage = parseInt(existingValue, 10);
+        // Find which page contains this image
+        for (let i = 0; i < imagePages.length; i++) {
+            if (selectedImage >= imagePages[i][0] && selectedImage <= imagePages[i][1]) {
+                currentPage = i;
+                break;
+            }
+        }
+        updateSelection();
+        enableContinue();
+    }
+
+    // Update page display
+    function showPage(pageIndex) {
+        pages.forEach((page, idx) => {
+            page.classList.toggle('active', idx === pageIndex);
+        });
+
+        // Update pagination info
+        const [start, end] = imagePages[pageIndex];
+        paginationInfo.textContent = `${start}-${end} of 55`;
+
+        // Update button states
+        prevBtn.disabled = pageIndex === 0;
+        nextBtn.disabled = pageIndex === totalPages - 1;
+    }
+
+    // Handle page navigation
+    prevBtn.addEventListener('click', function() {
+        if (currentPage > 0) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    });
+
+    nextBtn.addEventListener('click', function() {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    });
+
+    // Handle image selection
+    function selectImage(imageNum) {
+        selectedImage = imageNum;
+        selectedImageInput.value = imageNum;
+        updateSelection();
+        enableContinue();
+    }
+
+    function updateSelection() {
+        imageCards.forEach(card => {
+            const cardImageNum = parseInt(card.dataset.image, 10);
+            card.classList.toggle('selected', cardImageNum === selectedImage);
+        });
+    }
+
+    function enableContinue() {
+        continueBtn.disabled = false;
+        selectionHint.textContent = `Image ${selectedImage} selected`;
+    }
+
+    // Attach click handlers to all image cards
+    imageCards.forEach(card => {
+        // Click handler (works for touch and mouse)
+        card.addEventListener('click', function() {
+            const imageNum = parseInt(this.dataset.image, 10);
+            selectImage(imageNum);
+        });
+
+        // Keyboard accessibility
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const imageNum = parseInt(this.dataset.image, 10);
+                selectImage(imageNum);
+            }
+        });
+    });
+
+    // Initialize page display
+    showPage(currentPage);
+})();
+</script>
+{% endblock %}
