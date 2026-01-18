@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Strategy - The 55{% endblock %}
+
+{% block content %}
+<h2>Team Strategy</h2>
+<p>Hi {{ member.name }}!</p>
+
+<blockquote>
+{{ team.strategy_statement or "No strategy statement defined yet." }}
+</blockquote>
+
+<a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
+    <button>Continue to Response</button>
+</a>
+{% endblock %}

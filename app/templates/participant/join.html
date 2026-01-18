@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Join - The 55{% endblock %}
+
+{% block content %}
+<h2>Join Session</h2>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+<form method="post" action="/join">
+    <label for="code">Team Code</label>
+    <input type="text" id="code" name="code" placeholder="Enter team code" required autofocus>
+    <button type="submit">Join</button>
+</form>
+{% endblock %}

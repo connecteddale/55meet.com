@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Waiting - The 55{% endblock %}
+
+{% block content %}
+<h2>Waiting for Results</h2>
+<p>{{ member.name }}, your response has been submitted.</p>
+<p>Please wait while others complete their responses.</p>
+
+<p>Session state: {{ session.state.value }}</p>
+{% endblock %}

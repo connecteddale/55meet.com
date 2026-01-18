@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Select Session - The 55{% endblock %}
+
+{% block content %}
+<h2>Select Session</h2>
+<p>Team: {{ team.team_name }}</p>
+
+<form method="post" action="/join/{{ team.code }}/session">
+    {% for session in sessions %}
+    <label>
+        <input type="radio" name="session_id" value="{{ session.id }}" {% if loop.first %}checked{% endif %}>
+        {{ session.month }}
+    </label>
+    {% endfor %}
+    <button type="submit">Continue</button>
+</form>
+{% endblock %}
