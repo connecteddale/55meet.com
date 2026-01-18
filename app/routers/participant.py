@@ -368,6 +368,10 @@ async def submit_response(
         bullets_list = [b.strip() for b in bullets_list if b.strip()]
         if not 1 <= len(bullets_list) <= 5:
             raise ValueError("Must have 1-5 bullet points")
+        # Validate each bullet max 500 chars
+        for bullet in bullets_list:
+            if len(bullet) > 500:
+                raise ValueError("Each bullet point must be 500 characters or less")
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid bullets format")
     except ValueError as e:
