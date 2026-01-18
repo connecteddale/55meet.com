@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Session {{ session.month }} - The 55{% endblock %}
+
+{% block nav %}
+<nav>
+    <a href="/admin/sessions/team/{{ team.id }}" class="btn btn-secondary">Back to Sessions</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="session-control" data-session-id="{{ session.id }}">
+    <div class="card">
+        <div class="session-header">
+            <div>
+                <h2>{{ team.team_name }}</h2>
+                <p class="team-subtitle">{{ team.company_name }} &middot; {{ session.month }}</p>
+            </div>
+            <div class="session-state-badge state-{{ session.state.value }}">
+                {{ session.state.value }}
+            </div>
+        </div>
+
+        <div class="session-stats" id="session-stats">
+            <div class="stat">
+                <span class="stat-value" id="submitted-count">{{ submitted_count }}</span>
+                <span class="stat-label">Submitted</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="total-members">{{ total_members }}</span>
+                <span class="stat-label">Total Members</span>
+            </div>
+        </div>
+
+        <div class="session-controls">
+            {% if session.state.value == 'draft' %}
+            <form method="post" action="/admin/sessions/{{ session.id }}/start">
+                <button type="submit" class="btn btn-primary btn-large">
+                    Start Capturing
+                </button>
+            </form>
+            <p class="control-hint">Participants can join once capturing starts.</p>
+
+            {% elif session.state.value == 'capturing' %}
+            <form method="post" action="/admin/sessions/{{ session.id }}/close"
+                  onsubmit="return confirm('Close capture? Participants will no longer be able to submit.');">
+                <button type="submit" class="btn btn-warning btn-large">
+                    Close Capture
+                </button>
+            </form>
+            <p class="control-hint">Close when all participants have submitted.</p>
+
+            {% elif session.state.value == 'closed' %}
+            <form method="post" action="/admin/sessions/{{ session.id }}/reveal">
+                <button type="submit" class="btn btn-primary btn-large">
+                    Reveal Synthesis
+                </button>
+            </form>
+            <p class="control-hint">Synthesis will be generated and shown to participants.</p>
+
+            {% elif session.state.value == 'revealed' %}
+            <div class="session-complete">
+                <p>Session complete. Synthesis revealed to participants.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Participant Status</h3>
+        <div class="member-status-list" id="member-status-list">
+            {% for member in member_status %}
+            <div class="member-status-item" data-member-id="{{ member.id }}">
+                <span class="member-name">{{ member.name }}</span>
+                <span class="status-indicator {% if member.submitted %}submitted{% else %}waiting{% endif %}">
+                    {% if member.submitted %}Submitted{% else %}Waiting...{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if session.state.value == 'revealed' %}
+    <div class="card">
+        <h3>Recalibration Action</h3>
+        {% if session.recalibration_action %}
+        <p class="recalibration-text">{{ session.recalibration_action }}</p>
+        <form method="post" action="/admin/sessions/{{ session.id }}/recalibration">
+            <input type="hidden" name="completed" value="{{ 'false' if session.recalibration_completed else 'true' }}">
+            <button type="submit" class="btn {% if session.recalibration_completed %}btn-secondary{% else %}btn-primary{% endif %}">
+                {% if session.recalibration_completed %}
+                Mark Incomplete
+                {% else %}
+                Mark Complete
+                {% endif %}
+            </button>
+        </form>
+        {% else %}
+        <p class="empty-state">No recalibration action recorded.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if session.state.value == 'capturing' %}
+<script src="/static/js/polling.js"></script>
+{% endif %}
+{% endblock %}
