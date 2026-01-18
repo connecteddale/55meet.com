@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.team_name }} Sessions - The 55{% endblock %}
+
+{% block nav %}
+<nav>
+    <a href="/admin/teams/{{ team.id }}" class="btn btn-secondary">Back to Team</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h2>{{ team.team_name }} Sessions</h2>
+            <p class="team-subtitle">{{ team.company_name }}</p>
+        </div>
+        <a href="/admin/sessions/team/{{ team.id }}/create" class="btn btn-primary">New Session</a>
+    </div>
+
+    {% if sessions %}
+    <div class="session-list">
+        {% for session in sessions %}
+        <a href="/admin/sessions/{{ session.id }}" class="session-item">
+            <div class="session-month">{{ session.month }}</div>
+            <div class="session-state state-{{ session.state.value }}">{{ session.state.value }}</div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No sessions yet. Create your first session to get started.</p>
+    {% endif %}
+</div>
+{% endblock %}
