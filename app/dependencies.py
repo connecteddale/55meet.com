@@ -8,8 +8,10 @@ from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy.orm import Session
 
 from app.config import Settings
+from app.db.database import get_db
 
 
 @lru_cache
@@ -19,7 +21,4 @@ def get_settings() -> Settings:
 
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
-
-
-# Database session dependency will be added in Plan 02
-# SessionDep = Annotated[Session, Depends(get_session)]
+DbDep = Annotated[Session, Depends(get_db)]
