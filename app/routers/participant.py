@@ -280,10 +280,10 @@ async def respond_form(
     if not team:
         return RedirectResponse(url="/join", status_code=303)
 
+    # Get session (any state for now, check state separately)
     session = db.query(SessionModel).filter(
         SessionModel.id == session_id,
-        SessionModel.team_id == team.id,
-        SessionModel.state == SessionState.CAPTURING
+        SessionModel.team_id == team.id
     ).first()
 
     if not session:
@@ -300,11 +300,34 @@ async def respond_form(
             status_code=303
         )
 
-    # Check for existing response (edit mode)
+    # Check for existing response
     existing_response = db.query(Response).filter(
         Response.session_id == session_id,
         Response.member_id == member_id
     ).first()
+
+    # State validation: handle non-CAPTURING states gracefully
+    if session.state != SessionState.CAPTURING:
+        if session.state == SessionState.DRAFT:
+            # Session not active yet
+            return RedirectResponse(url="/join", status_code=303)
+        elif existing_response:
+            # CLOSED or REVEALED with existing response - go to waiting
+            return RedirectResponse(
+                url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
+                status_code=303
+            )
+        else:
+            # CLOSED or REVEALED without response - show session closed message
+            return templates.TemplateResponse(
+                "participant/session_closed.html",
+                {
+                    "request": request,
+                    "team": team,
+                    "session": session,
+                    "member": member
+                }
+            )
 
     # Generate pagination ranges: [(1,6), (7,12), ..., (49,54), (55,55)]
     image_pages = []
@@ -341,18 +364,41 @@ async def submit_response(
     if not team:
         return RedirectResponse(url="/join", status_code=303)
 
+    # Get session (any state for now, check state separately)
     session = db.query(SessionModel).filter(
         SessionModel.id == session_id,
-        SessionModel.team_id == team.id,
-        SessionModel.state == SessionState.CAPTURING
+        SessionModel.team_id == team.id
     ).first()
 
     if not session:
-        # Session no longer accepting submissions
-        return RedirectResponse(
-            url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
-            status_code=303
-        )
+        return RedirectResponse(url=f"/join/{code}/session", status_code=303)
+
+    # Check if session is still accepting submissions
+    if session.state != SessionState.CAPTURING:
+        # Check if member already has a response
+        existing_response = db.query(Response).filter(
+            Response.session_id == session_id,
+            Response.member_id == member_id
+        ).first()
+
+        if existing_response:
+            # Response was saved before state changed
+            return RedirectResponse(
+                url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
+                status_code=303
+            )
+        else:
+            # Session closed before submission could complete
+            return templates.TemplateResponse(
+                "participant/session_closed.html",
+                {
+                    "request": request,
+                    "team": team,
+                    "session": session,
+                    "member": db.query(Member).filter(Member.id == member_id).first(),
+                    "submission_error": "The session was closed before your response could be saved."
+                }
+            )
 
     member = db.query(Member).filter(
         Member.id == member_id,
@@ -492,5 +538,6 @@ async def get_participant_status(
         "session_id": session_id,
         "state": session.state.value,
         "total_members": len(members),
-        "submitted_count": len(responses)
+        "submitted_count": len(responses),
+        "can_edit": session.state == SessionState.CAPTURING
     })

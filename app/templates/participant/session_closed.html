@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Session Closed - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="session-closed-page">
+    <div class="session-closed-card">
+        <div class="closed-icon">
+            <svg viewBox="0 0 24 24" width="64" height="64">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="16" y1="8" x2="8" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <h2>Session Closed</h2>
+
+        {% if submission_error %}
+        <p class="error-message">{{ submission_error }}</p>
+        {% else %}
+        <p class="closed-message">
+            The capture period for this session has ended.
+            {% if session.state.value == 'closed' %}
+            The facilitator is preparing the synthesis.
+            {% elif session.state.value == 'revealed' %}
+            Results have been revealed.
+            {% endif %}
+        </p>
+        {% endif %}
+
+        <p class="closed-advice">
+            Please contact your facilitator if you need to submit a response.
+        </p>
+
+        <a href="/join" class="btn btn-secondary">
+            Return to Join
+        </a>
+    </div>
+</div>
+{% endblock %}
