@@ -7,8 +7,8 @@ No authentication required - participants join via team code.
 
 from typing import Annotated
 
-from fastapi import APIRouter, Request, Form, Depends
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Request, Form, Depends, HTTPException
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -304,3 +304,35 @@ async def waiting_state(
             "member": member
         }
     )
+
+
+@router.get("/{code}/session/{session_id}/status")
+async def get_participant_status(
+    code: str,
+    session_id: int,
+    db: DbDep
+):
+    """Get session status for participant polling (JSON endpoint)."""
+    code = code.strip().upper()
+    team = db.query(Team).filter(Team.code == code).first()
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+
+    session = db.query(SessionModel).filter(
+        SessionModel.id == session_id,
+        SessionModel.team_id == team.id
+    ).first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get member counts
+    members = db.query(Member).filter(Member.team_id == team.id).all()
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+
+    return JSONResponse({
+        "session_id": session_id,
+        "state": session.state.value,
+        "total_members": len(members),
+        "submitted_count": len(responses)
+    })
