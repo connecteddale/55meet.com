@@ -51,9 +51,23 @@
         <a href="/admin/teams/{{ team.id }}/members" class="btn btn-secondary">Manage Members ({{ team.members | length }})</a>
         <a href="/admin/sessions/team/{{ team.id }}" class="btn btn-secondary">View Sessions</a>
     </div>
+</div>
 
-    <hr>
+<div class="card qr-card">
+    <h3>QR Code</h3>
+    <p>Participants can scan to join:</p>
+    <div class="qr-display">
+        <img src="/admin/qr/team/{{ team.id }}" alt="QR Code for {{ team.code }}" class="qr-image">
+    </div>
+    <div class="qr-code-text">
+        <code>{{ team.code }}</code>
+    </div>
+    <a href="/admin/qr/team/{{ team.id }}/download" class="btn btn-secondary btn-small">
+        Download QR
+    </a>
+</div>
 
+<div class="card">
     <div class="danger-zone">
         <h3>Danger Zone</h3>
         <form method="post" action="/admin/teams/{{ team.id }}/delete"

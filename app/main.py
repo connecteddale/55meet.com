@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.db.database import Base, engine
-from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router
+from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router
 
 
 # Define paths
@@ -53,6 +53,7 @@ app.include_router(members_router)
 app.include_router(sessions_router)
 app.include_router(images_router)
 app.include_router(participant_router)
+app.include_router(qr_router)
 
 
 @app.get("/health")

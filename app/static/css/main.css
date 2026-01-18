@@ -692,3 +692,31 @@ input[type="month"] {
     margin-top: var(--space-4);
     flex-wrap: wrap;
 }
+
+/* QR Code */
+.qr-card {
+    text-align: center;
+}
+
+.qr-display {
+    margin: var(--space-4) 0;
+}
+
+.qr-image {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.qr-code-text {
+    margin-bottom: var(--space-4);
+}
+
+.qr-code-text code {
+    font-size: var(--font-size-xl);
+    letter-spacing: 0.1em;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+}
