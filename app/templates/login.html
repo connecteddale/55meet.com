@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Login - The 55{% endblock %}
+
+{% block body_class %} class="login-page"{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h1>The 55</h1>
+    <h2>Facilitator Login</h2>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/admin/login">
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autofocus>
+        </div>
+        <button type="submit" class="btn-primary">Login</button>
+    </form>
+</div>
+{% endblock %}
