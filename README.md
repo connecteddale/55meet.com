@@ -8,23 +8,29 @@ The 55 is a real-time facilitation tool that helps leadership teams catch alignm
 
 ## Quick Start
 
-1. Install dependencies:
+1. Create virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Copy and configure environment:
+3. Copy and configure environment:
    ```bash
    cp .env.example .env
    # Edit .env with your values
    ```
 
-3. Run development server:
+4. Run development server:
    ```bash
    uvicorn app.main:app --reload --port 8055
    ```
 
-4. Visit http://localhost:8055/health to verify.
+5. Visit http://localhost:8055/health to verify.
 
 ## Project Structure
 
