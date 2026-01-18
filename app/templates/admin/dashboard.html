@@ -4,11 +4,37 @@
 
 {% block nav %}
 <nav>
-    <a href="/admin/logout">Logout</a>
+    <a href="/admin/logout" class="btn btn-secondary">Logout</a>
 </nav>
 {% endblock %}
 
 {% block content %}
-<h2>Dashboard</h2>
-<p>Welcome, Facilitator. Team management coming in Phase 11.</p>
+<div class="dashboard">
+    <h2>Welcome to The 55</h2>
+    <p>55 minutes. Once a month. The truth about where the team actually is.</p>
+
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h3>Teams ({{ teams | length }})</h3>
+            <a href="/admin/teams/create" class="btn btn-primary">Create Team</a>
+        </div>
+
+        {% if teams %}
+        <div class="team-grid">
+            {% for team in teams %}
+            <a href="/admin/teams/{{ team.id }}" class="team-card">
+                <div class="team-company">{{ team.company_name }}</div>
+                <div class="team-name">{{ team.team_name }}</div>
+                <div class="team-meta">
+                    <span class="team-code">{{ team.code }}</span>
+                    <span class="team-members">{{ team.members | length }} members</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">No teams yet. Create your first team to get started.</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
