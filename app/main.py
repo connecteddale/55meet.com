@@ -12,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.db.database import Base, engine
+from app.routers import images_router
 
 
 # Define paths
@@ -42,6 +43,10 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Configure templates
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+
+# Include routers
+app.include_router(images_router)
 
 
 @app.get("/health")
