@@ -239,3 +239,120 @@ img, video, iframe {
 button, a, [role="button"] {
   cursor: pointer;
 }
+
+/* Member Management */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.team-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.member-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: var(--color-bg-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 4px;
+}
+
+.add-member-form {
+  margin-bottom: var(--space-4);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.member-input {
+  flex: 1;
+}
+
+.limit-reached {
+  padding: var(--space-3);
+  background: #fef3c7;
+  border-radius: 4px;
+  color: #92400e;
+  margin-bottom: var(--space-4);
+}
+
+.error {
+  padding: var(--space-3);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: var(--color-error);
+  margin-bottom: var(--space-4);
+}
+
+.member-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.member-item:last-child {
+  border-bottom: none;
+}
+
+.member-name {
+  font-weight: 500;
+}
+
+.delete-form {
+  margin: 0;
+}
+
+.btn-text {
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-2);
+}
+
+.btn-text:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.btn-small {
+  font-size: var(--font-size-sm);
+  padding: var(--space-2) var(--space-3);
+  min-height: 36px;
+}
+
+.empty-state {
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: var(--space-4);
+}
+
+.strategy-text {
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+/* Responsive adjustments for member form */
+@media (max-width: 480px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-row .btn {
+    width: 100%;
+  }
+}
