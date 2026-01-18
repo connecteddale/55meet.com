@@ -2,10 +2,79 @@
 
 {% block title %}Waiting - The 55{% endblock %}
 
-{% block content %}
-<h2>Waiting for Results</h2>
-<p>{{ member.name }}, your response has been submitted.</p>
-<p>Please wait while others complete their responses.</p>
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
 
-<p>Session state: {{ session.state.value }}</p>
+{% block content %}
+<div class="waiting-page" data-session-id="{{ session.id }}" data-team-code="{{ team.code }}" data-member-id="{{ member.id }}">
+    <div class="waiting-card">
+        <div class="waiting-icon">
+            <svg viewBox="0 0 24 24" width="64" height="64" class="spinner">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
+            </svg>
+        </div>
+
+        <h2>Thank You, {{ member.name }}</h2>
+
+        <p class="waiting-message" id="waiting-message">
+            {% if session.state.value == 'capturing' %}
+            Your response has been submitted. Waiting for others to complete...
+            {% elif session.state.value == 'closed' %}
+            Capture is closed. Synthesis is being prepared...
+            {% else %}
+            Please wait while the facilitator reveals the results...
+            {% endif %}
+        </p>
+
+        <div class="waiting-status">
+            <span class="status-badge state-{{ session.state.value }}">
+                {{ session.state.value | title }}
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    const POLL_INTERVAL = 3000;
+    const container = document.querySelector('.waiting-page');
+    const sessionId = container.dataset.sessionId;
+    const teamCode = container.dataset.teamCode;
+    const memberId = container.dataset.memberId;
+
+    async function checkStatus() {
+        try {
+            const response = await fetch(`/join/${teamCode}/session/${sessionId}/status`);
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            // Update message based on state
+            const messageEl = document.getElementById('waiting-message');
+            if (data.state === 'revealed') {
+                // Redirect to synthesis view
+                window.location.href = `/join/${teamCode}/session/${sessionId}/synthesis`;
+                return;
+            } else if (data.state === 'closed') {
+                messageEl.textContent = 'Capture is closed. Synthesis is being prepared...';
+            } else if (data.state === 'capturing') {
+                messageEl.textContent = `Your response has been submitted. Waiting for others (${data.submitted_count}/${data.total_members})...`;
+            }
+        } catch (err) {
+            console.error('Status check failed:', err);
+        }
+    }
+
+    // Poll every 3 seconds
+    setInterval(checkStatus, POLL_INTERVAL);
+})();
+</script>
 {% endblock %}

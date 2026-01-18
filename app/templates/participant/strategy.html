@@ -1,16 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Strategy - The 55{% endblock %}
+{% block title %}Our Strategy - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<h2>Team Strategy</h2>
-<p>Hi {{ member.name }}!</p>
+<div class="strategy-page">
+    <div class="strategy-card">
+        <h2>Welcome, {{ member.name }}</h2>
 
-<blockquote>
-{{ team.strategy_statement or "No strategy statement defined yet." }}
-</blockquote>
+        <div class="strategy-section">
+            <h3>Our Strategy</h3>
+            {% if team.strategy_statement %}
+            <blockquote class="strategy-statement">
+                {{ team.strategy_statement }}
+            </blockquote>
+            {% else %}
+            <p class="no-strategy">No strategy statement has been set for this team.</p>
+            {% endif %}
+        </div>
 
-<a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
-    <button>Continue to Response</button>
-</a>
+        <div class="strategy-instructions">
+            <h3>What Happens Next</h3>
+            <p>You'll be shown a collection of images. Select the one that best represents how you feel about where we are as a team in executing this strategy.</p>
+            <p>Then, explain your choice in 1-5 bullet points.</p>
+        </div>
+
+        <a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond"
+           class="btn btn-primary btn-large btn-block">
+            I'm Ready
+        </a>
+    </div>
+</div>
 {% endblock %}
