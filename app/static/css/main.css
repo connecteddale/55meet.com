@@ -684,3 +684,11 @@ input[type="month"] {
     border-radius: 4px;
     min-height: var(--touch-target-min);
 }
+
+/* Team Links */
+.team-links {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    flex-wrap: wrap;
+}
