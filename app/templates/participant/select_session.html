@@ -1,18 +1,90 @@
 {% extends "base.html" %}
 
-{% block title %}Select Session - The 55{% endblock %}
+{% block title %}Select Month - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
 
 {% block content %}
-<h2>Select Session</h2>
-<p>Team: {{ team.team_name }}</p>
+<div class="select-page">
+    <div class="select-card">
+        <h2>Select Month</h2>
+        <p class="select-subtitle">Which session are you joining?</p>
 
-<form method="post" action="/join/{{ team.code }}/session">
-    {% for session in sessions %}
-    <label>
-        <input type="radio" name="session_id" value="{{ session.id }}" {% if loop.first %}checked{% endif %}>
-        {{ session.month }}
-    </label>
-    {% endfor %}
-    <button type="submit">Continue</button>
-</form>
+        <form method="post" action="/join/{{ team.code }}/session" id="session-form">
+            <input type="hidden" name="session_id" id="selected-session" value="{{ current_session.id }}">
+
+            <div class="session-stepper">
+                <button type="button" class="stepper-btn stepper-prev" id="prev-btn">
+                    <span class="stepper-arrow">&larr;</span>
+                </button>
+
+                <div class="stepper-display" id="month-display">
+                    {{ current_session.month }}
+                </div>
+
+                <button type="button" class="stepper-btn stepper-next" id="next-btn">
+                    <span class="stepper-arrow">&rarr;</span>
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large btn-block">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    const sessions = [
+        {% for session in sessions %}
+        { id: {{ session.id }}, month: "{{ session.month }}" }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    let currentIndex = 0;
+    const monthDisplay = document.getElementById('month-display');
+    const hiddenInput = document.getElementById('selected-session');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    function formatMonth(monthStr) {
+        const [year, month] = monthStr.split('-');
+        const date = new Date(year, parseInt(month) - 1);
+        return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    function updateDisplay() {
+        monthDisplay.textContent = formatMonth(sessions[currentIndex].month);
+        hiddenInput.value = sessions[currentIndex].id;
+        prevBtn.disabled = currentIndex === sessions.length - 1;
+        nextBtn.disabled = currentIndex === 0;
+    }
+
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex < sessions.length - 1) {
+            currentIndex++;
+            updateDisplay();
+        }
+    });
+
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateDisplay();
+        }
+    });
+
+    updateDisplay();
+})();
+</script>
 {% endblock %}

@@ -2,17 +2,44 @@
 
 {% block title %}Select Your Name - The 55{% endblock %}
 
-{% block content %}
-<h2>Select Your Name</h2>
-<p>Team: {{ team.team_name }} | Session: {{ session.month }}</p>
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
 
-<form method="post" action="/join/{{ team.code }}/session/{{ session.id }}/name">
-    {% for member in members %}
-    <label>
-        <input type="radio" name="member_id" value="{{ member.id }}" {% if member.id in responded_ids %}disabled{% endif %}>
-        {{ member.name }} {% if member.id in responded_ids %}(submitted){% endif %}
-    </label>
-    {% endfor %}
-    <button type="submit">Continue</button>
-</form>
+{% block content %}
+<div class="select-page">
+    <div class="select-card">
+        <h2>Who Are You?</h2>
+        <p class="select-subtitle">Select your name from the list</p>
+
+        <form method="post" action="/join/{{ team.code }}/session/{{ session.id }}/name">
+            <div class="name-list">
+                {% for member in members %}
+                <label class="name-option {% if member.id in responded_ids %}responded{% endif %}">
+                    <input
+                        type="radio"
+                        name="member_id"
+                        value="{{ member.id }}"
+                        {% if member.id in responded_ids %}disabled{% endif %}
+                        required
+                    >
+                    <span class="name-text">{{ member.name }}</span>
+                    {% if member.id in responded_ids %}
+                    <span class="responded-badge">Already responded</span>
+                    {% endif %}
+                </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large btn-block">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}
