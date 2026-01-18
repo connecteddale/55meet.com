@@ -11,6 +11,8 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.db.database import Base, engine
+
 
 # Define paths
 APP_DIR = Path(__file__).parent
@@ -21,9 +23,10 @@ STATIC_DIR = APP_DIR / "static"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager for startup/shutdown events."""
-    # Startup
+    # Startup: create database tables
+    Base.metadata.create_all(bind=engine)
     yield
-    # Shutdown
+    # Shutdown: cleanup if needed
 
 
 # Create FastAPI app
