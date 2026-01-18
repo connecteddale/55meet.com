@@ -24,9 +24,9 @@
 
         <p class="waiting-message" id="waiting-message">
             {% if session.state.value == 'capturing' %}
-            Your response has been submitted. Waiting for others to complete...
+            Your response has been saved. You can edit until the facilitator closes capture.
             {% elif session.state.value == 'closed' %}
-            Capture is closed. Synthesis is being prepared...
+            Capture is closed. Waiting for facilitator to reveal synthesis.
             {% else %}
             Please wait while the facilitator reveals the results...
             {% endif %}
@@ -36,6 +36,15 @@
             <span class="status-badge state-{{ session.state.value }}">
                 {{ session.state.value | title }}
             </span>
+        </div>
+
+        <div class="waiting-actions" id="waiting-actions">
+            {% if session.state.value == 'capturing' %}
+            <a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond"
+               class="btn btn-secondary" id="edit-btn">
+                Edit Response
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -57,16 +66,24 @@
 
             const data = await response.json();
 
-            // Update message based on state
+            // Update message and edit button based on state
             const messageEl = document.getElementById('waiting-message');
+            const actionsEl = document.getElementById('waiting-actions');
+
             if (data.state === 'revealed') {
                 // Redirect to synthesis view
                 window.location.href = `/join/${teamCode}/session/${sessionId}/synthesis`;
                 return;
             } else if (data.state === 'closed') {
-                messageEl.textContent = 'Capture is closed. Synthesis is being prepared...';
+                messageEl.textContent = 'Capture is closed. Waiting for facilitator to reveal synthesis.';
+                // Hide edit button when closed
+                actionsEl.innerHTML = '';
             } else if (data.state === 'capturing') {
-                messageEl.textContent = `Your response has been submitted. Waiting for others (${data.submitted_count}/${data.total_members})...`;
+                messageEl.textContent = `Your response has been saved. Waiting for others (${data.submitted_count}/${data.total_members})...`;
+                // Ensure edit button is visible
+                if (!document.getElementById('edit-btn')) {
+                    actionsEl.innerHTML = `<a href="/join/${teamCode}/session/${sessionId}/member/${memberId}/respond" class="btn btn-secondary" id="edit-btn">Edit Response</a>`;
+                }
             }
         } catch (err) {
             console.error('Status check failed:', err);
