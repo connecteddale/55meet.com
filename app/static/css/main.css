@@ -1,0 +1,241 @@
+@import url('variables.css');
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100dvh; /* Use dvh for mobile Safari */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography */
+h1 { font-size: var(--font-size-3xl); font-weight: 700; }
+h2 { font-size: var(--font-size-2xl); font-weight: 600; }
+h3 { font-size: var(--font-size-xl); font-weight: 600; }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* Layout */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+main {
+  flex: 1;
+  padding: var(--space-6) 0;
+}
+
+/* Header */
+header {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4) 0;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  font-size: var(--font-size-xl);
+}
+
+header nav a {
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--space-3);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  min-height: var(--touch-target-min);
+  transition: border-color var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Buttons */
+.btn,
+button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  min-height: var(--touch-target-min);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-primary,
+button[type="submit"] {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+/* Messages */
+.error-message {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--color-error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 4px;
+  margin-bottom: var(--space-4);
+}
+
+.success-message {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: var(--color-success);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 4px;
+  margin-bottom: var(--space-4);
+}
+
+/* Login page */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--color-bg-secondary);
+}
+
+.login-container {
+  background: var(--color-bg);
+  padding: var(--space-8);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: var(--space-4);
+}
+
+.login-container h1 {
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.login-container h2 {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+  font-weight: 400;
+  margin-bottom: var(--space-6);
+}
+
+/* Cards */
+.card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* Status indicators */
+.status {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 4px;
+}
+
+.status-draft { background: #f1f5f9; color: var(--color-secondary); }
+.status-capturing { background: #dbeafe; color: var(--color-primary); }
+.status-closed { background: #fef3c7; color: var(--color-warning); }
+.status-revealed { background: #dcfce7; color: var(--color-success); }
+
+/* Responsive: ensure no horizontal scroll */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mobile-specific (375px and up is default) */
+@media (min-width: 640px) {
+  :root {
+    --container-padding: var(--space-6);
+  }
+
+  .login-container {
+    padding: var(--space-12);
+  }
+}
+
+@media (min-width: 768px) {
+  header .container {
+    flex-wrap: nowrap;
+  }
+}
+
+/* iOS Safari touch fix: add cursor pointer to tappable elements */
+button, a, [role="button"] {
+  cursor: pointer;
+}
