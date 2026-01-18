@@ -1164,3 +1164,97 @@ input[type="month"] {
     background: var(--color-border);
     cursor: not-allowed;
 }
+
+/* ========================================
+   Bullet Input Section
+   ======================================== */
+
+.bullet-section {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border-radius: 8px;
+}
+
+.bullet-section h3 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.bullet-section p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+}
+
+.bullet-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.bullet-input {
+    width: 100%;
+    font-size: 16px;  /* BC-4: Prevents iOS zoom */
+    min-height: var(--touch-target-min);  /* 44px Apple touch target */
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.bullet-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.bullet-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* Submit Section */
+.submit-section {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: var(--space-4);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    min-height: var(--touch-target-min);
+    transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+}
+
+.btn-submit:disabled {
+    background: var(--color-border);
+    cursor: not-allowed;
+}
+
+.btn-submit.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Form Error Messages */
+.form-error {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: var(--space-3);
+    border-radius: 4px;
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+}
