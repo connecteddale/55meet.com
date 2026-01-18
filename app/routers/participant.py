@@ -510,6 +510,65 @@ async def waiting_state(
     )
 
 
+@router.get("/{code}/session/{session_id}/synthesis")
+async def view_synthesis(
+    request: Request,
+    code: str,
+    session_id: int,
+    db: DbDep
+):
+    """Show synthesis results when session is revealed."""
+    code = code.strip().upper()
+    team = db.query(Team).filter(Team.code == code).first()
+    if not team:
+        return RedirectResponse(url="/join", status_code=303)
+
+    session = db.query(SessionModel).filter(
+        SessionModel.id == session_id,
+        SessionModel.team_id == team.id
+    ).first()
+
+    if not session:
+        return RedirectResponse(url=f"/join/{code}/session", status_code=303)
+
+    # Validate session state
+    if session.state == SessionState.DRAFT:
+        # Session not active
+        return RedirectResponse(url="/join", status_code=303)
+    elif session.state in (SessionState.CAPTURING, SessionState.CLOSED):
+        # Synthesis not ready yet - redirect to waiting
+        # Find a member to redirect with (use first response's member)
+        response = db.query(Response).filter(Response.session_id == session_id).first()
+        if response:
+            return RedirectResponse(
+                url=f"/join/{code}/session/{session_id}/member/{response.member_id}/waiting",
+                status_code=303
+            )
+        # No responses yet - back to join
+        return RedirectResponse(url="/join", status_code=303)
+
+    # Session is REVEALED - show synthesis
+    # Parse synthesis_statements from JSON
+    synthesis_statements = []
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except json.JSONDecodeError:
+            synthesis_statements = []
+
+    return templates.TemplateResponse(
+        "participant/synthesis.html",
+        {
+            "request": request,
+            "team": team,
+            "session": session,
+            "synthesis_themes": session.synthesis_themes,
+            "synthesis_statements": synthesis_statements,
+            "synthesis_gap_type": session.synthesis_gap_type
+        }
+    )
+
+
 @router.get("/{code}/session/{session_id}/status")
 async def get_participant_status(
     code: str,
