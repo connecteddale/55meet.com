@@ -55,10 +55,49 @@
             </button>
         </div>
 
-        <!-- Continue Button -->
-        <div class="browser-actions">
-            <button type="submit" id="continue-btn" class="btn btn-primary btn-large btn-block" disabled>
-                Continue
+        <!-- Bullet Point Section (shown after image selection) -->
+        <div class="bullet-section" id="bullet-section" style="display: none;">
+            <h3>Why does this image represent where you are?</h3>
+            <p>Enter 1-5 bullet points explaining your choice.</p>
+
+            {% if error %}
+            <div class="form-error">{{ error }}</div>
+            {% endif %}
+
+            <div class="bullet-inputs">
+                <input type="text"
+                       class="bullet-input"
+                       id="bullet-1"
+                       placeholder="Bullet point 1 (required)"
+                       maxlength="500"
+                       required>
+                <input type="text"
+                       class="bullet-input"
+                       id="bullet-2"
+                       placeholder="Bullet point 2 (optional)"
+                       maxlength="500">
+                <input type="text"
+                       class="bullet-input"
+                       id="bullet-3"
+                       placeholder="Bullet point 3 (optional)"
+                       maxlength="500">
+                <input type="text"
+                       class="bullet-input"
+                       id="bullet-4"
+                       placeholder="Bullet point 4 (optional)"
+                       maxlength="500">
+                <input type="text"
+                       class="bullet-input"
+                       id="bullet-5"
+                       placeholder="Bullet point 5 (optional)"
+                       maxlength="500">
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-section" id="submit-section">
+            <button type="submit" id="submit-btn" class="btn-submit" disabled>
+                Submit Response
             </button>
             <p class="selection-hint" id="selection-hint">Select an image to continue</p>
         </div>
@@ -74,6 +113,9 @@
     let selectedImage = null;
     const totalPages = {{ image_pages|length }};
     const imagePages = {{ image_pages|tojson }};
+    const sessionId = {{ session.id }};
+    const memberId = {{ member.id }};
+    const draftKey = `draft-${sessionId}-${memberId}`;
 
     // DOM Elements
     const pages = document.querySelectorAll('.image-page');
@@ -81,12 +123,109 @@
     const nextBtn = document.getElementById('next-btn');
     const paginationInfo = document.getElementById('pagination-info');
     const selectedImageInput = document.getElementById('selected-image');
-    const continueBtn = document.getElementById('continue-btn');
+    const bulletsJsonInput = document.getElementById('bullets-json');
+    const submitBtn = document.getElementById('submit-btn');
     const selectionHint = document.getElementById('selection-hint');
     const imageCards = document.querySelectorAll('.image-card');
+    const bulletSection = document.getElementById('bullet-section');
+    const bulletInputs = [
+        document.getElementById('bullet-1'),
+        document.getElementById('bullet-2'),
+        document.getElementById('bullet-3'),
+        document.getElementById('bullet-4'),
+        document.getElementById('bullet-5')
+    ];
+    const respondForm = document.getElementById('respond-form');
+
+    // Load draft from localStorage
+    function loadDraft() {
+        try {
+            const draft = JSON.parse(localStorage.getItem(draftKey));
+            if (draft) {
+                if (draft.image && !selectedImageInput.value) {
+                    selectedImage = draft.image;
+                    selectedImageInput.value = draft.image;
+                    // Find page
+                    for (let i = 0; i < imagePages.length; i++) {
+                        if (selectedImage >= imagePages[i][0] && selectedImage <= imagePages[i][1]) {
+                            currentPage = i;
+                            break;
+                        }
+                    }
+                    updateSelection();
+                    showBulletSection();
+                }
+                if (draft.bullets && draft.bullets.length > 0) {
+                    draft.bullets.forEach((bullet, idx) => {
+                        if (bulletInputs[idx]) {
+                            bulletInputs[idx].value = bullet;
+                        }
+                    });
+                    updateBulletsJson();
+                    updateSubmitButton();
+                }
+            }
+        } catch (e) {
+            // Ignore localStorage errors
+        }
+    }
+
+    // Save draft to localStorage
+    function saveDraft() {
+        try {
+            const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
+            const draft = {
+                image: selectedImage,
+                bullets: bullets
+            };
+            localStorage.setItem(draftKey, JSON.stringify(draft));
+        } catch (e) {
+            // Ignore localStorage errors
+        }
+    }
+
+    // Clear draft from localStorage
+    function clearDraft() {
+        try {
+            localStorage.removeItem(draftKey);
+        } catch (e) {
+            // Ignore
+        }
+    }
+
+    // Update hidden bullets JSON field
+    function updateBulletsJson() {
+        const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
+        bulletsJsonInput.value = JSON.stringify(bullets);
+    }
+
+    // Update submit button state
+    function updateSubmitButton() {
+        const hasImage = selectedImage !== null;
+        const hasBullet = bulletInputs[0].value.trim().length > 0;
+        submitBtn.disabled = !(hasImage && hasBullet);
+
+        if (hasImage && hasBullet) {
+            selectionHint.textContent = 'Ready to submit';
+        } else if (hasImage) {
+            selectionHint.textContent = 'Enter at least one bullet point';
+        } else {
+            selectionHint.textContent = 'Select an image to continue';
+        }
+    }
+
+    // Show bullet section
+    function showBulletSection() {
+        bulletSection.style.display = 'block';
+        // Scroll to bullet section smoothly
+        setTimeout(() => {
+            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 
     // Initialize from existing response
     const existingValue = selectedImageInput.value;
+    const existingBullets = bulletsJsonInput.value;
     if (existingValue) {
         selectedImage = parseInt(existingValue, 10);
         // Find which page contains this image
@@ -97,7 +236,25 @@
             }
         }
         updateSelection();
-        enableContinue();
+        showBulletSection();
+
+        // Pre-fill bullets if editing
+        if (existingBullets && existingBullets !== '[]') {
+            try {
+                const bullets = JSON.parse(existingBullets);
+                bullets.forEach((bullet, idx) => {
+                    if (bulletInputs[idx]) {
+                        bulletInputs[idx].value = bullet;
+                    }
+                });
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+        updateSubmitButton();
+    } else {
+        // Try to restore from draft
+        loadDraft();
     }
 
     // Update page display
@@ -135,7 +292,9 @@
         selectedImage = imageNum;
         selectedImageInput.value = imageNum;
         updateSelection();
-        enableContinue();
+        showBulletSection();
+        updateSubmitButton();
+        saveDraft();
     }
 
     function updateSelection() {
@@ -143,11 +302,6 @@
             const cardImageNum = parseInt(card.dataset.image, 10);
             card.classList.toggle('selected', cardImageNum === selectedImage);
         });
-    }
-
-    function enableContinue() {
-        continueBtn.disabled = false;
-        selectionHint.textContent = `Image ${selectedImage} selected`;
     }
 
     // Attach click handlers to all image cards
@@ -166,6 +320,37 @@
                 selectImage(imageNum);
             }
         });
+    });
+
+    // Attach event handlers to bullet inputs
+    bulletInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            updateBulletsJson();
+            updateSubmitButton();
+            saveDraft();
+        });
+    });
+
+    // Handle form submission
+    respondForm.addEventListener('submit', function(e) {
+        // Update bullets JSON before submission
+        updateBulletsJson();
+
+        // Check validation
+        const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
+        if (bullets.length === 0) {
+            e.preventDefault();
+            alert('Please enter at least one bullet point.');
+            return;
+        }
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.classList.add('loading');
+
+        // Clear draft on submit
+        clearDraft();
     });
 
     // Initialize page display
