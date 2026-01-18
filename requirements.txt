@@ -9,3 +9,4 @@ pwdlib[argon2]==0.3.0
 itsdangerous==2.2.0
 python-multipart==0.0.21
 slowapi==0.1.9
+qrcode[pil]==8.2
