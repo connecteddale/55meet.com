@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Team - The 55{% endblock %}
+
+{% block nav %}
+<nav>
+    <a href="/admin/teams" class="btn btn-secondary">Back to Teams</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Edit Team</h2>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/admin/teams/{{ team.id }}">
+        <div class="form-group">
+            <label for="company_name">Company Name</label>
+            <input type="text" id="company_name" name="company_name" required
+                   value="{{ team.company_name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="team_name">Team Name</label>
+            <input type="text" id="team_name" name="team_name" required
+                   value="{{ team.team_name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="code">Team Code</label>
+            <input type="text" id="code" name="code" required maxlength="20"
+                   value="{{ team.code }}" pattern="[A-Za-z0-9]+"
+                   style="text-transform: uppercase;">
+        </div>
+
+        <div class="form-group">
+            <label for="strategy_statement">Strategy Statement (3AM Test)</label>
+            <textarea id="strategy_statement" name="strategy_statement" rows="3"
+                      >{{ team.strategy_statement or '' }}</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <div class="danger-zone">
+        <h3>Danger Zone</h3>
+        <form method="post" action="/admin/teams/{{ team.id }}/delete"
+              onsubmit="return confirm('Delete this team? This cannot be undone.');">
+            <button type="submit" class="btn btn-danger">Delete Team</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
