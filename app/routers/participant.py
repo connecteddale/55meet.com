@@ -5,7 +5,8 @@ Public endpoints for participant session entry flow.
 No authentication required - participants join via team code.
 """
 
-from typing import Annotated
+import json
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -255,6 +256,152 @@ async def show_strategy(
             "session": session,
             "member": member
         }
+    )
+
+
+@router.get("/{code}/session/{session_id}/member/{member_id}/respond")
+async def respond_form(
+    request: Request,
+    code: str,
+    session_id: int,
+    member_id: int,
+    db: DbDep
+):
+    """Show image browser for response selection."""
+    code = code.strip().upper()
+    team = db.query(Team).filter(Team.code == code).first()
+    if not team:
+        return RedirectResponse(url="/join", status_code=303)
+
+    session = db.query(SessionModel).filter(
+        SessionModel.id == session_id,
+        SessionModel.team_id == team.id,
+        SessionModel.state == SessionState.CAPTURING
+    ).first()
+
+    if not session:
+        return RedirectResponse(url=f"/join/{code}/session", status_code=303)
+
+    member = db.query(Member).filter(
+        Member.id == member_id,
+        Member.team_id == team.id
+    ).first()
+
+    if not member:
+        return RedirectResponse(
+            url=f"/join/{code}/session/{session_id}/name",
+            status_code=303
+        )
+
+    # Check for existing response (edit mode)
+    existing_response = db.query(Response).filter(
+        Response.session_id == session_id,
+        Response.member_id == member_id
+    ).first()
+
+    # Generate pagination ranges: [(1,6), (7,12), ..., (49,54), (55,55)]
+    image_pages = []
+    for start in range(1, 56, 6):
+        end = min(start + 5, 55)
+        image_pages.append((start, end))
+
+    return templates.TemplateResponse(
+        "participant/respond.html",
+        {
+            "request": request,
+            "team": team,
+            "session": session,
+            "member": member,
+            "existing_response": existing_response,
+            "image_pages": image_pages
+        }
+    )
+
+
+@router.post("/{code}/session/{session_id}/member/{member_id}/respond")
+async def submit_response(
+    request: Request,
+    code: str,
+    session_id: int,
+    member_id: int,
+    db: DbDep,
+    image_number: int = Form(...),
+    bullets: str = Form(...)
+):
+    """Process response submission."""
+    code = code.strip().upper()
+    team = db.query(Team).filter(Team.code == code).first()
+    if not team:
+        return RedirectResponse(url="/join", status_code=303)
+
+    session = db.query(SessionModel).filter(
+        SessionModel.id == session_id,
+        SessionModel.team_id == team.id,
+        SessionModel.state == SessionState.CAPTURING
+    ).first()
+
+    if not session:
+        # Session no longer accepting submissions
+        return RedirectResponse(
+            url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
+            status_code=303
+        )
+
+    member = db.query(Member).filter(
+        Member.id == member_id,
+        Member.team_id == team.id
+    ).first()
+
+    if not member:
+        return RedirectResponse(url="/join", status_code=303)
+
+    # Validate image_number (1-55)
+    if not 1 <= image_number <= 55:
+        raise HTTPException(status_code=400, detail="Invalid image number")
+
+    # Parse and validate bullets JSON
+    try:
+        bullets_list = json.loads(bullets)
+        if not isinstance(bullets_list, list):
+            raise ValueError("Bullets must be a list")
+        # Filter out empty strings and whitespace-only strings
+        bullets_list = [b.strip() for b in bullets_list if b.strip()]
+        if not 1 <= len(bullets_list) <= 5:
+            raise ValueError("Must have 1-5 bullet points")
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid bullets format")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    # Store validated bullets back as JSON
+    bullets_json = json.dumps(bullets_list)
+
+    # Check for existing response
+    existing = db.query(Response).filter(
+        Response.session_id == session_id,
+        Response.member_id == member_id
+    ).first()
+
+    if existing:
+        # Update existing response
+        existing.image_number = image_number
+        existing.bullets = bullets_json
+    else:
+        # Insert new response
+        response = Response(
+            session_id=session_id,
+            member_id=member_id,
+            image_number=image_number,
+            bullets=bullets_json
+        )
+        db.add(response)
+
+    db.commit()
+
+    # Redirect to waiting page
+    return RedirectResponse(
+        url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
+        status_code=303
     )
 
 
