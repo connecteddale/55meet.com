@@ -29,13 +29,17 @@
 
         <div class="strategy-instructions">
             <h3>What Happens Next</h3>
+            {% if has_response %}
+            <p class="edit-notice">You've already submitted a response. Click below to view or edit it.</p>
+            {% else %}
             <p>You'll be shown a collection of images. Select the one that best represents how you feel about where we are as a team in executing this strategy.</p>
             <p>Then, explain your choice in 1-5 bullet points.</p>
+            {% endif %}
         </div>
 
         <a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond"
            class="btn btn-primary btn-large btn-block">
-            I'm Ready
+            {% if has_response %}Edit Response{% else %}I'm Ready{% endif %}
         </a>
     </div>
 </div>

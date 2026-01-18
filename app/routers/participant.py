@@ -248,13 +248,20 @@ async def show_strategy(
             status_code=303
         )
 
+    # Check if member already has a response
+    existing_response = db.query(Response).filter(
+        Response.session_id == session_id,
+        Response.member_id == member_id
+    ).first()
+
     return templates.TemplateResponse(
         "participant/strategy.html",
         {
             "request": request,
             "team": team,
             "session": session,
-            "member": member
+            "member": member,
+            "has_response": existing_response is not None
         }
     )
 
