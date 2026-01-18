@@ -23,11 +23,11 @@ DbDep = Annotated[Session, Depends(get_db)]
 
 
 @router.get("")
-async def join_form(request: Request):
-    """Show team code entry form."""
+async def join_form(request: Request, code: str = None):
+    """Show team code entry form. Optionally pre-fill from QR code URL."""
     return templates.TemplateResponse(
         "participant/join.html",
-        {"request": request, "error": None}
+        {"request": request, "error": None, "prefill_code": code}
     )
 
 
