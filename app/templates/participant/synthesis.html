@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Team Synthesis - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge">{{ team.team_name }}</span>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="synthesis-page">
+    <div class="synthesis-header">
+        <h2>{{ session.month }} Synthesis</h2>
+        <p class="synthesis-subtitle">{{ team.company_name }}</p>
+    </div>
+
+    {% if synthesis_themes %}
+    <div class="synthesis-section themes-section">
+        <h3>Team Themes</h3>
+        <p class="themes-text">{{ synthesis_themes }}</p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_gap_type %}
+    <div class="synthesis-section gap-section">
+        <h3>Primary Gap</h3>
+        <div class="gap-indicator gap-{{ synthesis_gap_type|lower }}">
+            <span class="gap-type">{{ synthesis_gap_type }}</span>
+        </div>
+        <p class="gap-description">
+            {% if synthesis_gap_type == 'Direction' %}
+            The team may lack shared understanding of goals or priorities.
+            {% elif synthesis_gap_type == 'Alignment' %}
+            The team's work may be disconnected or uncoordinated.
+            {% elif synthesis_gap_type == 'Commitment' %}
+            Individual interests may be overriding collective success.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_statements %}
+    <div class="synthesis-section statements-section">
+        <h3>Key Insights</h3>
+        <ul class="insights-list">
+            {% for stmt in synthesis_statements %}
+            <li class="insight-item">
+                <span class="insight-text">{{ stmt.statement }}</span>
+                <span class="insight-attribution">({{ stmt.participants|join(', ') }})</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if not synthesis_themes %}
+    <div class="synthesis-section empty-section">
+        <p>Synthesis results are not yet available.</p>
+    </div>
+    {% endif %}
+
+    <div class="synthesis-footer">
+        <p class="footer-message">
+            Discuss these insights with your team to identify action items.
+        </p>
+    </div>
+</div>
+{% endblock %}
