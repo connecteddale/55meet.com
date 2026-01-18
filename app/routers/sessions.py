@@ -7,12 +7,15 @@ Session management and control endpoints for facilitator.
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Request, Form, HTTPException
+import json
+
+from fastapi import APIRouter, Request, Form, HTTPException, BackgroundTasks
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from app.dependencies import AuthDep, DbDep
 from app.db.models import Team, Member, Session, Response, SessionState
+from app.services.synthesis import run_synthesis_task
 
 router = APIRouter(prefix="/admin/sessions", tags=["sessions"])
 templates = Jinja2Templates(directory="app/templates")
@@ -135,6 +138,20 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
             "submitted": member.id in responded_member_ids
         })
 
+    # Parse synthesis data
+    synthesis_statements = None
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            synthesis_statements = []
+
+    # Synthesis is pending if CLOSED state and no synthesis_themes yet
+    synthesis_pending = (
+        session.state == SessionState.CLOSED and
+        session.synthesis_themes is None
+    )
+
     return templates.TemplateResponse(
         "admin/sessions/view.html",
         {
@@ -143,7 +160,11 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
             "team": team,
             "member_status": member_status,
             "total_members": len(members),
-            "submitted_count": len(responded_member_ids)
+            "submitted_count": len(responded_member_ids),
+            "synthesis_themes": session.synthesis_themes,
+            "synthesis_statements": synthesis_statements,
+            "synthesis_gap_type": session.synthesis_gap_type,
+            "synthesis_pending": synthesis_pending
         }
     )
 
@@ -207,6 +228,37 @@ async def reveal_synthesis(session_id: int, auth: AuthDep, db: DbDep):
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
+@router.post("/{session_id}/synthesize")
+async def trigger_synthesis(
+    session_id: int,
+    background_tasks: BackgroundTasks,
+    auth: AuthDep,
+    db: DbDep
+):
+    """Trigger synthesis generation for a closed session."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.state != SessionState.CLOSED:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot generate synthesis. Session is in '{session.state.value}' state. Must be 'closed'."
+        )
+
+    # Check if synthesis already exists and succeeded
+    if session.synthesis_themes is not None:
+        # If it's an error message, allow retry
+        if "failed" not in session.synthesis_themes.lower() and "insufficient" not in session.synthesis_themes.lower():
+            # Already have valid synthesis, just redirect
+            return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+    # Add background task to generate synthesis
+    background_tasks.add_task(run_synthesis_task, session_id)
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
 @router.get("/{session_id}/status")
 async def get_session_status(session_id: int, auth: AuthDep, db: DbDep):
     """Get session status for polling (JSON endpoint)."""
@@ -227,12 +279,21 @@ async def get_session_status(session_id: int, auth: AuthDep, db: DbDep):
             "submitted": member.id in responded_member_ids
         })
 
+    # Synthesis status for CLOSED state polling
+    has_synthesis = session.synthesis_themes is not None
+    synthesis_pending = (
+        session.state == SessionState.CLOSED and
+        session.synthesis_themes is None
+    )
+
     return JSONResponse({
         "session_id": session_id,
         "state": session.state.value,
         "total_members": len(members),
         "submitted_count": len(responded_member_ids),
-        "members": member_status
+        "members": member_status,
+        "has_synthesis": has_synthesis,
+        "synthesis_pending": synthesis_pending
     })
 
 
