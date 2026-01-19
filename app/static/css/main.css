@@ -1879,3 +1879,140 @@ input[type="month"] {
         font-size: 3rem;
     }
 }
+
+/* ========================================
+   Presentation Levels (Phase 22-02)
+   ======================================== */
+
+/* Level Tab Navigation */
+.level-tabs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.level-tab {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--font-size-base);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.level-tab:hover {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+}
+
+.level-tab.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+/* Level Content Visibility */
+.level-content {
+    display: none;
+}
+
+.level-content.active {
+    display: block;
+}
+
+/* Level 3: Raw Responses */
+.raw-participant {
+    margin-bottom: var(--space-6);
+    padding: var(--space-4);
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+}
+
+.raw-participant-name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: rgba(255,255,255,0.9);
+}
+
+.raw-participant-image {
+    font-size: var(--font-size-sm);
+    color: rgba(255,255,255,0.5);
+    margin-bottom: var(--space-3);
+}
+
+.raw-bullets {
+    list-style: disc;
+    padding-left: var(--space-5);
+}
+
+.raw-bullets li {
+    margin-bottom: var(--space-2);
+    color: rgba(255,255,255,0.8);
+}
+
+/* Export Button in Presentation */
+.level-export {
+    display: inline-block;
+    margin-top: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+}
+
+.level-export:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    text-decoration: none;
+}
+
+/* Keyboard Hint */
+.keyboard-hint {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    font-size: var(--font-size-sm);
+    color: rgba(255,255,255,0.3);
+}
+
+.keyboard-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+/* Synthesis Error State */
+.synthesis-error {
+    text-align: center;
+    padding: var(--space-8);
+}
+
+.synthesis-error-message {
+    font-size: var(--font-size-lg);
+    color: #ef4444;
+    margin-bottom: var(--space-6);
+}
+
+.retry-button {
+    display: inline-block;
+    padding: var(--space-3) var(--space-6);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+}
+
+.retry-button:hover {
+    opacity: 0.9;
+}
