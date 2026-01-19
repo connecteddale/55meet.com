@@ -1638,3 +1638,106 @@ input[type="month"] {
 .exit-presentation:hover {
     color: rgba(255,255,255,0.7);
 }
+
+/* ========================================
+   Image Browser - Sticky Header (Phase 19)
+   ======================================== */
+
+/* Sticky header container - instructions + pagination */
+.image-browser-sticky {
+  position: -webkit-sticky;  /* iOS Safari (IG-1) */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-bg);
+  padding: var(--space-3) var(--space-4);
+  margin: 0 calc(-1 * var(--space-4));  /* Extend to edges */
+  border-bottom: 1px solid var(--color-border);
+  /* Force GPU layer to reduce iOS flickering (IG-1) */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+.browser-instruction {
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.browser-instruction p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* Pagination in sticky header */
+.pagination-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pagination-header .pagination-btn {
+  flex-shrink: 0;
+}
+
+.page-indicator {
+  text-align: center;
+  flex: 1;
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+/* Jump to selection button */
+.jump-to-selection {
+  display: none;
+  margin-top: var(--space-2);
+  text-align: center;
+}
+
+.jump-to-selection.visible {
+  display: block;
+}
+
+.jump-to-selection button {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.jump-to-selection button:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Image grid adjustments for sticky header */
+.image-grid-container {
+  padding-top: var(--space-4);
+}
+
+/* Loading state for AJAX */
+.image-page-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.image-page-loading .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Ensure no overflow:hidden on image-browser (IG-1) */
+.image-browser {
+  overflow: visible;  /* Required for sticky to work */
+}
