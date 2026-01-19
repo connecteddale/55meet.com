@@ -13,9 +13,24 @@
 
 {% block content %}
 <div class="image-browser">
-    <div class="browser-header">
-        <h2>Select an Image, {{ member.name }}</h2>
-        <p class="browser-subtitle">Choose the image that best represents how you feel about where your team is in executing the strategy.</p>
+    <!-- Sticky Header: Instructions + Pagination -->
+    <div class="image-browser-sticky">
+        <div class="browser-instruction">
+            <h2>Select an Image, {{ member.name }}</h2>
+            <p>Choose the image that best represents how you feel about where your team is in executing the strategy.</p>
+        </div>
+        <div class="pagination-header">
+            <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
+                <span class="pagination-arrow">&larr;</span> Prev
+            </button>
+            <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
+            <button type="button" id="next-btn" class="pagination-btn" aria-label="Next page">
+                Next <span class="pagination-arrow">&rarr;</span>
+            </button>
+        </div>
+        <div class="jump-to-selection" id="jump-to-selection">
+            <button type="button" onclick="jumpToSelection()">Jump to your selection</button>
+        </div>
     </div>
 
     <form id="respond-form" method="POST" action="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
@@ -23,36 +38,11 @@
         <input type="hidden" name="image_number" id="selected-image" value="{% if existing_response %}{{ existing_response.image_number }}{% endif %}">
         <input type="hidden" name="bullets" id="bullets-json" value="{% if existing_response %}{{ existing_response.bullets }}{% else %}[]{% endif %}">
 
-        <!-- Image Grid Container -->
-        <div class="image-grid" id="image-grid">
-            {% for page_idx in range(image_pages|length) %}
-            {% set start, end = image_pages[page_idx] %}
-            <div class="image-page {% if page_idx == 0 %}active{% endif %}" data-page="{{ page_idx }}">
-                {% for img_num in range(start, end + 1) %}
-                <div class="image-card {% if existing_response and existing_response.image_number == img_num %}selected{% endif %}"
-                     data-image="{{ img_num }}"
-                     role="button"
-                     tabindex="0"
-                     aria-label="Image {{ img_num }}">
-                    <img src="/static/images/55/{{ img_num }}.svg"
-                         alt="Image {{ img_num }}"
-                         {% if page_idx == 0 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
-                    <span class="image-number">{{ img_num }}</span>
-                </div>
-                {% endfor %}
+        <!-- Image Grid Container (loaded via AJAX) -->
+        <div class="image-grid-container" id="image-grid-container">
+            <div class="image-page active" id="image-page">
+                <!-- Images loaded via JavaScript -->
             </div>
-            {% endfor %}
-        </div>
-
-        <!-- Pagination Controls -->
-        <div class="pagination-controls">
-            <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
-                <span class="pagination-arrow">&larr;</span> Previous
-            </button>
-            <span class="pagination-info" id="pagination-info">1-6 of 55</span>
-            <button type="button" id="next-btn" class="pagination-btn" aria-label="Next page">
-                Next <span class="pagination-arrow">&rarr;</span>
-            </button>
         </div>
 
         <!-- Bullet Point Section (shown after image selection) -->
@@ -108,25 +98,31 @@
 (function() {
     'use strict';
 
-    // State
-    let currentPage = 0;
-    let selectedImage = null;
-    const totalPages = {{ image_pages|length }};
-    const imagePages = {{ image_pages|tojson }};
+    // Configuration from server
     const sessionId = {{ session.id }};
     const memberId = {{ member.id }};
+    const teamCode = "{{ team.code }}";
+    const perPage = {{ per_page }};
+
+    // State
+    let currentPage = 1;
+    let totalPages = 1;
+    let selectedImageId = null;
+    let selectedImagePage = null;
+    let loadedPages = new Map();  // page -> images array
+    const storageKey = `image-browser-${sessionId}-${memberId}`;
     const draftKey = `draft-${sessionId}-${memberId}`;
 
     // DOM Elements
-    const pages = document.querySelectorAll('.image-page');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    const paginationInfo = document.getElementById('pagination-info');
+    const pageIndicator = document.getElementById('page-indicator');
+    const imagePage = document.getElementById('image-page');
+    const jumpSection = document.getElementById('jump-to-selection');
     const selectedImageInput = document.getElementById('selected-image');
     const bulletsJsonInput = document.getElementById('bullets-json');
     const submitBtn = document.getElementById('submit-btn');
     const selectionHint = document.getElementById('selection-hint');
-    const imageCards = document.querySelectorAll('.image-card');
     const bulletSection = document.getElementById('bullet-section');
     const bulletInputs = [
         document.getElementById('bullet-1'),
@@ -137,23 +133,142 @@
     ];
     const respondForm = document.getElementById('respond-form');
 
-    // Load draft from localStorage
+    // ========================================
+    // Page Loading (AJAX)
+    // ========================================
+
+    async function loadPage(pageNum) {
+        // Show loading state
+        imagePage.innerHTML = '<div class="image-page-loading"><div class="spinner"></div></div>';
+
+        try {
+            const url = `/api/images?page=${pageNum}&per_page=${perPage}&seed=${sessionId}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to load images');
+
+            const data = await response.json();
+            totalPages = data.total_pages;
+
+            // Cache the page
+            loadedPages.set(pageNum, data.images);
+
+            // Render images
+            renderPage(data.images);
+
+            // Update pagination
+            updatePagination(pageNum);
+
+            // Save state to sessionStorage (IG-2)
+            savePageState(pageNum);
+
+        } catch (error) {
+            console.error('Error loading images:', error);
+            imagePage.innerHTML = '<p class="error">Failed to load images. Please refresh the page.</p>';
+        }
+    }
+
+    function renderPage(images) {
+        // Build grid HTML
+        const html = images.map((img, idx) => {
+            const isSelected = img.id === selectedImageId;
+            const imgNum = img.id;  // Use image ID for backward compatibility
+            return `
+                <div class="image-card ${isSelected ? 'selected' : ''}"
+                     data-image="${imgNum}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="Image ${imgNum}">
+                    <img src="${img.url}"
+                         alt="Image ${imgNum}"
+                         loading="${idx < 6 ? 'eager' : 'lazy'}">
+                    <span class="image-number">${imgNum}</span>
+                </div>
+            `;
+        }).join('');
+
+        imagePage.innerHTML = html;
+        imagePage.classList.add('active');
+
+        // Attach event handlers to new cards
+        attachCardHandlers();
+    }
+
+    function attachCardHandlers() {
+        const cards = imagePage.querySelectorAll('.image-card');
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                const imageId = this.dataset.image;
+                selectImage(imageId);
+            });
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const imageId = this.dataset.image;
+                    selectImage(imageId);
+                }
+            });
+        });
+    }
+
+    function updatePagination(pageNum) {
+        currentPage = pageNum;
+        pageIndicator.textContent = `Page ${pageNum} of ${totalPages}`;
+        prevBtn.disabled = pageNum <= 1;
+        nextBtn.disabled = pageNum >= totalPages;
+
+        // Show "jump to selection" if selection is on different page
+        if (selectedImagePage && selectedImagePage !== pageNum) {
+            jumpSection.classList.add('visible');
+        } else {
+            jumpSection.classList.remove('visible');
+        }
+    }
+
+    // ========================================
+    // State Persistence (IG-2)
+    // ========================================
+
+    function savePageState(pageNum) {
+        try {
+            sessionStorage.setItem(storageKey, JSON.stringify({
+                page: pageNum,
+                selectedId: selectedImageId,
+                selectedPage: selectedImagePage
+            }));
+        } catch (e) {
+            // Ignore storage errors
+        }
+    }
+
+    function loadPageState() {
+        try {
+            const saved = sessionStorage.getItem(storageKey);
+            if (saved) {
+                const state = JSON.parse(saved);
+                if (state.selectedId) {
+                    selectedImageId = state.selectedId;
+                    selectedImagePage = state.selectedPage;
+                }
+                return state.page || 1;
+            }
+        } catch (e) {
+            // Ignore
+        }
+        return 1;
+    }
+
+    // ========================================
+    // Draft Persistence
+    // ========================================
+
     function loadDraft() {
         try {
             const draft = JSON.parse(localStorage.getItem(draftKey));
             if (draft) {
                 if (draft.image && !selectedImageInput.value) {
-                    selectedImage = draft.image;
+                    selectedImageId = draft.image;
                     selectedImageInput.value = draft.image;
-                    // Find page
-                    for (let i = 0; i < imagePages.length; i++) {
-                        if (selectedImage >= imagePages[i][0] && selectedImage <= imagePages[i][1]) {
-                            currentPage = i;
-                            break;
-                        }
-                    }
-                    updateSelection();
-                    showBulletSection();
+                    // We'll find the page when we load
                 }
                 if (draft.bullets && draft.bullets.length > 0) {
                     draft.bullets.forEach((bullet, idx) => {
@@ -162,46 +277,82 @@
                         }
                     });
                     updateBulletsJson();
-                    updateSubmitButton();
                 }
             }
-        } catch (e) {
-            // Ignore localStorage errors
-        }
-    }
-
-    // Save draft to localStorage
-    function saveDraft() {
-        try {
-            const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
-            const draft = {
-                image: selectedImage,
-                bullets: bullets
-            };
-            localStorage.setItem(draftKey, JSON.stringify(draft));
-        } catch (e) {
-            // Ignore localStorage errors
-        }
-    }
-
-    // Clear draft from localStorage
-    function clearDraft() {
-        try {
-            localStorage.removeItem(draftKey);
         } catch (e) {
             // Ignore
         }
     }
 
-    // Update hidden bullets JSON field
+    function saveDraft() {
+        try {
+            const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
+            localStorage.setItem(draftKey, JSON.stringify({
+                image: selectedImageId,
+                bullets: bullets
+            }));
+        } catch (e) {
+            // Ignore
+        }
+    }
+
+    function clearDraft() {
+        try {
+            localStorage.removeItem(draftKey);
+            sessionStorage.removeItem(storageKey);
+        } catch (e) {
+            // Ignore
+        }
+    }
+
+    // ========================================
+    // Image Selection
+    // ========================================
+
+    function selectImage(imageId) {
+        selectedImageId = imageId;
+        selectedImageInput.value = imageId;
+        selectedImagePage = currentPage;
+
+        // Update visual selection
+        const cards = imagePage.querySelectorAll('.image-card');
+        cards.forEach(card => {
+            card.classList.toggle('selected', card.dataset.image === imageId);
+        });
+
+        // Show bullet section
+        bulletSection.style.display = 'block';
+        setTimeout(() => {
+            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+
+        updateSubmitButton();
+        saveDraft();
+        savePageState(currentPage);
+
+        // Hide jump button since we're on selection page
+        jumpSection.classList.remove('visible');
+    }
+
+    function jumpToSelection() {
+        if (selectedImagePage && selectedImagePage !== currentPage) {
+            loadPage(selectedImagePage);
+        }
+    }
+    // Expose to global for onclick
+    window.jumpToSelection = jumpToSelection;
+
+    // ========================================
+    // Bullet Points
+    // ========================================
+
     function updateBulletsJson() {
         const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
         bulletsJsonInput.value = JSON.stringify(bullets);
     }
 
-    // Update submit button state
     function updateSubmitButton() {
-        const hasImage = selectedImage !== null;
+        const hasImage = selectedImageId !== null;
         const hasBullet = bulletInputs[0].value.trim().length > 0;
         submitBtn.disabled = !(hasImage && hasBullet);
 
@@ -214,115 +365,22 @@
         }
     }
 
-    // Show bullet section
-    function showBulletSection() {
-        bulletSection.style.display = 'block';
-        // Scroll to bullet section smoothly
-        setTimeout(() => {
-            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-    }
+    // ========================================
+    // Event Handlers
+    // ========================================
 
-    // Initialize from existing response
-    const existingValue = selectedImageInput.value;
-    const existingBullets = bulletsJsonInput.value;
-    if (existingValue) {
-        selectedImage = parseInt(existingValue, 10);
-        // Find which page contains this image
-        for (let i = 0; i < imagePages.length; i++) {
-            if (selectedImage >= imagePages[i][0] && selectedImage <= imagePages[i][1]) {
-                currentPage = i;
-                break;
-            }
-        }
-        updateSelection();
-        showBulletSection();
-
-        // Pre-fill bullets if editing
-        if (existingBullets && existingBullets !== '[]') {
-            try {
-                const bullets = JSON.parse(existingBullets);
-                bullets.forEach((bullet, idx) => {
-                    if (bulletInputs[idx]) {
-                        bulletInputs[idx].value = bullet;
-                    }
-                });
-            } catch (e) {
-                // Ignore parse errors
-            }
-        }
-        updateSubmitButton();
-    } else {
-        // Try to restore from draft
-        loadDraft();
-    }
-
-    // Update page display
-    function showPage(pageIndex) {
-        pages.forEach((page, idx) => {
-            page.classList.toggle('active', idx === pageIndex);
-        });
-
-        // Update pagination info
-        const [start, end] = imagePages[pageIndex];
-        paginationInfo.textContent = `${start}-${end} of 55`;
-
-        // Update button states
-        prevBtn.disabled = pageIndex === 0;
-        nextBtn.disabled = pageIndex === totalPages - 1;
-    }
-
-    // Handle page navigation
     prevBtn.addEventListener('click', function() {
-        if (currentPage > 0) {
-            currentPage--;
-            showPage(currentPage);
+        if (currentPage > 1) {
+            loadPage(currentPage - 1);
         }
     });
 
     nextBtn.addEventListener('click', function() {
-        if (currentPage < totalPages - 1) {
-            currentPage++;
-            showPage(currentPage);
+        if (currentPage < totalPages) {
+            loadPage(currentPage + 1);
         }
     });
 
-    // Handle image selection
-    function selectImage(imageNum) {
-        selectedImage = imageNum;
-        selectedImageInput.value = imageNum;
-        updateSelection();
-        showBulletSection();
-        updateSubmitButton();
-        saveDraft();
-    }
-
-    function updateSelection() {
-        imageCards.forEach(card => {
-            const cardImageNum = parseInt(card.dataset.image, 10);
-            card.classList.toggle('selected', cardImageNum === selectedImage);
-        });
-    }
-
-    // Attach click handlers to all image cards
-    imageCards.forEach(card => {
-        // Click handler (works for touch and mouse)
-        card.addEventListener('click', function() {
-            const imageNum = parseInt(this.dataset.image, 10);
-            selectImage(imageNum);
-        });
-
-        // Keyboard accessibility
-        card.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                const imageNum = parseInt(this.dataset.image, 10);
-                selectImage(imageNum);
-            }
-        });
-    });
-
-    // Attach event handlers to bullet inputs
     bulletInputs.forEach(input => {
         input.addEventListener('input', function() {
             updateBulletsJson();
@@ -331,12 +389,9 @@
         });
     });
 
-    // Handle form submission
     respondForm.addEventListener('submit', function(e) {
-        // Update bullets JSON before submission
         updateBulletsJson();
 
-        // Check validation
         const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
         if (bullets.length === 0) {
             e.preventDefault();
@@ -344,17 +399,54 @@
             return;
         }
 
-        // Show loading state
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
         submitBtn.classList.add('loading');
 
-        // Clear draft on submit
         clearDraft();
     });
 
-    // Initialize page display
-    showPage(currentPage);
+    // ========================================
+    // Initialization
+    // ========================================
+
+    function init() {
+        // Load from existing response first
+        const existingValue = selectedImageInput.value;
+        const existingBullets = bulletsJsonInput.value;
+
+        if (existingValue) {
+            selectedImageId = existingValue;
+            // Pre-fill bullets if editing
+            if (existingBullets && existingBullets !== '[]') {
+                try {
+                    const bullets = JSON.parse(existingBullets);
+                    bullets.forEach((bullet, idx) => {
+                        if (bulletInputs[idx]) {
+                            bulletInputs[idx].value = bullet;
+                        }
+                    });
+                } catch (e) {}
+            }
+            bulletSection.style.display = 'block';
+            updateSubmitButton();
+        } else {
+            // Try to restore from draft
+            loadDraft();
+            if (selectedImageId) {
+                bulletSection.style.display = 'block';
+                updateSubmitButton();
+            }
+        }
+
+        // Restore page position
+        const savedPage = loadPageState();
+
+        // Load the page (either saved position or page 1)
+        loadPage(savedPage);
+    }
+
+    init();
 })();
 </script>
 {% endblock %}
