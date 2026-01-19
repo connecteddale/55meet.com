@@ -122,21 +122,33 @@
 
     {% if session.state.value == 'revealed' %}
     <div class="card">
+        <h3>Facilitator Notes</h3>
+        <form method="post" action="/admin/sessions/{{ session.id }}/notes">
+            <div class="form-group">
+                <textarea name="facilitator_notes" rows="4" placeholder="Session observations, context, follow-up items...">{{ session.facilitator_notes or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-small">Save Notes</button>
+        </form>
+    </div>
+
+    <div class="card">
         <h3>Recalibration Action</h3>
         {% if session.recalibration_action %}
         <p class="recalibration-text">{{ session.recalibration_action }}</p>
-        <form method="post" action="/admin/sessions/{{ session.id }}/recalibration">
+        {% endif %}
+        <form method="post" action="/admin/sessions/{{ session.id }}/notes">
+            <div class="form-group">
+                <textarea name="recalibration_action" rows="2" placeholder="ONE action the team commits to...">{{ session.recalibration_action or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-small">Save Action</button>
+        </form>
+        {% if session.recalibration_action %}
+        <form method="post" action="/admin/sessions/{{ session.id }}/recalibration" style="margin-top: var(--space-3);">
             <input type="hidden" name="completed" value="{{ 'false' if session.recalibration_completed else 'true' }}">
-            <button type="submit" class="btn {% if session.recalibration_completed %}btn-secondary{% else %}btn-primary{% endif %}">
-                {% if session.recalibration_completed %}
-                Mark Incomplete
-                {% else %}
-                Mark Complete
-                {% endif %}
+            <button type="submit" class="btn {% if session.recalibration_completed %}btn-secondary{% else %}btn-primary{% endif %} btn-small">
+                {% if session.recalibration_completed %}Mark Incomplete{% else %}Mark Complete{% endif %}
             </button>
         </form>
-        {% else %}
-        <p class="empty-state">No recalibration action recorded.</p>
         {% endif %}
     </div>
     {% endif %}
