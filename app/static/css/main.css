@@ -1506,3 +1506,135 @@ input[type="month"] {
     background: #dcfce7;
     color: var(--color-success);
 }
+
+/* ========================================
+   Presentation Mode
+   ======================================== */
+
+.presentation-mode {
+    background: #1a1a2e;
+    color: #eaeaea;
+    min-height: 100vh;
+}
+
+.presentation-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--space-8);
+}
+
+.presentation-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.presentation-team {
+    font-size: var(--font-size-lg);
+    color: rgba(255,255,255,0.6);
+    margin-bottom: var(--space-2);
+}
+
+.presentation-month {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+}
+
+.presentation-section {
+    margin-bottom: var(--space-8);
+}
+
+.presentation-label {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: var(--space-4);
+}
+
+.presentation-themes {
+    font-size: 1.5rem;
+    line-height: 1.6;
+}
+
+.presentation-gap {
+    display: inline-block;
+    font-size: 2rem;
+    font-weight: 700;
+    padding: var(--space-3) var(--space-6);
+    border-radius: 8px;
+    margin-bottom: var(--space-3);
+}
+
+.presentation-gap.gap-direction {
+    background: #3B82F6;
+    color: white;
+}
+
+.presentation-gap.gap-alignment {
+    background: #F59E0B;
+    color: white;
+}
+
+.presentation-gap.gap-commitment {
+    background: #10B981;
+    color: white;
+}
+
+.presentation-gap-desc {
+    font-size: 1.125rem;
+    color: rgba(255,255,255,0.7);
+}
+
+.presentation-insights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.presentation-insights li {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 1.25rem;
+}
+
+.presentation-insights li:last-child {
+    border-bottom: none;
+}
+
+.presentation-insights .insight-statement {
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+.presentation-insights .insight-names {
+    font-size: var(--font-size-sm);
+    color: rgba(255,255,255,0.5);
+}
+
+.presentation-action {
+    background: rgba(255,255,255,0.05);
+    padding: var(--space-6);
+    border-radius: 8px;
+    border-left: 4px solid #10B981;
+}
+
+.presentation-action-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.presentation-footer {
+    margin-top: var(--space-12);
+    text-align: center;
+}
+
+.exit-presentation {
+    color: rgba(255,255,255,0.4);
+    font-size: var(--font-size-sm);
+}
+
+.exit-presentation:hover {
+    color: rgba(255,255,255,0.7);
+}
