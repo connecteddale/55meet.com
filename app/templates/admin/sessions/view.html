@@ -108,6 +108,15 @@
                 <span class="status-indicator {% if member.submitted %}submitted{% else %}waiting{% endif %}">
                     {% if member.submitted %}Submitted{% else %}Waiting...{% endif %}
                 </span>
+                {% if session.state.value == 'capturing' and member.submitted %}
+                <form method="post" action="/admin/sessions/{{ session.id }}/member/{{ member.id }}/clear"
+                      onsubmit="return confirm('Clear {{ member.name }}\'s submission? They will need to resubmit.');"
+                      style="margin-left: auto;">
+                    <button type="submit" class="btn btn-small btn-danger">
+                        Clear
+                    </button>
+                </form>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
