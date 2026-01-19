@@ -9,7 +9,7 @@
     'use strict';
 
     const POLL_INTERVAL = 2500; // 2.5 seconds
-    const container = document.querySelector('.session-control');
+    const container = document.querySelector('.session-control') || document.querySelector('.capture-control');
 
     if (!container) return;
 
@@ -64,6 +64,9 @@
         const list = document.getElementById('member-status-list');
         if (!list) return;
 
+        // Detect if we're in capture mode (checkmark style) or control mode (text style)
+        const isCaptureMode = document.body.classList.contains('capture-mode');
+
         members.forEach(member => {
             const item = list.querySelector(`[data-member-id="${member.id}"]`);
             if (!item) return;
@@ -74,11 +77,11 @@
             if (member.submitted) {
                 indicator.classList.remove('waiting');
                 indicator.classList.add('submitted');
-                indicator.textContent = 'Submitted';
+                indicator.textContent = isCaptureMode ? '\u2713' : 'Submitted';
             } else {
                 indicator.classList.remove('submitted');
                 indicator.classList.add('waiting');
-                indicator.textContent = 'Waiting...';
+                indicator.textContent = isCaptureMode ? '...' : 'Waiting...';
             }
         });
     }

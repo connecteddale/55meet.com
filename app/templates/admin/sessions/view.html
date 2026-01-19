@@ -50,6 +50,13 @@
             </form>
             <p class="control-hint">Close when all participants have submitted.</p>
 
+            <!-- Capture view for projection -->
+            <div class="session-actions" style="margin-top: var(--space-4);">
+                <a href="/admin/sessions/{{ session.id }}/capture" class="btn btn-primary">
+                    Capture View (Project)
+                </a>
+            </div>
+
             {% elif session.state.value == 'closed' %}
             {% if synthesis_pending %}
             <form method="post" action="/admin/sessions/{{ session.id }}/synthesize">
