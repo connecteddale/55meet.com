@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Session History - The 55{% endblock %}
+
+{% block nav %}
+<nav>
+    <a href="/admin" class="btn btn-secondary">Dashboard</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Session History</h2>
+    </div>
+
+    {% if sessions %}
+    <div class="history-list">
+        {% for session in sessions %}
+        <a href="/admin/sessions/{{ session.id }}" class="history-item">
+            <div class="history-main">
+                <div class="history-month">{{ session.month }}</div>
+                <div class="history-team">{{ session.team.company_name }} - {{ session.team.team_name }}</div>
+            </div>
+            <div class="history-meta">
+                <span class="session-state state-{{ session.state.value }}">{{ session.state.value }}</span>
+                {% if session.recalibration_action %}
+                <span class="history-badge {% if session.recalibration_completed %}completed{% endif %}">
+                    {% if session.recalibration_completed %}Action Done{% else %}Action Set{% endif %}
+                </span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No sessions yet. Create a session from a team page to get started.</p>
+    {% endif %}
+</div>
+{% endblock %}
