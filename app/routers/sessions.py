@@ -538,6 +538,23 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
         except (json.JSONDecodeError, TypeError):
             synthesis_statements = []
 
+    # Query raw responses for Level 3
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    raw_responses = []
+    for r in responses:
+        member = db.query(Member).filter(Member.id == r.member_id).first()
+        raw_responses.append({
+            "participant": member.name if member else "Unknown",
+            "image_number": r.image_number,
+            "bullets": json.loads(r.bullets) if r.bullets else []
+        })
+
+    # Check for synthesis failure (for retry UI)
+    synthesis_failed = False
+    if session.synthesis_themes:
+        themes_lower = session.synthesis_themes.lower()
+        synthesis_failed = "failed" in themes_lower or "insufficient" in themes_lower
+
     return templates.TemplateResponse(
         "admin/sessions/present.html",
         {
@@ -546,7 +563,9 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
             "team": session.team,
             "synthesis_themes": session.synthesis_themes,
             "synthesis_statements": synthesis_statements,
-            "synthesis_gap_type": session.synthesis_gap_type
+            "synthesis_gap_type": session.synthesis_gap_type,
+            "raw_responses": raw_responses,
+            "synthesis_failed": synthesis_failed
         }
     )
 
