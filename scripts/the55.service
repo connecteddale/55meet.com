@@ -1,0 +1,27 @@
+# Reference copy of the systemd service file
+# Installed at: /etc/systemd/system/the55.service
+# Install with: sudo cp this-file /etc/systemd/system/the55.service
+#               sudo systemctl daemon-reload
+#               sudo systemctl enable the55
+#               sudo systemctl start the55
+
+[Unit]
+Description=The 55 - Leadership Alignment Diagnostics (FastAPI)
+After=network.target
+
+[Service]
+User=DrPloy
+Group=www-data
+WorkingDirectory=/var/www/the55
+Environment="PATH=/var/www/the55/venv/bin"
+ExecStart=/var/www/the55/venv/bin/gunicorn app.main:app \
+    --workers 2 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:8055 \
+    --access-logfile /var/www/the55/logs/access.log \
+    --error-logfile /var/www/the55/logs/error.log
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
