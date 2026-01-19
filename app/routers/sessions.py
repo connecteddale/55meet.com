@@ -248,6 +248,40 @@ async def reopen_capture(session_id: int, auth: AuthDep, db: DbDep):
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
+@router.post("/{session_id}/member/{member_id}/clear")
+async def clear_member_submission(
+    session_id: int,
+    member_id: int,
+    auth: AuthDep,
+    db: DbDep
+):
+    """Clear a specific participant's submission to allow resubmit."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Only allow clearing during CAPTURING state
+    if session.state != SessionState.CAPTURING:
+        raise HTTPException(
+            status_code=400,
+            detail="Can only clear submissions while capturing."
+        )
+
+    # Delete the response (hard delete, no audit trail needed)
+    response = db.query(Response).filter(
+        Response.session_id == session_id,
+        Response.member_id == member_id
+    ).first()
+
+    if not response:
+        raise HTTPException(status_code=404, detail="No submission found")
+
+    db.delete(response)
+    db.commit()
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
 @router.post("/{session_id}/reveal")
 async def reveal_synthesis(session_id: int, auth: AuthDep, db: DbDep):
     """Transition session from closed to revealed."""
