@@ -72,6 +72,17 @@
             </div>
             {% endif %}
 
+            {# Reopen capture option for latecomers #}
+            <div class="secondary-controls" style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border-color);">
+                <form method="post" action="/admin/sessions/{{ session.id }}/reopen"
+                      onsubmit="return confirm('Reopen capture for latecomers?\n\nThis will clear any existing synthesis and allow new submissions.');">
+                    <button type="submit" class="btn btn-secondary">
+                        Reopen Capture
+                    </button>
+                </form>
+                <p class="control-hint">Allow latecomers to submit. Clears synthesis if generated.</p>
+            </div>
+
             {% elif session.state.value == 'revealed' %}
             <div class="session-complete">
                 <p>Session complete. Synthesis revealed to participants.</p>
