@@ -423,6 +423,45 @@ async def mark_recalibration_complete(
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
+@router.get("/{session_id}/capture")
+async def capture_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
+    """Projector-friendly capture view with QR code and status."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Only show in CAPTURING state (redirect otherwise)
+    if session.state != SessionState.CAPTURING:
+        return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+    team = session.team
+    members = db.query(Member).filter(Member.team_id == team.id).order_by(Member.name).all()
+
+    # Get response status for each member
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responded_member_ids = {r.member_id for r in responses}
+
+    member_status = []
+    for member in members:
+        member_status.append({
+            "id": member.id,
+            "name": member.name,
+            "submitted": member.id in responded_member_ids
+        })
+
+    return templates.TemplateResponse(
+        "admin/sessions/capture.html",
+        {
+            "request": request,
+            "session": session,
+            "team": team,
+            "member_status": member_status,
+            "total_members": len(members),
+            "submitted_count": len(responded_member_ids)
+        }
+    )
+
+
 @router.get("/{session_id}/present")
 async def present_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
     """Projector-friendly presentation view of synthesis."""

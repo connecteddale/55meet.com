@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Capture - {{ team.team_name }} | The 55{% endblock %}
+
+{% block head %}
+<style>
+    /* Capture-specific overrides for projector mode */
+    body { background: #000; color: #fff; }
+    header { display: none; }
+    main { padding: 0; }
+    .container { max-width: 1200px; }
+</style>
+{% endblock %}
+
+{% block body_class %} class="capture-mode"{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="capture-control" data-session-id="{{ session.id }}">
+    <div class="capture-container">
+        <!-- QR Panel (left) -->
+        <div class="capture-qr-panel">
+            <img src="/admin/qr/team/{{ team.id }}" alt="Scan to join" class="capture-qr-code">
+            <div class="capture-join-code">{{ team.code }}</div>
+            <div class="capture-join-url">Scan QR or visit /join</div>
+        </div>
+        <!-- Status Panel (right) -->
+        <div class="capture-status-panel">
+            <div class="capture-progress">
+                <span id="submitted-count">{{ submitted_count }}</span>/<span id="total-members">{{ total_members }}</span>
+            </div>
+            <div class="capture-member-list" id="member-status-list">
+                {% for member in member_status %}
+                <div class="capture-member" data-member-id="{{ member.id }}">
+                    <span class="member-name">{{ member.name }}</span>
+                    <span class="status-indicator {% if member.submitted %}submitted{% else %}waiting{% endif %}">
+                        {% if member.submitted %}&#10003;{% else %}...{% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="capture-footer">
+        <a href="/admin/sessions/{{ session.id }}" class="exit-capture">Exit to Control Panel</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/polling.js"></script>
+{% endblock %}
