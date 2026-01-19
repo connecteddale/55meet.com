@@ -309,6 +309,11 @@ button, a, [role="button"] {
   margin: 0;
 }
 
+.section-description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
