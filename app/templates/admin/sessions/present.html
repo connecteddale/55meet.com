@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.team_name }} - {{ session.month }} | The 55{% endblock %}
+
+{% block head %}
+<style>
+    /* Presentation-specific overrides for projector mode */
+    body { background: #000; color: #fff; }
+    header { display: none; }
+    main { padding: 0; }
+    .container { max-width: 1200px; }
+</style>
+{% endblock %}
+
+{% block body_class %} class="presentation-mode"{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="presentation-container">
+    <div class="presentation-header">
+        <div class="presentation-team">{{ team.company_name }} &middot; {{ team.team_name }}</div>
+        <div class="presentation-month">{{ session.month }}</div>
+    </div>
+
+    {% if synthesis_themes %}
+    <div class="presentation-section">
+        <h2 class="presentation-label">What We Heard</h2>
+        <p class="presentation-themes">{{ synthesis_themes }}</p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_gap_type %}
+    <div class="presentation-section">
+        <h2 class="presentation-label">Primary Gap</h2>
+        <div class="presentation-gap gap-{{ synthesis_gap_type|lower }}">
+            {{ synthesis_gap_type }}
+        </div>
+        <p class="presentation-gap-desc">
+            {% if synthesis_gap_type == "Direction" %}
+            Team members see different destinations. Where are we going?
+            {% elif synthesis_gap_type == "Alignment" %}
+            Team members are pulling in different directions. How do our efforts connect?
+            {% elif synthesis_gap_type == "Commitment" %}
+            Individual priorities outweigh collective goals. What will we sacrifice?
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_statements %}
+    <div class="presentation-section">
+        <h2 class="presentation-label">Key Insights</h2>
+        <ul class="presentation-insights">
+            {% for stmt in synthesis_statements %}
+            <li>
+                <span class="insight-statement">{{ stmt.statement }}</span>
+                <span class="insight-names">({{ stmt.participants|join(', ') }})</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if session.recalibration_action %}
+    <div class="presentation-section presentation-action">
+        <h2 class="presentation-label">Recalibration Action</h2>
+        <p class="presentation-action-text">{{ session.recalibration_action }}</p>
+    </div>
+    {% endif %}
+
+    <div class="presentation-footer">
+        <a href="/admin/sessions/{{ session.id }}" class="exit-presentation">Exit Presentation</a>
+    </div>
+</div>
+{% endblock %}
