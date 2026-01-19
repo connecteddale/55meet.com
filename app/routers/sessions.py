@@ -333,6 +333,64 @@ async def trigger_synthesis(
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
+@router.post("/{session_id}/synthesize/retry")
+async def retry_synthesis(
+    session_id: int,
+    background_tasks: BackgroundTasks,
+    auth: AuthDep,
+    db: DbDep
+):
+    """Force regeneration of synthesis, clearing existing data first."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.state != SessionState.CLOSED:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot retry synthesis. Session is in '{session.state.value}' state. Must be 'closed'."
+        )
+
+    # Clear existing synthesis data to force regeneration
+    session.synthesis_themes = None
+    session.synthesis_statements = None
+    session.synthesis_gap_type = None
+    db.commit()
+
+    # Add background task to generate synthesis
+    background_tasks.add_task(run_synthesis_task, session_id)
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
+@router.get("/{session_id}/synthesis-status")
+async def get_synthesis_status(session_id: int, auth: AuthDep, db: DbDep):
+    """Get synthesis progress status for polling."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Determine synthesis status
+    if session.synthesis_themes is None:
+        status = "pending"
+        has_error = False
+        error_message = None
+    elif "failed" in session.synthesis_themes.lower() or "insufficient" in session.synthesis_themes.lower():
+        status = "failed"
+        has_error = True
+        error_message = session.synthesis_themes
+    else:
+        status = "complete"
+        has_error = False
+        error_message = None
+
+    return JSONResponse({
+        "status": status,
+        "has_error": has_error,
+        "error_message": error_message
+    })
+
+
 @router.get("/{session_id}/status")
 async def get_session_status(session_id: int, auth: AuthDep, db: DbDep):
     """Get session status for polling (JSON endpoint)."""
