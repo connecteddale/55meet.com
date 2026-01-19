@@ -75,6 +75,14 @@
             {% elif session.state.value == 'revealed' %}
             <div class="session-complete">
                 <p>Session complete. Synthesis revealed to participants.</p>
+                <div class="session-actions" style="margin-top: var(--space-4);">
+                    <a href="/admin/sessions/{{ session.id }}/present" class="btn btn-primary">
+                        Presentation Mode
+                    </a>
+                    <a href="/admin/sessions/{{ session.id }}/export" class="btn btn-secondary">
+                        Export JSON
+                    </a>
+                </div>
             </div>
             {% endif %}
         </div>
