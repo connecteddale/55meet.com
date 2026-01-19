@@ -553,3 +553,80 @@ async def export_session(session_id: int, auth: AuthDep, db: DbDep):
         content=export_data,
         headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}.json"}
     )
+
+
+@router.get("/{session_id}/export/level1")
+async def export_level1(session_id: int, auth: AuthDep, db: DbDep):
+    """Export Level 1 synthesis data (themes and gap type only)."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+    export_data = {
+        "themes": session.synthesis_themes,
+        "gap_type": session.synthesis_gap_type
+    }
+
+    return JSONResponse(
+        content=export_data,
+        headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}-level1.json"}
+    )
+
+
+@router.get("/{session_id}/export/level2")
+async def export_level2(session_id: int, auth: AuthDep, db: DbDep):
+    """Export Level 2 synthesis data (attributed statements)."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+
+    # Parse synthesis statements
+    statements = []
+    if session.synthesis_statements:
+        try:
+            statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            statements = []
+
+    export_data = {
+        "statements": statements
+    }
+
+    return JSONResponse(
+        content=export_data,
+        headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}-level2.json"}
+    )
+
+
+@router.get("/{session_id}/export/level3")
+async def export_level3(session_id: int, auth: AuthDep, db: DbDep):
+    """Export Level 3 raw data (participant responses)."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+
+    # Build response data
+    response_data = []
+    for r in responses:
+        member = db.query(Member).filter(Member.id == r.member_id).first()
+        response_data.append({
+            "participant": member.name if member else "Unknown",
+            "image_number": r.image_number,
+            "bullets": json.loads(r.bullets) if r.bullets else [],
+            "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None
+        })
+
+    export_data = {
+        "responses": response_data
+    }
+
+    return JSONResponse(
+        content=export_data,
+        headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}-level3.json"}
+    )
