@@ -15,6 +15,8 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.db.models import Team, Member, Session as SessionModel, SessionState, Response
+from app.services.images import get_image_library
+from app.config import get_settings
 
 router = APIRouter(prefix="/join", tags=["participant"])
 templates = Jinja2Templates(directory="app/templates")
@@ -329,11 +331,30 @@ async def respond_form(
                 }
             )
 
-    # Generate pagination ranges: [(1,6), (7,12), ..., (49,54), (55,55)]
+    # Get shuffled images using session ID as seed for consistent ordering
+    settings = get_settings()
+    library = get_image_library()
+    per_page = settings.images_per_page  # Default 20
+
+    shuffled_images = library.get_shuffled_images(seed=session.id)
+    total_images = len(shuffled_images)
+
+    # Generate page ranges based on image indices (0-indexed)
     image_pages = []
-    for start in range(1, 56, 6):
-        end = min(start + 5, 55)
-        image_pages.append((start, end))
+    for start_idx in range(0, total_images, per_page):
+        end_idx = min(start_idx + per_page - 1, total_images - 1)
+        image_pages.append((start_idx, end_idx))
+
+    # Backward compatibility: if using old 55-image set with numbered IDs,
+    # keep numbered approach for current template
+    if total_images == 55 and all(img.id.isdigit() for img in shuffled_images[:5]):
+        shuffled_numbers = [int(img.id) for img in shuffled_images]
+        image_pages = []
+        for start_idx in range(0, 55, 6):
+            end_idx = min(start_idx + 5, 54)
+            # Page contains these image numbers
+            page_numbers = shuffled_numbers[start_idx:end_idx + 1]
+            image_pages.append((start_idx, end_idx, page_numbers))
 
     return templates.TemplateResponse(
         "participant/respond.html",
@@ -343,7 +364,10 @@ async def respond_form(
             "session": session,
             "member": member,
             "existing_response": existing_response,
-            "image_pages": image_pages
+            "image_pages": image_pages,
+            "images": shuffled_images,
+            "total_images": total_images,
+            "per_page": per_page,
         }
     )
 
