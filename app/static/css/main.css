@@ -1439,3 +1439,65 @@ input[type="month"] {
 .synthesis-generating p {
     color: var(--color-text-muted);
 }
+
+/* ========================================
+   Session History
+   ======================================== */
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4);
+    background: var(--color-bg);
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--transition-fast);
+}
+
+.history-item:hover {
+    border-color: var(--color-primary);
+    text-decoration: none;
+}
+
+.history-main {
+    flex: 1;
+}
+
+.history-month {
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.history-team {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.history-meta {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.history-badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+    border-radius: 4px;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.history-badge.completed {
+    background: #dcfce7;
+    color: var(--color-success);
+}
