@@ -362,3 +362,96 @@ async def mark_recalibration_complete(
     db.commit()
 
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
+@router.get("/{session_id}/present")
+async def present_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
+    """Projector-friendly presentation view of synthesis."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.state != SessionState.REVEALED:
+        return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+    # Parse synthesis statements
+    synthesis_statements = None
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            synthesis_statements = []
+
+    return templates.TemplateResponse(
+        "admin/sessions/present.html",
+        {
+            "request": request,
+            "session": session,
+            "team": session.team,
+            "synthesis_themes": session.synthesis_themes,
+            "synthesis_statements": synthesis_statements,
+            "synthesis_gap_type": session.synthesis_gap_type
+        }
+    )
+
+
+@router.get("/{session_id}/export")
+async def export_session(session_id: int, auth: AuthDep, db: DbDep):
+    """Export session data as JSON."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+
+    # Build response data
+    response_data = []
+    for r in responses:
+        member = db.query(Member).filter(Member.id == r.member_id).first()
+        response_data.append({
+            "participant": member.name if member else "Unknown",
+            "image_number": r.image_number,
+            "bullets": json.loads(r.bullets) if r.bullets else [],
+            "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None
+        })
+
+    # Parse synthesis statements
+    synthesis_statements = None
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            synthesis_statements = []
+
+    export_data = {
+        "session": {
+            "id": session.id,
+            "month": session.month,
+            "state": session.state.value,
+            "created_at": session.created_at.isoformat() if session.created_at else None,
+            "closed_at": session.closed_at.isoformat() if session.closed_at else None,
+            "revealed_at": session.revealed_at.isoformat() if session.revealed_at else None
+        },
+        "team": {
+            "company_name": team.company_name,
+            "team_name": team.team_name,
+            "strategy_statement": team.strategy_statement
+        },
+        "responses": response_data,
+        "synthesis": {
+            "themes": session.synthesis_themes,
+            "statements": synthesis_statements,
+            "gap_type": session.synthesis_gap_type
+        },
+        "facilitator": {
+            "notes": session.facilitator_notes,
+            "recalibration_action": session.recalibration_action,
+            "recalibration_completed": session.recalibration_completed
+        }
+    }
+
+    return JSONResponse(
+        content=export_data,
+        headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}.json"}
+    )
