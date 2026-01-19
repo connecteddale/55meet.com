@@ -13,6 +13,8 @@ from fastapi import APIRouter, Request, Form, HTTPException, BackgroundTasks
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import joinedload
+
 from app.dependencies import AuthDep, DbDep
 from app.db.models import Team, Member, Session, Response, SessionState
 from app.services.synthesis import run_synthesis_task
@@ -114,6 +116,19 @@ async def create_session(
     db.commit()
 
     return RedirectResponse(url=f"/admin/sessions/{session.id}", status_code=303)
+
+
+@router.get("/history")
+async def session_history(request: Request, auth: AuthDep, db: DbDep):
+    """View all sessions across all teams."""
+    sessions = db.query(Session).options(
+        joinedload(Session.team)
+    ).order_by(Session.month.desc()).all()
+
+    return templates.TemplateResponse(
+        "admin/sessions/history.html",
+        {"request": request, "sessions": sessions}
+    )
 
 
 @router.get("/{session_id}")
@@ -295,6 +310,40 @@ async def get_session_status(session_id: int, auth: AuthDep, db: DbDep):
         "has_synthesis": has_synthesis,
         "synthesis_pending": synthesis_pending
     })
+
+
+@router.post("/{session_id}/notes")
+async def update_session_notes(
+    session_id: int,
+    auth: AuthDep,
+    db: DbDep,
+    facilitator_notes: Optional[str] = Form(None),
+    recalibration_action: Optional[str] = Form(None)
+):
+    """Save facilitator notes and recalibration action text."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.state != SessionState.REVEALED:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot save notes. Session must be in 'revealed' state, but is '{session.state.value}'."
+        )
+
+    # Update facilitator notes if provided
+    if facilitator_notes is not None:
+        cleaned = facilitator_notes.strip()
+        session.facilitator_notes = cleaned if cleaned else None
+
+    # Update recalibration action if provided
+    if recalibration_action is not None:
+        cleaned = recalibration_action.strip()
+        session.recalibration_action = cleaned if cleaned else None
+
+    db.commit()
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
 @router.post("/{session_id}/recalibration")
