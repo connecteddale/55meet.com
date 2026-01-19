@@ -1741,3 +1741,141 @@ input[type="month"] {
 .image-browser {
   overflow: visible;  /* Required for sticky to work */
 }
+
+/* ========================================
+   Capture Mode (QR + Status Projectable)
+   ======================================== */
+
+.capture-mode {
+    background: #1a1a2e;
+    color: #eaeaea;
+    min-height: 100vh;
+}
+
+.capture-control {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.capture-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-8);
+    flex: 1;
+    align-items: center;
+}
+
+/* QR Panel (left side) */
+.capture-qr-panel {
+    text-align: center;
+}
+
+.capture-qr-code {
+    width: 400px;
+    height: 400px;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.capture-join-code {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-top: var(--space-6);
+    text-transform: uppercase;
+}
+
+.capture-join-url {
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: var(--space-2);
+    font-size: 1.125rem;
+}
+
+/* Status Panel (right side) */
+.capture-status-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: var(--space-6);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.capture-progress {
+    font-size: 4rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.capture-member-list {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.capture-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.25rem;
+}
+
+.capture-member:last-child {
+    border-bottom: none;
+}
+
+.capture-member .member-name {
+    color: #eaeaea;
+}
+
+.capture-member .status-indicator.submitted {
+    color: #22c55e;  /* Bright green - visible on projector */
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.capture-member .status-indicator.waiting {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+}
+
+/* Footer exit link */
+.capture-footer {
+    text-align: center;
+    padding: var(--space-4);
+}
+
+.exit-capture {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: var(--font-size-sm);
+}
+
+.exit-capture:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive: Stack on narrower screens */
+@media (max-width: 900px) {
+    .capture-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    .capture-qr-code {
+        width: 300px;
+        height: 300px;
+    }
+
+    .capture-progress {
+        font-size: 3rem;
+    }
+}
