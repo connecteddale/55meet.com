@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting - {{ team.team_name }} | The 55{% endblock %}
+
+{% block head %}
+<style>
+    body { background: #1a1a2e; color: #eaeaea; }
+    header { display: none; }
+    main { padding: 0; }
+</style>
+{% endblock %}
+
+{% block body_class %} class="meeting-mode meeting-{{ session.state.value }}"{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="meeting-screen" data-session-id="{{ session.id }}" data-state="{{ session.state.value }}">
+
+    {# CAPTURE SECTION: Visible in draft/capturing states #}
+    {% if session.state.value in ['draft', 'capturing'] %}
+    <section class="meeting-capture" id="capture-section">
+        <div class="meeting-qr">
+            <img src="/admin/qr/team/{{ team.id }}" alt="Scan to join" class="meeting-qr-code">
+            <div class="meeting-join-code">{{ team.code }}</div>
+            <div class="meeting-join-url">Scan QR or visit /join</div>
+        </div>
+        <div class="meeting-status">
+            <div class="meeting-progress">
+                <span id="submitted-count">{{ submitted_count }}</span>/<span id="total-members">{{ total_members }}</span>
+            </div>
+            <div class="meeting-member-list" id="member-status-list">
+                {% for member in member_status %}
+                <div class="meeting-member" data-member-id="{{ member.id }}">
+                    <span class="member-name">{{ member.name }}</span>
+                    <span class="status-indicator {% if member.submitted %}submitted{% else %}waiting{% endif %}">
+                        {% if member.submitted %}&#10003;{% else %}...{% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# CLOSED STATE: Show waiting for synthesis #}
+    {% if session.state.value == 'closed' %}
+    <section class="meeting-waiting" id="waiting-section">
+        <div class="meeting-waiting-content">
+            <h1>Analyzing Responses</h1>
+            <p>Please wait while we synthesize your team's feedback...</p>
+            <div class="meeting-spinner"></div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# SYNTHESIS SECTION: Visible in revealed state #}
+    {% if session.state.value == 'revealed' %}
+    <section class="meeting-synthesis" id="synthesis-section">
+        {% if synthesis_failed %}
+        <div class="meeting-error">
+            <h2>Synthesis Generation Failed</h2>
+            <p>{{ synthesis_themes }}</p>
+            <p class="meeting-error-hint">Return to control panel to retry.</p>
+        </div>
+        {% else %}
+        {# Level tabs #}
+        <div class="level-tabs">
+            <button class="level-tab active" data-level="1">Overview</button>
+            <button class="level-tab" data-level="2">Insights</button>
+            <button class="level-tab" data-level="3">Raw</button>
+        </div>
+
+        {# Level 1: Themes + Gap #}
+        <div class="level-content active" data-level="1">
+            <div class="meeting-header">
+                <h1>{{ team.team_name }}</h1>
+                <p class="meeting-meta">{{ team.company_name }} &middot; {{ session.month }}</p>
+            </div>
+            <div class="meeting-themes">
+                <h2>What We Heard</h2>
+                <p>{{ synthesis_themes }}</p>
+            </div>
+            {% if synthesis_gap_type %}
+            <div class="meeting-gap">
+                <h2>Suggested Gap</h2>
+                <span class="meeting-gap-badge gap-{{ synthesis_gap_type|lower }}">{{ synthesis_gap_type }}</span>
+                {% if synthesis_gap_reasoning %}
+                <p class="meeting-gap-reasoning">{{ synthesis_gap_reasoning }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        {# Level 2: Key Insights #}
+        <div class="level-content" data-level="2">
+            <div class="meeting-header">
+                <h1>Key Insights</h1>
+            </div>
+            {% if synthesis_statements %}
+            <ul class="meeting-insights">
+                {% for stmt in synthesis_statements %}
+                <li>
+                    <span class="insight-statement">{{ stmt.statement }}</span>
+                    <span class="insight-names">&mdash; {{ stmt.participants|join(', ') }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="meeting-empty">No insights available.</p>
+            {% endif %}
+        </div>
+
+        {# Level 3: Raw Responses #}
+        <div class="level-content" data-level="3">
+            <div class="meeting-header">
+                <h1>Individual Responses</h1>
+            </div>
+            {% if raw_responses %}
+            <div class="meeting-raw">
+                {% for response in raw_responses %}
+                <div class="raw-participant">
+                    <h3 class="raw-participant-name">{{ response.participant }}</h3>
+                    {% if response.bullets %}
+                    <ul class="raw-bullets">
+                        {% for bullet in response.bullets %}
+                        <li>{{ bullet }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="meeting-empty">No explanation provided</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="meeting-empty">No responses recorded.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# Footer #}
+    <footer class="meeting-footer">
+        <span class="keyboard-hint">{% if session.state.value == 'revealed' %}Press 1, 2, 3 for detail levels{% endif %}</span>
+        <a href="/admin/sessions/{{ session.id }}" class="exit-meeting">Exit to Control Panel</a>
+    </footer>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/meeting.js"></script>
+{% endblock %}
