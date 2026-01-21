@@ -7,6 +7,43 @@
   padding: 0;
 }
 
+/* Skip link for keyboard navigation - WCAG 2.4.1 */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: var(--space-2) var(--space-4);
+    z-index: 1000;
+    transition: top 0.3s;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus-visible for keyboard accessibility - WCAG 2.4.7 */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Keep existing form focus ring which uses box-shadow */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
 /* Base */
 html {
   font-size: 16px;  /* Keep for iOS zoom prevention */
