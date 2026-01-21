@@ -1,0 +1,241 @@
+/* ========================================
+   Landing Page Styles - The 55
+   Premium, minimalist, Duarte/Jobs inspired
+   ======================================== */
+
+/* General Section Layout */
+.landing-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-8) var(--container-padding);
+}
+
+/* Content container */
+.landing-content {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.landing-content-center {
+  text-align: center;
+}
+
+/* ========================================
+   Hero Section
+   ======================================== */
+
+.landing-hero {
+  background: var(--color-bg);
+}
+
+.landing-headline {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+  margin-bottom: var(--space-6);
+}
+
+.landing-subheadline {
+  font-size: var(--text-xl);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-10);
+  max-width: 100%;
+}
+
+/* CTA Group */
+.landing-cta-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.landing-cta-primary {
+  font-size: var(--text-lg);
+  padding: var(--space-5) var(--space-10);
+  box-shadow: var(--shadow-md);
+}
+
+.landing-cta-primary:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.landing-cta-secondary {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.landing-cta-secondary:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* ========================================
+   Content Sections (Problem, Stakes, Solution)
+   ======================================== */
+
+.landing-problem,
+.landing-stakes,
+.landing-solution {
+  background: var(--color-bg);
+}
+
+/* Alternate backgrounds for visual rhythm */
+.landing-stakes {
+  background: var(--color-bg-secondary);
+}
+
+.landing-section-headline {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-snug);
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+  margin-bottom: var(--space-8);
+}
+
+/* Prose content */
+.landing-prose {
+  max-width: var(--prose-max);
+}
+
+.landing-prose p {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.landing-prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Emphasis paragraph - confident, declarative */
+.landing-emphasis {
+  color: var(--color-text) !important;
+  font-weight: 500;
+}
+
+/* ========================================
+   Final CTA Section
+   ======================================== */
+
+.landing-final-cta {
+  background: var(--color-bg);
+  min-height: 60vh;
+}
+
+.landing-final-cta .landing-section-headline {
+  margin-bottom: var(--space-10);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.landing-footer {
+  padding: var(--space-8) var(--container-padding);
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.landing-footer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: 0;
+  max-width: none;
+}
+
+.landing-footer a {
+  color: var(--color-text-secondary);
+}
+
+.landing-footer a:hover {
+  color: var(--color-primary);
+}
+
+/* ========================================
+   Mobile Responsive (375px+)
+   ======================================== */
+
+@media (max-width: 640px) {
+  /* Natural height sections on mobile */
+  .landing-section {
+    min-height: auto;
+    padding: var(--space-16) var(--container-padding);
+  }
+
+  .landing-hero {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .landing-headline {
+    font-size: var(--text-3xl);
+  }
+
+  .landing-section-headline {
+    font-size: var(--text-2xl);
+  }
+
+  .landing-subheadline {
+    font-size: var(--text-lg);
+  }
+
+  /* Full-width buttons on mobile */
+  .landing-cta-group {
+    width: 100%;
+  }
+
+  .landing-cta-primary {
+    width: 100%;
+    max-width: 320px;
+    padding: var(--space-4) var(--space-6);
+  }
+
+  /* Stack prose naturally */
+  .landing-prose p {
+    font-size: var(--text-base);
+  }
+
+  .landing-final-cta {
+    min-height: auto;
+    padding: var(--space-16) var(--container-padding);
+  }
+}
+
+/* Ensure touch targets are adequate */
+.landing-cta-primary,
+.landing-cta-secondary {
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================================
+   Large screens (1200px+)
+   ======================================== */
+
+@media (min-width: 1200px) {
+  .landing-content {
+    max-width: 900px;
+  }
+
+  .landing-headline {
+    font-size: clamp(3rem, 4vw, 4.5rem);
+  }
+
+  .landing-section-headline {
+    font-size: clamp(2rem, 3vw, 3.5rem);
+  }
+}
