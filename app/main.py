@@ -7,9 +7,11 @@ A real-time facilitation tool for leadership alignment diagnostics.
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.db.database import Base, engine
 from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router
@@ -54,6 +56,51 @@ app.include_router(sessions_router)
 app.include_router(images_router)
 app.include_router(participant_router)
 app.include_router(qr_router)
+
+
+# Custom exception handlers
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: StarletteHTTPException):
+    """Custom 404 page for browser requests."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return templates.TemplateResponse(
+            "errors/404.html",
+            {"request": request},
+            status_code=404
+        )
+    # Return JSON for API requests
+    return JSONResponse(
+        status_code=404,
+        content={"detail": "Not found"}
+    )
+
+
+@app.exception_handler(500)
+async def server_error_handler(request: Request, exc: Exception):
+    """Custom 500 page for browser requests."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return templates.TemplateResponse(
+            "errors/500.html",
+            {"request": request},
+            status_code=500
+        )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
+
+
+@app.get("/")
+def root(request: Request):
+    """Landing page with links to main functions."""
+    from fastapi.responses import HTMLResponse
+    from pathlib import Path
+
+    template_path = APP_DIR / "templates" / "landing.html"
+    html_content = template_path.read_text()
+    return HTMLResponse(content=html_content)
 
 
 @app.get("/health")
