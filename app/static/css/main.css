@@ -3083,3 +3083,116 @@ input[type="month"] {
         text-align: center;
     }
 }
+
+/* ========================================
+   Meeting Mode - Transitions & Animations
+   ======================================== */
+
+/* All-submitted state indicator (MEET-03) */
+.meeting-capture.all-submitted .meeting-status {
+    border: 2px solid #22c55e;
+}
+
+.meeting-capture.all-submitted .meeting-progress {
+    color: #22c55e;
+}
+
+.all-submitted-text {
+    font-size: 0.7em;
+    animation: pulse-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Status collapse animation (MEET-03) */
+.meeting-capture.collapsing {
+    animation: collapse-capture 0.6s var(--ease-out) forwards;
+}
+
+@keyframes collapse-capture {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Ceremony reveal animation (MEET-07) */
+.meeting-synthesis {
+    animation: ceremony-reveal 0.8s var(--ease-out) forwards;
+}
+
+@keyframes ceremony-reveal {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Level content transitions (MEET-05) */
+.meeting-synthesis .level-content {
+    display: none;
+    animation: fade-in-up 0.3s var(--ease-out) forwards;
+}
+
+.meeting-synthesis .level-content.active {
+    display: block;
+}
+
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tab transition */
+.meeting-synthesis .level-tab {
+    transition: all 0.2s var(--ease-out);
+}
+
+/* Waiting state animation (for closed state) */
+.meeting-waiting {
+    animation: fade-in 0.5s var(--ease-out);
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Body transition state */
+.meeting-transitioning {
+    pointer-events: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .meeting-synthesis,
+    .meeting-capture.collapsing,
+    .meeting-synthesis .level-content,
+    .all-submitted-text,
+    .meeting-waiting {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
