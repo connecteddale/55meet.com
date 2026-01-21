@@ -3,13 +3,20 @@
 {% block title %}Session History - The 55{% endblock %}
 
 {% block nav %}
-<nav>
-    <a href="/admin" class="btn btn-secondary">Dashboard</a>
+<nav class="admin-nav">
+    <div class="nav-links">
+        <a href="/admin" class="nav-link">Dashboard</a>
+        <a href="/admin/settings" class="nav-link">Settings</a>
+    </div>
+    <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
 </nav>
 {% endblock %}
 
 {% block content %}
 <div class="card">
+    <div class="page-header" style="margin-bottom: var(--space-4);">
+        <a href="/admin" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">← Dashboard</a>
+    </div>
     <div class="card-header">
         <h2>Session History</h2>
     </div>

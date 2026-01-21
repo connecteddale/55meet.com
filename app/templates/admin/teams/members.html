@@ -3,13 +3,22 @@
 {% block title %}{{ team.team_name }} Members - The 55{% endblock %}
 
 {% block nav %}
-<nav>
-    <a href="/admin/teams/{{ team.id }}" class="btn btn-secondary">Back to Team</a>
+<nav class="admin-nav">
+    <div class="nav-links">
+        <a href="/admin" class="nav-link">Dashboard</a>
+        <a href="/admin/settings" class="nav-link">Settings</a>
+    </div>
+    <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
 </nav>
 {% endblock %}
 
 {% block content %}
 <div class="card">
+    <div class="page-header" style="margin-bottom: var(--space-4);">
+        <a href="/admin" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">← Dashboard</a>
+        <span style="color: var(--color-text-tertiary); margin: 0 var(--space-2);">/</span>
+        <a href="/admin/teams/{{ team.id }}" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">{{ team.team_name }}</a>
+    </div>
     <div class="card-header">
         <div>
             <h2>{{ team.team_name }}</h2>
