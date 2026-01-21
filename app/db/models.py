@@ -63,6 +63,7 @@ class Session(Base):
     synthesis_themes = Column(Text, nullable=True)
     synthesis_statements = Column(Text, nullable=True)
     synthesis_gap_type = Column(String(50), nullable=True)
+    synthesis_gap_reasoning = Column(Text, nullable=True)
     facilitator_notes = Column(Text, nullable=True)
     recalibration_action = Column(Text, nullable=True)
     recalibration_completed = Column(Boolean, default=False)
@@ -81,7 +82,7 @@ class Response(Base):
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
     member_id = Column(Integer, ForeignKey("members.id"), nullable=False)
-    image_number = Column(Integer, nullable=False)  # 1-55
+    image_id = Column(String(255), nullable=False)  # filename stem e.g. "kids-swimming-pool-2026..."
     bullets = Column(Text, nullable=False)  # JSON array of 1-5 strings
     submitted_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

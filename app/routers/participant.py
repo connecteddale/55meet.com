@@ -379,7 +379,7 @@ async def submit_response(
     session_id: int,
     member_id: int,
     db: DbDep,
-    image_number: int = Form(...),
+    image_id: str = Form(...),
     bullets: str = Form(...)
 ):
     """Process response submission."""
@@ -432,9 +432,10 @@ async def submit_response(
     if not member:
         return RedirectResponse(url="/join", status_code=303)
 
-    # Validate image_number (1-55)
-    if not 1 <= image_number <= 55:
-        raise HTTPException(status_code=400, detail="Invalid image number")
+    # Validate image_id (non-empty string)
+    image_id = image_id.strip()
+    if not image_id:
+        raise HTTPException(status_code=400, detail="Image selection required")
 
     # Parse and validate bullets JSON
     try:
@@ -465,14 +466,14 @@ async def submit_response(
 
     if existing:
         # Update existing response
-        existing.image_number = image_number
+        existing.image_id = image_id
         existing.bullets = bullets_json
     else:
         # Insert new response
         response = Response(
             session_id=session_id,
             member_id=member_id,
-            image_number=image_number,
+            image_id=image_id,
             bullets=bullets_json
         )
         db.add(response)

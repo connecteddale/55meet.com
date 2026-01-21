@@ -544,12 +544,13 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
     raw_responses = []
     for r in responses:
         member = db.query(Member).filter(Member.id == r.member_id).first()
-        # Build image URL from image_number (e.g., 5 -> /static/images/55/05.svg)
-        image_filename = f"{r.image_number:02d}.svg"
+        # Build image URL from image_id (filename stem)
+        # Try common extensions in order of preference
+        image_url = f"/static/images/library/{r.image_id}.jpg"
         raw_responses.append({
             "participant": member.name if member else "Unknown",
-            "image_number": r.image_number,
-            "image_url": f"/static/images/55/{image_filename}",
+            "image_id": r.image_id,
+            "image_url": image_url,
             "bullets": json.loads(r.bullets) if r.bullets else []
         })
 
@@ -591,7 +592,7 @@ async def export_session(session_id: int, auth: AuthDep, db: DbDep):
         member = db.query(Member).filter(Member.id == r.member_id).first()
         response_data.append({
             "participant": member.name if member else "Unknown",
-            "image_number": r.image_number,
+            "image_id": r.image_id,
             "bullets": json.loads(r.bullets) if r.bullets else [],
             "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None
         })
@@ -699,7 +700,7 @@ async def export_level3(session_id: int, auth: AuthDep, db: DbDep):
         member = db.query(Member).filter(Member.id == r.member_id).first()
         response_data.append({
             "participant": member.name if member else "Unknown",
-            "image_number": r.image_number,
+            "image_id": r.image_id,
             "bullets": json.loads(r.bullets) if r.bullets else [],
             "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None
         })

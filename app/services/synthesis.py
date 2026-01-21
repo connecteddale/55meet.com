@@ -28,14 +28,14 @@ def build_synthesis_prompt(
     Build prompt for team response synthesis.
 
     Args:
-        responses: List of dicts with keys: name, image_number, bullets
+        responses: List of dicts with keys: name, image_id, bullets
         strategy_statement: The team's 3AM test strategy statement
 
     Returns:
         Complete prompt for Claude synthesis
     """
     responses_text = "\n\n".join([
-        f"**{r['name']}** (Image #{r['image_number']}):\n" +
+        f"**{r['name']}** (Image: {r['image_id']}):\n" +
         "\n".join(f"- {b}" for b in r['bullets'])
         for r in responses
     ])
@@ -108,7 +108,7 @@ async def _generate_and_store_synthesis(session_id: int) -> None:
         # Build response data for prompt
         response_data = [{
             "name": r.member.name,
-            "image_number": r.image_number,
+            "image_id": r.image_id,
             "bullets": json.loads(r.bullets)
         } for r in responses]
 
@@ -145,6 +145,7 @@ async def _generate_and_store_synthesis(session_id: int) -> None:
             [s.model_dump() for s in result.statements]
         )
         session.synthesis_gap_type = result.gap_type
+        session.synthesis_gap_reasoning = result.gap_reasoning
         db.commit()
 
     except Exception as e:

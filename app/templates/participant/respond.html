@@ -35,7 +35,7 @@
 
     <form id="respond-form" method="POST" action="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
         <!-- Hidden inputs for form submission -->
-        <input type="hidden" name="image_number" id="selected-image" value="{% if existing_response %}{{ existing_response.image_number }}{% endif %}">
+        <input type="hidden" name="image_id" id="selected-image" value="{% if existing_response %}{{ existing_response.image_id }}{% endif %}">
         <input type="hidden" name="bullets" id="bullets-json" value="{% if existing_response %}{{ existing_response.bullets }}{% else %}[]{% endif %}">
 
         <!-- Image Grid Container (loaded via AJAX) -->
