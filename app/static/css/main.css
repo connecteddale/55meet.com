@@ -745,6 +745,17 @@ small {
     text-transform: uppercase;
 }
 
+/* Status badge icons for color independence - WCAG 1.4.1 */
+.session-state-badge::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: var(--space-2);
+    vertical-align: middle;
+}
+
 .session-stats {
     display: flex;
     gap: var(--space-8);
@@ -2534,6 +2545,22 @@ input[type="month"] {
     text-transform: capitalize;
 }
 
+/* Status badges with icons for color independence - WCAG 1.4.1 */
+.session-state::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: var(--space-1);
+    vertical-align: middle;
+}
+
+.state-draft::before { background-color: var(--color-text-tertiary); }
+.state-capturing::before { background-color: #1a7f4b; }
+.state-closed::before { background-color: #b35c00; }
+.state-revealed::before { background-color: var(--color-primary); }
+
 .state-draft { background: var(--color-bg-secondary); color: var(--color-text-secondary); }
 .state-capturing { background: #e5f7ed; color: #1a7f4b; }
 .state-closed { background: #fff3e5; color: #b35c00; }
@@ -3232,4 +3259,32 @@ input[type="month"] {
         opacity: 1;
         transform: none;
     }
+}
+
+/* ========================================
+   Error Pages
+   ======================================== */
+
+.error-page {
+    text-align: center;
+    padding: var(--space-16) var(--space-4);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.error-page h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+}
+
+.error-page p {
+    margin-bottom: var(--space-8);
+    max-width: none;
+}
+
+.error-actions {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
 }
