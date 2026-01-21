@@ -4,6 +4,9 @@ The 55 App - Authentication Service
 Password verification and session token management.
 """
 
+import re
+from pathlib import Path
+
 from pwdlib import PasswordHash
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -36,3 +39,19 @@ def verify_session_token(token: str, settings: Settings, max_age: int = 86400) -
         return data.get("facilitator") is True
     except (BadSignature, SignatureExpired):
         return False
+
+
+def update_password_hash(new_hash: str, env_path: str = ".env") -> bool:
+    """Update password hash in .env file."""
+    path = Path(env_path)
+    if not path.exists():
+        return False
+
+    content = path.read_text()
+    new_content = re.sub(
+        r'FACILITATOR_PASSWORD_HASH=.*',
+        f'FACILITATOR_PASSWORD_HASH={new_hash}',
+        content
+    )
+    path.write_text(new_content)
+    return True
