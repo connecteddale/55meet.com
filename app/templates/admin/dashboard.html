@@ -3,46 +3,118 @@
 {% block title %}Dashboard - The 55{% endblock %}
 
 {% block nav %}
-<nav>
-    <a href="/admin/logout" class="btn btn-secondary">Logout</a>
+<nav class="admin-nav">
+    <div class="nav-links">
+        <a href="/admin" class="nav-link nav-link-active">Dashboard</a>
+        <a href="/admin/settings" class="nav-link">Settings</a>
+    </div>
+    <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
 </nav>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard">
-    <h2>Welcome to The 55</h2>
-    <p>55 minutes. Once a month. The truth about where the team actually is.</p>
+<div class="dashboard command-center">
+    <header class="dashboard-header">
+        <h1>The 55</h1>
+        <p class="dashboard-tagline">55 minutes. Once a month. The truth about where the team actually is.</p>
+    </header>
 
-    <div class="dashboard-section">
+    <!-- Active Sessions Section (Sessions-First) -->
+    <section class="dashboard-section dashboard-section-primary">
         <div class="section-header">
-            <h3>Teams ({{ teams | length }})</h3>
-            <a href="/admin/teams/create" class="btn btn-primary">Create Team</a>
+            <h2>Active Sessions</h2>
+            <span class="section-badge">{{ active_sessions | length }} this month</span>
+        </div>
+
+        {% if active_sessions %}
+        <div class="session-cards">
+            {% for session in active_sessions %}
+            <a href="/admin/sessions/{{ session.id }}" class="card card-link session-card session-card-active" data-searchable="{{ session.team.company_name }} {{ session.team.team_name }} {{ session.month }}">
+                <div class="session-team">{{ session.team.company_name }}</div>
+                <div class="session-team-name">{{ session.team.team_name }}</div>
+                <div class="session-meta">
+                    <span class="session-month">{{ session.month }}</span>
+                    <span class="session-state state-{{ session.state.value }}">{{ session.state.value }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No active sessions this month.</p>
+            <p class="text-secondary">Start a session from a team below.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Teams with One-Click Session -->
+    <section class="dashboard-section" id="teams">
+        <div class="section-header">
+            <h2>Teams</h2>
+            <div class="section-header-actions">
+                <span class="section-badge" id="teams-count">{{ teams | length }}</span>
+                <input type="search" id="dashboard-search" placeholder="Search teams or dates..." class="search-input">
+                <a href="/admin/teams/create" class="btn btn-primary btn-small">New Team</a>
+            </div>
         </div>
 
         {% if teams %}
         <div class="team-grid">
             {% for team in teams %}
-            <a href="/admin/teams/{{ team.id }}" class="team-card">
+            <div class="card team-card" data-searchable="{{ team.company_name }} {{ team.team_name }}">
                 <div class="team-company">{{ team.company_name }}</div>
                 <div class="team-name">{{ team.team_name }}</div>
                 <div class="team-meta">
                     <span class="team-code">{{ team.code }}</span>
                     <span class="team-members">{{ team.members | length }} members</span>
                 </div>
+                <div class="team-actions">
+                    <a href="/admin/sessions/team/{{ team.id }}/create?month={{ current_month }}" class="btn btn-primary btn-small">New Session</a>
+                    <a href="/admin/teams/{{ team.id }}" class="btn btn-ghost btn-small">Edit</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="search-empty-state" class="empty-state hidden">
+            <p>No teams match your search.</p>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No teams yet.</p>
+            <a href="/admin/teams/create" class="btn btn-primary">Create Your First Team</a>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2>Recent Activity</h2>
+            <a href="/admin/sessions/history" class="btn btn-ghost btn-small">View All</a>
+        </div>
+
+        {% if recent_sessions %}
+        <div class="activity-list">
+            {% for session in recent_sessions %}
+            <a href="/admin/sessions/{{ session.id }}" class="activity-item">
+                <span class="activity-icon">&#10003;</span>
+                <span class="activity-text">
+                    <strong>{{ session.team.team_name }}</strong>
+                    <span class="text-secondary">{{ session.month }}</span>
+                </span>
+                <span class="activity-date text-secondary">
+                    {% if session.revealed_at %}
+                    {{ session.revealed_at.strftime('%b %d') }}
+                    {% endif %}
+                </span>
             </a>
             {% endfor %}
         </div>
         {% else %}
-        <p class="empty-state">No teams yet. Create your first team to get started.</p>
+        <p class="text-secondary">No completed sessions yet.</p>
         {% endif %}
-    </div>
-
-    <div class="dashboard-section">
-        <div class="section-header">
-            <h3>Sessions</h3>
-            <a href="/admin/sessions/history" class="btn btn-secondary">View All History</a>
-        </div>
-        <p class="section-description">Access all sessions across all teams for review and follow-up.</p>
-    </div>
+    </section>
 </div>
+
+<script src="/static/js/dashboard.js"></script>
 {% endblock %}
