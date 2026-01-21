@@ -1,11 +1,11 @@
 /**
- * The 55 - Meeting Mode JavaScript
+ * The 55 - Meeting Screen Controller
  *
  * Handles unified meeting screen functionality:
- * - Level tab switching for synthesis view
- * - Keyboard shortcuts (1, 2, 3) for level navigation
- * - Status polling during capture states
- * - Auto-reload on state changes
+ * - Status polling during capture phase
+ * - All-submitted detection and status collapse
+ * - State change detection and ceremony reveal
+ * - Keyboard navigation for synthesis levels (1/2/3)
  */
 
 (function() {
@@ -13,13 +13,14 @@
 
     const POLL_INTERVAL = 2500; // 2.5 seconds
     let pollTimer = null;
+    let previousSubmittedCount = 0;
 
     // Get meeting screen element
     const meetingScreen = document.querySelector('.meeting-screen');
     if (!meetingScreen) return;
 
     const sessionId = meetingScreen.dataset.sessionId;
-    const currentState = meetingScreen.dataset.state;
+    let currentState = meetingScreen.dataset.state;
 
     /**
      * Initialize level tab switching for synthesis view
@@ -103,20 +104,78 @@
 
             const data = await response.json();
 
-            // If state changed, reload page to show new state
+            // State transition detection
             if (data.state !== currentState) {
-                stopPolling();
-                window.location.reload();
+                handleStateTransition(currentState, data.state, data);
                 return;
             }
 
             // Update UI for capture mode
             if (currentState === 'draft' || currentState === 'capturing') {
                 updateCaptureUI(data);
+                checkAllSubmitted(data);
             }
         } catch (error) {
             console.error('Status poll error:', error);
         }
+    }
+
+    /**
+     * Handle state transitions (MEET-04, MEET-07)
+     */
+    function handleStateTransition(fromState, toState, data) {
+        console.log(`Meeting state transition: ${fromState} -> ${toState}`);
+        stopPolling();
+
+        if (toState === 'revealed') {
+            // Trigger ceremony reveal animation before reload
+            triggerCeremonyReveal();
+        } else {
+            // Other transitions - reload immediately
+            window.location.reload();
+        }
+    }
+
+    /**
+     * Check if all participants have submitted (MEET-03)
+     */
+    function checkAllSubmitted(data) {
+        if (data.submitted_count === data.total_members && data.total_members > 0) {
+            const captureSection = document.getElementById('capture-section');
+            if (captureSection && !captureSection.classList.contains('all-submitted')) {
+                captureSection.classList.add('all-submitted');
+                showAllSubmittedMessage();
+            }
+        }
+    }
+
+    /**
+     * Show "All Responses Received" visual indicator
+     */
+    function showAllSubmittedMessage() {
+        const progress = document.querySelector('.meeting-progress');
+        if (progress) {
+            progress.innerHTML = '<span class="all-submitted-text">All Responses Received</span>';
+        }
+    }
+
+    /**
+     * Trigger ceremony reveal animation (MEET-07)
+     */
+    function triggerCeremonyReveal() {
+        // Add transition class to body
+        document.body.classList.add('meeting-transitioning');
+
+        // Collapse capture section if visible
+        const captureSection = document.getElementById('capture-section');
+        if (captureSection) {
+            captureSection.classList.add('collapsing');
+        }
+
+        // After collapse animation, reload to show synthesis
+        setTimeout(() => {
+            window.location.reload();
+        }, 800); // Match CSS transition duration
     }
 
     /**
