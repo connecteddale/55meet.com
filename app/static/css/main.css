@@ -134,24 +134,33 @@ header nav a {
   margin-bottom: var(--space-4);
 }
 
+/* Label styling */
 label {
   display: block;
   margin-bottom: var(--space-2);
   font-weight: 500;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
 }
 
+/* Premium inputs */
 input[type="text"],
 input[type="password"],
 input[type="email"],
+input[type="month"],
 textarea,
 select {
   width: 100%;
-  padding: var(--space-3);
-  font-size: var(--font-size-base);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  font-family: inherit;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: 8px;
   min-height: var(--touch-target-min);
-  transition: border-color var(--transition-fast);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 
 input:focus,
@@ -159,39 +168,73 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-/* Buttons */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Buttons - Premium feel */
 .btn,
 button[type="submit"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-3) var(--space-6);
-  font-size: var(--font-size-base);
+  font-size: var(--text-base);
   font-weight: 500;
   min-height: var(--touch-target-min);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;  /* Softer corners */
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: all var(--duration-fast) var(--ease-out);
+  text-decoration: none;
 }
 
+/* Primary button - premium feel */
 .btn-primary,
 button[type="submit"] {
   background-color: var(--color-primary);
   color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover,
 button[type="submit"]:hover {
   background-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
+.btn-primary:active,
+button[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Secondary button */
 .btn-secondary {
-  background-color: var(--color-secondary);
-  color: white;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-light);
+}
+
+/* Ghost button (text-only) */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-primary);
+  padding: var(--space-2) var(--space-3);
+}
+
+.btn-ghost:hover {
+  background: var(--color-primary-light);
 }
 
 /* Messages */
@@ -245,13 +288,42 @@ button[type="submit"]:hover {
   margin-bottom: var(--space-6);
 }
 
-/* Cards */
+/* Cards - Premium feel */
 .card {
   background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: var(--space-4);
+  border: 1px solid var(--color-border-light);
+  border-radius: 12px;  /* Softer corners */
+  padding: var(--space-6);
   margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border);
+}
+
+/* Card that links somewhere */
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+/* Elevated card variant */
+.card-elevated {
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+
+.card-elevated:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 /* Status indicators */
@@ -2296,4 +2368,18 @@ input[type="month"] {
 .text-muted {
     color: var(--text-secondary);
     font-style: italic;
+}
+
+/* ========================================
+   Reduced Motion Preference
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
