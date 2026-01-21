@@ -33,7 +33,8 @@
         </div>
         {% endif %}
 
-        <form method="POST" action="/admin/settings/password" class="settings-form">
+        <form method="POST" action="/admin/settings/password" class="settings-form"
+              onsubmit="this.querySelector('button[type=submit]').classList.add('btn-loading')">
             <div class="form-group">
                 <label for="current_password">Current Password</label>
                 <input type="password" id="current_password" name="current_password" required

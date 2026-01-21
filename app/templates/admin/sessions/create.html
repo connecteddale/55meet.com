@@ -25,7 +25,8 @@
     <div class="error">{{ error }}</div>
     {% endif %}
 
-    <form method="post" action="/admin/sessions/team/{{ team.id }}/create">
+    <form method="post" action="/admin/sessions/team/{{ team.id }}/create"
+          onsubmit="this.querySelector('button[type=submit]').classList.add('btn-loading')">
         <div class="form-group">
             <label for="month">Month</label>
             <input type="month" id="month" name="month" required

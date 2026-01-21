@@ -32,7 +32,8 @@
     {% endif %}
 
     {% if can_add %}
-    <form method="post" action="/admin/teams/{{ team.id }}/members" class="add-member-form">
+    <form method="post" action="/admin/teams/{{ team.id }}/members" class="add-member-form"
+          onsubmit="this.querySelector('button[type=submit]').classList.add('btn-loading')">
         <div class="form-row">
             <input type="text" name="name" required placeholder="Enter member name"
                    autocomplete="off" class="member-input">

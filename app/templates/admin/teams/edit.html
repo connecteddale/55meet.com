@@ -23,7 +23,8 @@
     <div class="error-message">{{ error }}</div>
     {% endif %}
 
-    <form method="post" action="/admin/teams/{{ team.id }}">
+    <form method="post" action="/admin/teams/{{ team.id }}"
+          onsubmit="this.querySelector('button[type=submit]').classList.add('btn-loading')">
         <div class="form-group">
             <label for="company_name">Company Name</label>
             <input type="text" id="company_name" name="company_name" required
