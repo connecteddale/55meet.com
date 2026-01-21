@@ -179,6 +179,7 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
             "synthesis_themes": session.synthesis_themes,
             "synthesis_statements": synthesis_statements,
             "synthesis_gap_type": session.synthesis_gap_type,
+            "synthesis_gap_reasoning": session.synthesis_gap_reasoning,
             "synthesis_pending": synthesis_pending
         }
     )
@@ -345,10 +346,10 @@ async def retry_synthesis(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    if session.state != SessionState.CLOSED:
+    if session.state not in (SessionState.CLOSED, SessionState.REVEALED):
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot retry synthesis. Session is in '{session.state.value}' state. Must be 'closed'."
+            detail=f"Cannot retry synthesis. Session is in '{session.state.value}' state. Must be 'closed' or 'revealed'."
         )
 
     # Clear existing synthesis data to force regeneration
@@ -538,14 +539,17 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
         except (json.JSONDecodeError, TypeError):
             synthesis_statements = []
 
-    # Query raw responses for Level 3
+    # Query raw responses with image URLs
     responses = db.query(Response).filter(Response.session_id == session_id).all()
     raw_responses = []
     for r in responses:
         member = db.query(Member).filter(Member.id == r.member_id).first()
+        # Build image URL from image_number (e.g., 5 -> /static/images/55/05.svg)
+        image_filename = f"{r.image_number:02d}.svg"
         raw_responses.append({
             "participant": member.name if member else "Unknown",
             "image_number": r.image_number,
+            "image_url": f"/static/images/55/{image_filename}",
             "bullets": json.loads(r.bullets) if r.bullets else []
         })
 
@@ -564,6 +568,7 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
             "synthesis_themes": session.synthesis_themes,
             "synthesis_statements": synthesis_statements,
             "synthesis_gap_type": session.synthesis_gap_type,
+            "synthesis_gap_reasoning": session.synthesis_gap_reasoning,
             "raw_responses": raw_responses,
             "synthesis_failed": synthesis_failed
         }
@@ -706,4 +711,74 @@ async def export_level3(session_id: int, auth: AuthDep, db: DbDep):
     return JSONResponse(
         content=export_data,
         headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}-level3.json"}
+    )
+
+
+@router.get("/{session_id}/meeting")
+async def meeting_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
+    """Unified meeting screen - combines capture and presentation into single projectable view.
+
+    Works for ALL session states:
+    - DRAFT/CAPTURING: Shows QR code and participant status
+    - CLOSED: Shows "analyzing" waiting state
+    - REVEALED: Shows synthesis with level navigation
+    """
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+    members = db.query(Member).filter(Member.team_id == team.id).order_by(Member.name).all()
+
+    # Get response status for each member
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responded_member_ids = {r.member_id for r in responses}
+
+    member_status = []
+    for member in members:
+        member_status.append({
+            "id": member.id,
+            "name": member.name,
+            "submitted": member.id in responded_member_ids
+        })
+
+    # Parse synthesis statements if available
+    synthesis_statements = None
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            synthesis_statements = []
+
+    # Build raw responses with participant names for Level 3
+    raw_responses = []
+    for r in responses:
+        member = db.query(Member).filter(Member.id == r.member_id).first()
+        raw_responses.append({
+            "participant": member.name if member else "Unknown",
+            "bullets": json.loads(r.bullets) if r.bullets else []
+        })
+
+    # Check for synthesis failure
+    synthesis_failed = False
+    if session.synthesis_themes:
+        themes_lower = session.synthesis_themes.lower()
+        synthesis_failed = "failed" in themes_lower or "insufficient" in themes_lower
+
+    return templates.TemplateResponse(
+        "admin/sessions/meeting.html",
+        {
+            "request": request,
+            "session": session,
+            "team": team,
+            "member_status": member_status,
+            "total_members": len(members),
+            "submitted_count": len(responded_member_ids),
+            "synthesis_themes": session.synthesis_themes,
+            "synthesis_statements": synthesis_statements,
+            "synthesis_gap_type": session.synthesis_gap_type,
+            "synthesis_gap_reasoning": session.synthesis_gap_reasoning,
+            "raw_responses": raw_responses,
+            "synthesis_failed": synthesis_failed
+        }
     )
