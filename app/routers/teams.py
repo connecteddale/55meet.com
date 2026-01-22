@@ -108,7 +108,9 @@ async def update_team(
     company_name: str = Form(...),
     team_name: str = Form(...),
     code: str = Form(...),
-    strategy_statement: Optional[str] = Form(None)
+    strategy_statement: Optional[str] = Form(None),
+    image_prompt: Optional[str] = Form(None),
+    bullet_prompt: Optional[str] = Form(None)
 ):
     """Update team details."""
     team = db.query(Team).filter(Team.id == team_id).first()
@@ -134,6 +136,8 @@ async def update_team(
     team.team_name = team_name.strip()
     team.code = code
     team.strategy_statement = strategy_statement.strip() if strategy_statement else None
+    team.image_prompt = image_prompt.strip() if image_prompt else None
+    team.bullet_prompt = bullet_prompt.strip() if bullet_prompt else None
     db.commit()
 
     return RedirectResponse(url="/admin/teams", status_code=303)

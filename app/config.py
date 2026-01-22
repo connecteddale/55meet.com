@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""  # Optional for dev
 
     # Image Library
-    image_library_path: str = "app/static/images/library"  # Directory containing images
-    images_per_page: int = 20  # Images per page in browser
+    image_library_path: str = "app/static/images/library/reducedlive"  # Web-optimized images
+    images_per_page: int = 42  # Images per page in browser
     image_cache_ttl: int = 300  # Cache TTL in seconds (5 minutes)
 
     model_config = SettingsConfigDict(

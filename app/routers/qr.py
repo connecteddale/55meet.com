@@ -31,7 +31,7 @@ async def generate_qr(
     auth: AuthDep,
     db: DbDep
 ):
-    """Generate QR code PNG for team join URL."""
+    """Generate QR code PNG for team join URL (500x500 pixels)."""
     team = db.query(Team).filter(Team.id == team_id).first()
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -50,8 +50,9 @@ async def generate_qr(
     qr.add_data(join_url)
     qr.make(fit=True)
 
-    # Create image
+    # Create image and resize to exactly 500x500
     img = qr.make_image(fill_color="black", back_color="white")
+    img = img.resize((500, 500))
 
     # Return as PNG
     buffer = io.BytesIO()

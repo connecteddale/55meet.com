@@ -28,6 +28,11 @@ async def lifespan(app: FastAPI):
     """Application lifespan manager for startup/shutdown events."""
     # Startup: create database tables
     Base.metadata.create_all(bind=engine)
+
+    # Process library images (resize for web if needed)
+    from app.services.image_processor import run_on_startup
+    run_on_startup()
+
     yield
     # Shutdown: cleanup if needed
 

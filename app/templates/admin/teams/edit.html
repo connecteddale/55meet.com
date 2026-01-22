@@ -5,7 +5,7 @@
 {% block nav %}
 <nav class="admin-nav">
     <div class="nav-links">
-        <a href="/admin" class="nav-link">Dashboard</a>
+        <a href="/admin" class="nav-link">AlignHQ</a>
         <a href="/admin/settings" class="nav-link">Settings</a>
     </div>
     <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
@@ -15,7 +15,7 @@
 {% block content %}
 <div class="card">
     <div class="page-header" style="margin-bottom: var(--space-4);">
-        <a href="/admin" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">← Dashboard</a>
+        <a href="/admin" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">← AlignHQ</a>
     </div>
     <h2>Edit Team</h2>
 
@@ -48,6 +48,22 @@
             <label for="strategy_statement">Strategy Statement (3AM Test)</label>
             <textarea id="strategy_statement" name="strategy_statement" rows="3"
                       >{{ team.strategy_statement or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image_prompt">Image Selection Prompt</label>
+            <input type="text" id="image_prompt" name="image_prompt"
+                   value="{{ team.image_prompt or '' }}"
+                   placeholder="Choose the image that best represents how you as a team are executing your strategy.">
+            <small class="form-hint">Shown when participants select an image</small>
+        </div>
+
+        <div class="form-group">
+            <label for="bullet_prompt">Bullet Points Prompt</label>
+            <input type="text" id="bullet_prompt" name="bullet_prompt"
+                   value="{{ team.bullet_prompt or '' }}"
+                   placeholder="Describe why this image describes how you are executing your strategy">
+            <small class="form-hint">Shown when participants enter their explanation</small>
         </div>
 
         <div class="form-actions">

@@ -134,12 +134,15 @@ async def session_history(request: Request, auth: AuthDep, db: DbDep):
 @router.get("/{session_id}")
 async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
     """View session details and control panel."""
+    from app.services.images import get_image_library
+
     session = db.query(Session).filter(Session.id == session_id).first()
     if not session:
         return RedirectResponse(url="/admin/teams", status_code=303)
 
     team = session.team
     members = db.query(Member).filter(Member.team_id == team.id).order_by(Member.name).all()
+    member_by_id = {m.id: m for m in members}
 
     # Get response status for each member
     responses = db.query(Response).filter(Response.session_id == session_id).all()
@@ -161,11 +164,54 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
         except (json.JSONDecodeError, TypeError):
             synthesis_statements = []
 
-    # Synthesis is pending if CLOSED state and no synthesis_themes yet
+    # Synthesis status: pending (not started), generating (in progress), or complete
     synthesis_pending = (
         session.state == SessionState.CLOSED and
         session.synthesis_themes is None
     )
+    synthesis_generating = (
+        session.state == SessionState.CLOSED and
+        session.synthesis_themes is not None and
+        session.synthesis_themes.lower() == "generating..."
+    )
+
+    # Build participant responses with images for display
+    image_library = get_image_library()
+    participant_responses = []
+    for r in responses:
+        member = member_by_id.get(r.member_id)
+        # Get actual filename from opaque ID
+        filename = image_library.get_filename_by_id(r.image_id)
+        if filename:
+            image_url = f"/static/images/library/reducedlive/{filename}"
+        else:
+            image_url = None
+
+        bullets = []
+        if r.bullets:
+            try:
+                bullets = json.loads(r.bullets)
+            except (json.JSONDecodeError, TypeError):
+                bullets = []
+
+        participant_responses.append({
+            "name": member.name if member else "Unknown",
+            "image_url": image_url,
+            "bullets": bullets
+        })
+
+    # Don't pass "GENERATING..." as actual themes to display
+    display_themes = None
+    if session.synthesis_themes and session.synthesis_themes.lower() != "generating...":
+        display_themes = session.synthesis_themes
+
+    # Parse suggested recalibrations
+    suggested_recalibrations = None
+    if session.suggested_recalibrations:
+        try:
+            suggested_recalibrations = json.loads(session.suggested_recalibrations)
+        except (json.JSONDecodeError, TypeError):
+            suggested_recalibrations = []
 
     return templates.TemplateResponse(
         "admin/sessions/view.html",
@@ -176,11 +222,14 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
             "member_status": member_status,
             "total_members": len(members),
             "submitted_count": len(responded_member_ids),
-            "synthesis_themes": session.synthesis_themes,
+            "synthesis_themes": display_themes,
             "synthesis_statements": synthesis_statements,
             "synthesis_gap_type": session.synthesis_gap_type,
             "synthesis_gap_reasoning": session.synthesis_gap_reasoning,
-            "synthesis_pending": synthesis_pending
+            "suggested_recalibrations": suggested_recalibrations,
+            "synthesis_pending": synthesis_pending,
+            "synthesis_generating": synthesis_generating,
+            "participant_responses": participant_responses
         }
     )
 
@@ -321,12 +370,20 @@ async def trigger_synthesis(
             detail=f"Cannot generate synthesis. Session is in '{session.state.value}' state. Must be 'closed'."
         )
 
-    # Check if synthesis already exists and succeeded
+    # Check if synthesis already in progress or completed
     if session.synthesis_themes is not None:
+        themes_lower = session.synthesis_themes.lower()
+        # If generating, don't start another
+        if themes_lower == "generating...":
+            return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
         # If it's an error message, allow retry
-        if "failed" not in session.synthesis_themes.lower() and "insufficient" not in session.synthesis_themes.lower():
+        if "failed" not in themes_lower and "insufficient" not in themes_lower:
             # Already have valid synthesis, just redirect
             return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+    # Set marker to indicate synthesis is in progress (prevents double-click)
+    session.synthesis_themes = "GENERATING..."
+    db.commit()
 
     # Add background task to generate synthesis
     background_tasks.add_task(run_synthesis_task, session_id)
@@ -374,6 +431,10 @@ async def get_synthesis_status(session_id: int, auth: AuthDep, db: DbDep):
     # Determine synthesis status
     if session.synthesis_themes is None:
         status = "pending"
+        has_error = False
+        error_message = None
+    elif session.synthesis_themes.lower() == "generating...":
+        status = "generating"
         has_error = False
         error_message = None
     elif "failed" in session.synthesis_themes.lower() or "insufficient" in session.synthesis_themes.lower():
@@ -443,21 +504,24 @@ async def update_session_notes(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    if session.state != SessionState.REVEALED:
+    # Allow notes in closed (after synthesis) or revealed state
+    if session.state not in (SessionState.CLOSED, SessionState.REVEALED):
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot save notes. Session must be in 'revealed' state, but is '{session.state.value}'."
+            detail=f"Cannot save notes. Session must be in 'closed' or 'revealed' state, but is '{session.state.value}'."
         )
 
     # Update facilitator notes if provided
     if facilitator_notes is not None:
         cleaned = facilitator_notes.strip()
         session.facilitator_notes = cleaned if cleaned else None
+        session.facilitator_notes_updated_at = datetime.utcnow()
 
     # Update recalibration action if provided
     if recalibration_action is not None:
         cleaned = recalibration_action.strip()
         session.recalibration_action = cleaned if cleaned else None
+        session.recalibration_action_updated_at = datetime.utcnow()
 
     db.commit()
 
@@ -712,6 +776,125 @@ async def export_level3(session_id: int, auth: AuthDep, db: DbDep):
     return JSONResponse(
         content=export_data,
         headers={"Content-Disposition": f"attachment; filename=session-{session.month}-{team.team_name}-level3.json"}
+    )
+
+
+@router.get("/{session_id}/export/markdown")
+async def export_markdown(session_id: int, auth: AuthDep, db: DbDep):
+    """Export session data as Markdown for easy viewing/copying."""
+    from fastapi.responses import PlainTextResponse
+
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+
+    # Parse synthesis statements
+    synthesis_statements = []
+    if session.synthesis_statements:
+        try:
+            synthesis_statements = json.loads(session.synthesis_statements)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Build markdown content
+    lines = []
+    lines.append(f"# The 55 Session Report")
+    lines.append(f"")
+    lines.append(f"**Team:** {team.team_name}")
+    lines.append(f"**Company:** {team.company_name}")
+    lines.append(f"**Session:** {session.month}")
+    lines.append(f"")
+
+    if team.strategy_statement:
+        lines.append(f"## Strategy Statement")
+        lines.append(f"")
+        lines.append(f"{team.strategy_statement}")
+        lines.append(f"")
+
+    # Facilitator notes section (if any)
+    if session.facilitator_notes or session.recalibration_action:
+        lines.append(f"---")
+        lines.append(f"")
+        lines.append(f"## Facilitator Notes")
+        lines.append(f"")
+        if session.facilitator_notes:
+            lines.append(f"{session.facilitator_notes}")
+            lines.append(f"")
+        if session.recalibration_action:
+            status = "(Completed)" if session.recalibration_completed else "(Pending)"
+            lines.append(f"**Recalibration Action** {status}")
+            lines.append(f"")
+            lines.append(f"{session.recalibration_action}")
+            lines.append(f"")
+
+    # Synthesis section
+    if session.synthesis_themes:
+        lines.append(f"---")
+        lines.append(f"")
+        lines.append(f"## What We Heard")
+        lines.append(f"")
+        lines.append(f"{session.synthesis_themes}")
+        lines.append(f"")
+
+        if session.synthesis_gap_type:
+            lines.append(f"### Gap Analysis")
+            lines.append(f"")
+            lines.append(f"**Gap Type:** {session.synthesis_gap_type}")
+            if session.synthesis_gap_reasoning:
+                lines.append(f"")
+                lines.append(f"{session.synthesis_gap_reasoning}")
+            lines.append(f"")
+
+    # Key insights
+    if synthesis_statements:
+        lines.append(f"---")
+        lines.append(f"")
+        lines.append(f"## Key Insights")
+        lines.append(f"")
+        for stmt in synthesis_statements:
+            participants = ", ".join(stmt.get("participants", []))
+            lines.append(f"- {stmt.get('statement', '')} *({participants})*")
+        lines.append(f"")
+
+    # Participant responses
+    if responses:
+        lines.append(f"---")
+        lines.append(f"")
+        lines.append(f"## Participant Responses")
+        lines.append(f"")
+
+        for r in responses:
+            member = db.query(Member).filter(Member.id == r.member_id).first()
+            name = member.name if member else "Unknown"
+
+            bullets = []
+            if r.bullets:
+                try:
+                    bullets = json.loads(r.bullets)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+            lines.append(f"### {name}")
+            lines.append(f"")
+            for i, bullet in enumerate(bullets, 1):
+                lines.append(f"{i}. {bullet}")
+            lines.append(f"")
+
+    markdown_content = "\n".join(lines)
+
+    # Clean filename
+    safe_team = team.team_name.replace(" ", "-").replace("/", "-")
+    filename = f"session-{session.month}-{safe_team}.md"
+
+    return PlainTextResponse(
+        content=markdown_content,
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Content-Type": "text/markdown; charset=utf-8"
+        }
     )
 
 

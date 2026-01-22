@@ -32,6 +32,9 @@ class Team(Base):
     team_name = Column(String(255), nullable=False)
     code = Column(String(20), unique=True, nullable=False, index=True)
     strategy_statement = Column(Text, nullable=True)
+    # Customizable prompts for participant experience
+    image_prompt = Column(Text, nullable=True)  # Shown when selecting image
+    bullet_prompt = Column(Text, nullable=True)  # Shown when entering bullet points
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -64,9 +67,11 @@ class Session(Base):
     synthesis_statements = Column(Text, nullable=True)
     synthesis_gap_type = Column(String(50), nullable=True)
     synthesis_gap_reasoning = Column(Text, nullable=True)
+    suggested_recalibrations = Column(Text, nullable=True)  # JSON array of 3 suggestions
     facilitator_notes = Column(Text, nullable=True)
+    facilitator_notes_updated_at = Column(DateTime, nullable=True)
     recalibration_action = Column(Text, nullable=True)
-    recalibration_completed = Column(Boolean, default=False)
+    recalibration_action_updated_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     closed_at = Column(DateTime, nullable=True)
     revealed_at = Column(DateTime, nullable=True)

@@ -17,7 +17,7 @@
     <div class="image-browser-sticky">
         <div class="browser-instruction">
             <h2>Select an Image, {{ member.name }}</h2>
-            <p>Choose the image that best represents how you feel about where your team is in executing the strategy.</p>
+            <p>{{ team.image_prompt or "Choose the image that best represents how you as a team are executing your strategy." }}</p>
         </div>
         <div class="pagination-header">
             <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
@@ -47,7 +47,10 @@
 
         <!-- Bullet Point Section (shown after image selection) -->
         <div class="bullet-section" id="bullet-section" style="display: none;">
-            <h3>Why does this image represent where you are?</h3>
+            <div class="selected-image-preview" id="selected-image-preview">
+                <!-- Selected image shown here via JS -->
+            </div>
+            <h3>{{ team.bullet_prompt or "Describe why this image describes how you are executing your strategy" }}</h3>
             <p>Enter 1-5 bullet points explaining your choice.</p>
 
             {% if error %}
@@ -124,6 +127,8 @@
     const submitBtn = document.getElementById('submit-btn');
     const selectionHint = document.getElementById('selection-hint');
     const bulletSection = document.getElementById('bullet-section');
+    const selectedImagePreview = document.getElementById('selected-image-preview');
+    let selectedImageUrl = null;  // Store URL for preview
     const bulletInputs = [
         document.getElementById('bullet-1'),
         document.getElementById('bullet-2'),
@@ -168,20 +173,19 @@
     }
 
     function renderPage(images) {
-        // Build grid HTML
+        // Build grid HTML - no filenames or IDs shown to users
         const html = images.map((img, idx) => {
             const isSelected = img.id === selectedImageId;
-            const imgNum = img.id;  // Use image ID for backward compatibility
+            const imageNum = idx + 1 + ((currentPage - 1) * perPage);  // Sequential number for accessibility
             return `
                 <div class="image-card ${isSelected ? 'selected' : ''}"
-                     data-image="${imgNum}"
+                     data-image="${img.id}"
                      role="button"
                      tabindex="0"
-                     aria-label="Image ${imgNum}">
+                     aria-label="Image option ${imageNum}">
                     <img src="${img.url}"
-                         alt="Image ${imgNum}"
+                         alt="Image option"
                          loading="${idx < 6 ? 'eager' : 'lazy'}">
-                    <span class="image-number">${imgNum}</span>
                 </div>
             `;
         }).join('');
@@ -314,16 +318,25 @@
         selectedImageInput.value = imageId;
         selectedImagePage = currentPage;
 
-        // Update visual selection
+        // Update visual selection and get image URL
         const cards = imagePage.querySelectorAll('.image-card');
         cards.forEach(card => {
-            card.classList.toggle('selected', card.dataset.image === imageId);
+            const isSelected = card.dataset.image === imageId;
+            card.classList.toggle('selected', isSelected);
+            if (isSelected) {
+                selectedImageUrl = card.querySelector('img').src;
+            }
         });
 
-        // Show bullet section
+        // Update the preview with selected image
+        if (selectedImageUrl) {
+            selectedImagePreview.innerHTML = `<img src="${selectedImageUrl}" alt="Your selected image">`;
+        }
+
+        // Show bullet section and scroll to show the selected image preview
         bulletSection.style.display = 'block';
         setTimeout(() => {
-            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            selectedImagePreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
 
         updateSubmitButton();

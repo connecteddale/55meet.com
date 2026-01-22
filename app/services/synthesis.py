@@ -55,7 +55,7 @@ Each team member selected an image representing their current state and provided
 {responses_text}
 
 ## Your Task
-Synthesize these responses into three parts:
+Synthesize these responses into four parts:
 
 1. **Themes** (2-4 sentences): High-level summary of what the team is experiencing. Focus on patterns across responses.
 
@@ -66,7 +66,9 @@ Synthesize these responses into three parts:
    - **Alignment**: Team's work is disconnected or uncoordinated
    - **Commitment**: Individual interests override collective success
 
-Provide your reasoning for the gap diagnosis in 1-2 sentences.
+4. **Gap Reasoning** (2-3 sentences): Explain WHY you diagnosed this specific gap type. Reference specific evidence from the responses that led to this conclusion. This should clearly justify the diagnosis.
+
+5. **Suggested Recalibrations**: Provide exactly 3 specific, actionable recalibration actions the team could take to address the diagnosed gap. Each should be concrete and achievable within 30 days. Format as action items the team can commit to.
 
 ## Output Format
 Respond ONLY with valid JSON matching this schema:
@@ -76,8 +78,10 @@ Respond ONLY with valid JSON matching this schema:
 
 IMPORTANT:
 - gap_type MUST be exactly one of: "Direction", "Alignment", or "Commitment"
+- gap_reasoning MUST explain WHY this gap type was chosen based on evidence
 - statements array should contain 3-6 attributed insights
-- Each statement.participants array should contain 1-3 team member names"""
+- Each statement.participants array should contain 1-3 team member names
+- suggested_recalibrations MUST contain exactly 3 actionable items"""
 
 
 async def _generate_and_store_synthesis(session_id: int) -> None:
@@ -146,6 +150,7 @@ async def _generate_and_store_synthesis(session_id: int) -> None:
         )
         session.synthesis_gap_type = result.gap_type
         session.synthesis_gap_reasoning = result.gap_reasoning
+        session.suggested_recalibrations = json.dumps(result.suggested_recalibrations)
         db.commit()
 
     except Exception as e:

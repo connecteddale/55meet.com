@@ -11,11 +11,11 @@
     const POLL_INTERVAL = 2500; // 2.5 seconds
     let pollTimer = null;
 
-    // Get session ID from data attribute
-    const sessionControl = document.querySelector('.session-control');
-    if (!sessionControl) return;
+    // Get session ID from data attribute (supports session view and capture views)
+    const sessionView = document.querySelector('.session-view, .session-control, .capture-control');
+    if (!sessionView) return;
 
-    const sessionId = sessionControl.dataset.sessionId;
+    const sessionId = sessionView.dataset.sessionId;
     if (!sessionId) return;
 
     /**
@@ -64,17 +64,53 @@
             const memberEl = memberList.querySelector(`[data-member-id="${member.id}"]`);
             if (!memberEl) return;
 
-            const indicator = memberEl.querySelector('.status-indicator');
+            // Support both old (.status-indicator) and new (.member-status) class names
+            const indicator = memberEl.querySelector('.status-indicator, .member-status');
             if (!indicator) return;
 
             if (member.submitted) {
                 indicator.classList.remove('waiting');
-                indicator.classList.add('submitted');
-                indicator.textContent = 'Submitted';
+                indicator.classList.add('submitted', 'done');
+                // Update content for both old and new styles
+                if (indicator.classList.contains('member-status')) {
+                    indicator.innerHTML = '&#10003;';  // Checkmark
+                } else {
+                    indicator.textContent = 'Submitted';
+                }
+
+                // Add clear button if not already present (only during capturing)
+                if (!memberEl.querySelector('.clear-form')) {
+                    const clearForm = document.createElement('form');
+                    clearForm.method = 'post';
+                    clearForm.action = `/admin/sessions/${sessionId}/member/${member.id}/clear`;
+                    clearForm.className = 'clear-form';
+                    clearForm.onsubmit = function() {
+                        return confirm(`Clear ${member.name}'s submission?`);
+                    };
+                    clearForm.innerHTML = `
+                        <button type="submit" class="btn-clear" title="Clear submission">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    `;
+                    memberEl.appendChild(clearForm);
+                }
             } else {
-                indicator.classList.remove('submitted');
+                indicator.classList.remove('submitted', 'done');
                 indicator.classList.add('waiting');
-                indicator.textContent = 'Waiting...';
+                if (indicator.classList.contains('member-status')) {
+                    indicator.innerHTML = '&hellip;';  // Ellipsis
+                } else {
+                    indicator.textContent = 'Waiting...';
+                }
+
+                // Remove clear button if present (submission was cleared)
+                const existingForm = memberEl.querySelector('.clear-form');
+                if (existingForm) {
+                    existingForm.remove();
+                }
             }
         });
     }

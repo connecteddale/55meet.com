@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api", tags=["images"])
 @router.get("/images")
 async def list_images(
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
-    per_page: int = Query(20, ge=1, le=100, description="Images per page"),
+    per_page: int = Query(42, ge=1, le=100, description="Images per page"),
     seed: Optional[int] = Query(None, description="Random seed for consistent ordering (typically session_id)")
 ):
     """
@@ -27,7 +27,7 @@ async def list_images(
 
     Args:
         page: Page number (1-indexed, default 1)
-        per_page: Images per page (default 20, max 100)
+        per_page: Images per page (default 42, max 100)
         seed: Random seed for shuffling (optional, typically session_id)
 
     Returns:

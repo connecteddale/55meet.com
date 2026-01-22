@@ -2,147 +2,132 @@
 
 {% block title %}{{ team.team_name }} - {{ session.month }} | The 55{% endblock %}
 
-{% block head %}
-<style>
-    /* Presentation-specific overrides for projector mode */
-    body { background: #000; color: #fff; }
-    header { display: none; }
-    main { padding: 0; }
-    .container { max-width: 1200px; }
-</style>
+{% block nav %}
+<nav>
+    <a href="/admin/sessions/{{ session.id }}" class="btn btn-secondary">Back to Session</a>
+</nav>
 {% endblock %}
 
-{% block body_class %} class="presentation-mode"{% endblock %}
-
-{% block header %}{% endblock %}
-
 {% block content %}
-<div class="presentation-container">
-    <div class="presentation-header">
-        <div class="presentation-team">{{ team.company_name }} &middot; {{ team.team_name }}</div>
-        <div class="presentation-month">{{ session.month }}</div>
+<div class="results-page">
+    {# Header #}
+    <div class="results-header">
+        <h1>{{ team.team_name }}</h1>
+        <p class="results-meta">{{ team.company_name }} &middot; {{ session.month }}</p>
     </div>
 
     {% if synthesis_failed %}
     {# Synthesis Error State #}
-    <div class="synthesis-error">
-        <p class="synthesis-error-message">Synthesis generation failed</p>
-        <p style="color: rgba(255,255,255,0.6); margin-bottom: var(--space-4);">{{ synthesis_themes }}</p>
-        <form method="POST" action="/admin/sessions/{{ session.id }}/synthesize/retry">
-            <button type="submit" class="retry-button">Retry Synthesis</button>
-        </form>
+    <div class="card">
+        <div class="synthesis-error-box">
+            <h3>Synthesis Generation Failed</h3>
+            <p>{{ synthesis_themes }}</p>
+            <form method="POST" action="/admin/sessions/{{ session.id }}/synthesize/retry">
+                <button type="submit" class="btn btn-primary">Retry Synthesis</button>
+            </form>
+        </div>
     </div>
     {% else %}
-    {# Level Tab Navigation #}
-    <div class="level-tabs" role="tablist" aria-label="Presentation levels">
-        <button class="level-tab active" data-level="1" role="tab" aria-selected="true" aria-controls="level-1">1. Themes</button>
-        <button class="level-tab" data-level="2" role="tab" aria-selected="false" aria-controls="level-2">2. Insights</button>
-        <button class="level-tab" data-level="3" role="tab" aria-selected="false" aria-controls="level-3">3. Raw</button>
-    </div>
 
-    {# Level 1: Themes #}
-    <div id="level-1" class="level-content active" data-level="1" role="tabpanel" aria-labelledby="tab-1">
+    {# Section 1: Synthesis Summary #}
+    <div class="card">
+        <h2>What We Heard</h2>
         {% if synthesis_themes %}
-        <div class="presentation-section">
-            <h2 class="presentation-label">What We Heard</h2>
-            <p class="presentation-themes">{{ synthesis_themes }}</p>
-        </div>
+        <p class="results-themes">{{ synthesis_themes }}</p>
+        {% else %}
+        <p class="text-muted">No synthesis available.</p>
         {% endif %}
 
         {% if synthesis_gap_type %}
-        <div class="presentation-section">
-            <h2 class="presentation-label">Primary Gap</h2>
-            <div class="presentation-gap gap-{{ synthesis_gap_type|lower }}">
-                {{ synthesis_gap_type }}
-            </div>
-            <p class="presentation-gap-desc">
+        <h2>Suggested Gap</h2>
+        <div class="results-gap">
+            <span class="gap-badge gap-{{ synthesis_gap_type|lower }}">{{ synthesis_gap_type }}</span>
+            {% if synthesis_gap_reasoning %}
+            <p class="gap-reasoning">{{ synthesis_gap_reasoning }}</p>
+            {% else %}
+            <p class="gap-reasoning text-muted">
                 {% if synthesis_gap_type == "Direction" %}
-                Team members see different destinations. Where are we going?
+                The responses suggest team members may see different destinations.
                 {% elif synthesis_gap_type == "Alignment" %}
-                Team members are pulling in different directions. How do our efforts connect?
+                The responses suggest team members may be pulling in different directions.
                 {% elif synthesis_gap_type == "Commitment" %}
-                Individual priorities outweigh collective goals. What will we sacrifice?
+                The responses suggest individual priorities may outweigh collective goals.
                 {% endif %}
             </p>
-        </div>
-        {% endif %}
-
-        <a href="/admin/sessions/{{ session.id }}/export/level1" class="level-export">Export Level 1</a>
-    </div>
-
-    {# Level 2: Insights #}
-    <div id="level-2" class="level-content" data-level="2" role="tabpanel" aria-labelledby="tab-2">
-        {% if synthesis_statements %}
-        <div class="presentation-section">
-            <h2 class="presentation-label">Key Insights (Attributed)</h2>
-            <ul class="presentation-insights">
-                {% for stmt in synthesis_statements %}
-                <li>
-                    <span class="insight-statement">{{ stmt.statement }}</span>
-                    <span class="insight-names">({{ stmt.participants|join(', ') }})</span>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% else %}
-        <div class="presentation-section">
-            <p style="color: rgba(255,255,255,0.5);">No insights available.</p>
-        </div>
-        {% endif %}
-
-        <a href="/admin/sessions/{{ session.id }}/export/level2" class="level-export">Export Level 2</a>
-    </div>
-
-    {# Level 3: Raw Responses #}
-    <div id="level-3" class="level-content" data-level="3" role="tabpanel" aria-labelledby="tab-3">
-        <div class="presentation-section">
-            <h2 class="presentation-label">Raw Participant Responses</h2>
-            {% if raw_responses %}
-            {% for response in raw_responses %}
-            <div class="raw-participant">
-                <div class="raw-participant-name">{{ response.participant }}</div>
-                <div class="raw-participant-image">Image #{{ response.image_number }}</div>
-                {% if response.bullets %}
-                <ul class="raw-bullets">
-                    {% for bullet in response.bullets %}
-                    <li>{{ bullet }}</li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p style="color: rgba(255,255,255,0.4); font-style: italic;">No bullets submitted</p>
-                {% endif %}
-            </div>
-            {% endfor %}
-            {% else %}
-            <p style="color: rgba(255,255,255,0.5);">No responses recorded.</p>
             {% endif %}
         </div>
-
-        <a href="/admin/sessions/{{ session.id }}/export/level3" class="level-export">Export Level 3</a>
+        {% endif %}
     </div>
 
-    {# Recalibration Action (shown on all levels if set) #}
+    {# Section 2: Key Insights #}
+    {% if synthesis_statements %}
+    <div class="card">
+        <h2>Key Insights</h2>
+        <ul class="results-insights">
+            {% for stmt in synthesis_statements %}
+            <li>
+                <span class="insight-text">{{ stmt.statement }}</span>
+                <span class="insight-attribution">&mdash; {{ stmt.participants|join(', ') }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {# Section 3: Individual Responses #}
+    <div class="card">
+        <h2>Individual Responses</h2>
+        {% if raw_responses %}
+        <div class="responses-list">
+            {% for response in raw_responses %}
+            <div class="response-item">
+                <h3 class="response-name">{{ response.participant }}</h3>
+                <div class="response-body">
+                    <div class="response-image">
+                        <img src="{{ response.image_url }}" alt="Selected image" loading="lazy">
+                    </div>
+                    {% if response.bullets %}
+                    <ul class="response-bullets">
+                        {% for bullet in response.bullets %}
+                        <li>{{ bullet }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">No explanation provided</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No responses recorded.</p>
+        {% endif %}
+    </div>
+
+    {# Section 4: Recalibration Action #}
     {% if session.recalibration_action %}
-    <div class="presentation-section presentation-action">
-        <h2 class="presentation-label">Recalibration Action</h2>
-        <p class="presentation-action-text">{{ session.recalibration_action }}</p>
+    <div class="card results-action">
+        <h2>Recalibration Action</h2>
+        <p class="action-text">{{ session.recalibration_action }}</p>
+        {% if session.recalibration_completed %}
+        <span class="action-status completed">Completed</span>
+        {% else %}
+        <span class="action-status pending">Pending</span>
+        {% endif %}
     </div>
-    {% endif %}
     {% endif %}
 
-    <div class="presentation-footer">
-        <a href="/admin/sessions/{{ session.id }}" class="exit-presentation">Exit Presentation</a>
-    </div>
-
-    {# Keyboard hint #}
-    {% if not synthesis_failed %}
-    <div class="keyboard-hint">
-        Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to switch levels
-    </div>
     {% endif %}
+
+    {# Footer Actions #}
+    <div class="results-footer">
+        <div class="export-links">
+            <span>Export:</span>
+            <a href="/admin/sessions/{{ session.id }}/export/level1" class="btn btn-small btn-secondary">Themes</a>
+            <a href="/admin/sessions/{{ session.id }}/export/level2" class="btn btn-small btn-secondary">Insights</a>
+            <a href="/admin/sessions/{{ session.id }}/export/level3" class="btn btn-small btn-secondary">Raw Data</a>
+            <a href="/admin/sessions/{{ session.id }}/export" class="btn btn-small btn-secondary">Full JSON</a>
+        </div>
+    </div>
 </div>
-
-{% if not synthesis_failed %}
-<script src="/static/js/presentation.js"></script>
-{% endif %}
 {% endblock %}

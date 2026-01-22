@@ -2,12 +2,14 @@
 The 55 App - Image Library Service
 
 Auto-discovery of images from filesystem with caching and session-seeded randomization.
+Images are served via opaque IDs - filenames are never exposed to users.
 """
 
+import hashlib
 import random
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 from functools import lru_cache
 
 from pydantic import BaseModel
@@ -16,9 +18,8 @@ from app.config import get_settings
 
 
 class ImageInfo(BaseModel):
-    """Image metadata."""
-    id: str           # filename without extension
-    filename: str     # full filename
+    """Image metadata - ID and URL only, no filename exposed to users."""
+    id: str           # opaque identifier (hash of filename)
     url: str          # URL path for serving
 
 
@@ -27,7 +28,8 @@ class ImageLibrary:
     Discover and serve images from configurable directory.
 
     Features:
-    - Auto-discovery of .svg, .png, .jpg, .webp files
+    - Auto-discovery of .jpg files from reducedlive/ directory
+    - Opaque IDs (hashed) - filenames never exposed to users
     - Caching with configurable TTL (default 5 minutes)
     - Session-seeded randomization for consistent ordering
     """
@@ -36,7 +38,12 @@ class ImageLibrary:
         self._image_dir = image_dir
         self._cache_ttl = cache_ttl_seconds
         self._cache: List[ImageInfo] = []
+        self._id_to_filename: Dict[str, str] = {}  # Maps opaque ID to filename
         self._cache_time: Optional[datetime] = None
+
+    def _generate_opaque_id(self, filename: str) -> str:
+        """Generate short opaque ID from filename (first 12 chars of MD5)."""
+        return hashlib.md5(filename.encode()).hexdigest()[:12]
 
     def _is_cache_valid(self) -> bool:
         """Check if cache is still valid."""
@@ -48,26 +55,33 @@ class ImageLibrary:
         """
         Scan directory for image files, cache results.
 
-        Returns sorted list of ImageInfo objects.
+        Returns sorted list of ImageInfo objects with opaque IDs.
         """
         if self._is_cache_valid():
             return self._cache
 
         images = []
-        extensions = {'.svg', '.png', '.jpg', '.jpeg', '.webp'}
+        self._id_to_filename = {}
+        extensions = {'.jpg', '.jpeg', '.png', '.webp'}
 
         if self._image_dir.exists():
             for path in sorted(self._image_dir.iterdir()):
                 if path.suffix.lower() in extensions:
+                    opaque_id = self._generate_opaque_id(path.stem)
+                    self._id_to_filename[opaque_id] = path.name
                     images.append(ImageInfo(
-                        id=path.stem,
-                        filename=path.name,
-                        url=f"/static/images/library/{path.name}"
+                        id=opaque_id,
+                        url=f"/static/images/library/reducedlive/{path.name}"
                     ))
 
         self._cache = images
         self._cache_time = datetime.now()
         return images
+
+    def get_filename_by_id(self, opaque_id: str) -> Optional[str]:
+        """Look up actual filename from opaque ID."""
+        self.discover_images()  # Ensure cache is populated
+        return self._id_to_filename.get(opaque_id)
 
     def get_shuffled_images(self, seed: int) -> List[ImageInfo]:
         """

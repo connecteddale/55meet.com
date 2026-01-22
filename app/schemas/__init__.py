@@ -20,4 +20,9 @@ class SynthesisOutput(BaseModel):
     gap_type: Literal["Direction", "Alignment", "Commitment"] = Field(
         description="Primary gap type identified"
     )
-    gap_reasoning: str = Field(description="1-2 sentence explanation for gap diagnosis")
+    gap_reasoning: str = Field(description="2-3 sentences explaining WHY this gap type was diagnosed based on the evidence")
+    suggested_recalibrations: List[str] = Field(
+        description="3 specific, actionable recalibration suggestions that address the diagnosed gap",
+        min_length=3,
+        max_length=3
+    )
