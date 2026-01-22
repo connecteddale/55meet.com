@@ -16,7 +16,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import joinedload
 
 from app.dependencies import AuthDep, DbDep
-from app.db.models import Team, Member, Session, Response, SessionState
+from app.db.models import Team, Member, Session, Response as ResponseModel, SessionState
 from app.services.synthesis import run_synthesis_task
 from app.services.pdf_export import generate_session_pdf
 
@@ -146,7 +146,7 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
     member_by_id = {m.id: m for m in members}
 
     # Get response status for each member
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
     responded_member_ids = {r.member_id for r in responses}
 
     member_status = []
@@ -319,9 +319,9 @@ async def clear_member_submission(
         )
 
     # Delete the response (hard delete, no audit trail needed)
-    response = db.query(Response).filter(
-        Response.session_id == session_id,
-        Response.member_id == member_id
+    response = db.query(ResponseModel).filter(
+        ResponseModel.session_id == session_id,
+        ResponseModel.member_id == member_id
     ).first()
 
     if not response:
@@ -463,7 +463,7 @@ async def get_session_status(session_id: int, auth: AuthDep, db: DbDep):
 
     team = session.team
     members = db.query(Member).filter(Member.team_id == team.id).all()
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
     responded_member_ids = {r.member_id for r in responses}
 
     member_status = []
@@ -562,7 +562,7 @@ async def capture_session(request: Request, session_id: int, auth: AuthDep, db: 
     members = db.query(Member).filter(Member.team_id == team.id).order_by(Member.name).all()
 
     # Get response status for each member
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
     responded_member_ids = {r.member_id for r in responses}
 
     member_status = []
@@ -605,7 +605,7 @@ async def present_session(request: Request, session_id: int, auth: AuthDep, db: 
             synthesis_statements = []
 
     # Query raw responses with image URLs
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
     raw_responses = []
     for r in responses:
         member = db.query(Member).filter(Member.id == r.member_id).first()
@@ -649,7 +649,7 @@ async def export_session(session_id: int, auth: AuthDep, db: DbDep):
         raise HTTPException(status_code=404, detail="Session not found")
 
     team = session.team
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
 
     # Build response data
     response_data = []
@@ -757,7 +757,7 @@ async def export_level3(session_id: int, auth: AuthDep, db: DbDep):
         raise HTTPException(status_code=404, detail="Session not found")
 
     team = session.team
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
 
     # Build response data
     response_data = []
@@ -790,7 +790,7 @@ async def export_markdown(session_id: int, auth: AuthDep, db: DbDep):
         raise HTTPException(status_code=404, detail="Session not found")
 
     team = session.team
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
 
     # Parse synthesis statements
     synthesis_statements = []
@@ -939,7 +939,7 @@ async def meeting_session(request: Request, session_id: int, auth: AuthDep, db: 
     members = db.query(Member).filter(Member.team_id == team.id).order_by(Member.name).all()
 
     # Get response status for each member
-    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    responses = db.query(ResponseModel).filter(ResponseModel.session_id == session_id).all()
     responded_member_ids = {r.member_id for r in responses}
 
     member_status = []
