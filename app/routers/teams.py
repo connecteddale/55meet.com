@@ -17,7 +17,7 @@ from app.dependencies import AuthDep, DbDep
 from app.db.models import Team
 
 router = APIRouter(prefix="/admin/teams", tags=["teams"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 
 def generate_team_code() -> str:

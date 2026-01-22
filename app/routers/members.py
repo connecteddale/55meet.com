@@ -12,7 +12,7 @@ from app.dependencies import AuthDep, DbDep
 from app.db.models import Team, Member
 
 router = APIRouter(prefix="/admin/teams", tags=["members"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 MAX_MEMBERS = 25
 

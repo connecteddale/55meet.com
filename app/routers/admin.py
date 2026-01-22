@@ -15,7 +15,7 @@ from app.db.models import Team, Session, SessionState
 from app.services.auth import verify_password, hash_password, update_password_hash
 
 router = APIRouter(prefix="/admin", tags=["admin"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 
 def get_current_month() -> str:

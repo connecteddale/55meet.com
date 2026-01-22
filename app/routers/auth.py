@@ -12,7 +12,7 @@ from app.dependencies import SettingsDep
 from app.services.auth import verify_password, create_session_token
 
 router = APIRouter(prefix="/admin", tags=["auth"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/login")

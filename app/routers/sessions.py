@@ -20,7 +20,7 @@ from app.db.models import Team, Member, Session, Response, SessionState
 from app.services.synthesis import run_synthesis_task
 
 router = APIRouter(prefix="/admin/sessions", tags=["sessions"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 
 def get_current_month() -> str:

@@ -19,7 +19,7 @@ from app.services.images import get_image_library
 from app.config import get_settings
 
 router = APIRouter(prefix="/join", tags=["participant"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 # Database dependency without auth
 DbDep = Annotated[Session, Depends(get_db)]
