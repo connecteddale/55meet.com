@@ -10,7 +10,7 @@ from typing import Optional
 import json
 
 from fastapi import APIRouter, Request, Form, HTTPException, BackgroundTasks
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import joinedload
@@ -18,6 +18,7 @@ from sqlalchemy.orm import joinedload
 from app.dependencies import AuthDep, DbDep
 from app.db.models import Team, Member, Session, Response, SessionState
 from app.services.synthesis import run_synthesis_task
+from app.services.pdf_export import generate_session_pdf
 
 router = APIRouter(prefix="/admin/sessions", tags=["sessions"])
 templates = Jinja2Templates(directory="templates")
@@ -895,6 +896,29 @@ async def export_markdown(session_id: int, auth: AuthDep, db: DbDep):
             "Content-Disposition": f"attachment; filename={filename}",
             "Content-Type": "text/markdown; charset=utf-8"
         }
+    )
+
+
+@router.get("/{session_id}/export/pdf")
+async def export_pdf(session_id: int, auth: AuthDep, db: DbDep):
+    """Export session data as presentation-ready PDF."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    team = session.team
+
+    # Generate PDF bytes
+    pdf_bytes = generate_session_pdf(session, team)
+
+    # Clean filename: TeamName-YYYY-MM.pdf
+    safe_team = team.team_name.replace(" ", "-").replace("/", "-")
+    filename = f"{safe_team}-{session.month}.pdf"
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
 

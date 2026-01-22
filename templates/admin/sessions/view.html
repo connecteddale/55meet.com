@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Session {{ session.month }} - The 55{% endblock %}
+
+{% block nav %}
+<nav class="admin-nav">
+    <div class="nav-links">
+        <a href="/admin" class="nav-link">AlignHQ</a>
+        <a href="/admin/settings" class="nav-link">Settings</a>
+    </div>
+    <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="session-view" data-session-id="{{ session.id }}">
+    {# Header - Team info and state #}
+    <div class="session-view-header">
+        <a href="/admin" class="back-link">&larr; AlignHQ</a>
+        <div class="session-title">
+            <h1>{{ team.team_name }}</h1>
+            <span class="session-meta">{{ team.company_name }} &middot; {{ session.month }}</span>
+        </div>
+        <span class="state-badge state-{{ session.state.value }}">{{ session.state.value }}</span>
+    </div>
+
+    {# Main content - Two column layout #}
+    <div class="session-view-grid">
+        {# Left column: QR, join info, controls #}
+        <div class="session-left-col">
+            {% if session.state.value in ['draft', 'capturing'] %}
+            <div class="qr-panel">
+                <a href="/join?code={{ team.code }}" target="_blank" class="qr-link" title="Click to open join page">
+                    <img src="/admin/qr/team/{{ team.id }}" alt="Scan to join" class="qr-image">
+                </a>
+                <div class="join-info">
+                    <a href="/join?code={{ team.code }}" target="_blank" class="join-code">{{ team.code }}</a>
+                    <span class="join-url">55meet.com/join</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="stat-number" id="submitted-count">{{ submitted_count }}</span>
+                    <span class="stat-label">Submitted</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number" id="total-members">{{ total_members }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                {% if session.state.value == 'draft' %}
+                <form method="post" action="/admin/sessions/{{ session.id }}/start">
+                    <button type="submit" class="btn btn-primary btn-block">Start Capturing</button>
+                </form>
+                <p class="hint">Participants can join once capturing starts.</p>
+
+                {% elif session.state.value == 'capturing' %}
+                <form method="post" action="/admin/sessions/{{ session.id }}/close"
+                      onsubmit="return confirm('Close capture? Participants will no longer be able to submit.');">
+                    <button type="submit" class="btn btn-warning btn-block">Close Capture</button>
+                </form>
+                <p class="hint">Close when all participants have submitted.</p>
+
+                {% elif session.state.value in ['closed', 'revealed'] %}
+                {% if synthesis_pending %}
+                <form method="post" action="/admin/sessions/{{ session.id }}/synthesize" id="synthesize-form">
+                    <button type="submit" class="btn btn-primary btn-block" id="synthesize-btn">Generate Synthesis</button>
+                </form>
+                <p class="hint" id="synthesize-hint">Analyze responses and generate themes.</p>
+                {% elif synthesis_generating %}
+                <div class="synthesis-loading">
+                    <div class="spinner"></div>
+                    <p>Generating synthesis...</p>
+                    <p class="hint">This may take 30-60 seconds</p>
+                </div>
+                {% elif synthesis_themes %}
+                {# Export buttons after synthesis is generated #}
+                <a href="/admin/sessions/{{ session.id }}/export/pdf" class="btn btn-primary btn-block">Export PDF</a>
+                <a href="/admin/sessions/{{ session.id }}/export" class="btn btn-secondary btn-block">Export JSON</a>
+                <a href="/admin/sessions/{{ session.id }}/export/markdown" class="btn btn-secondary btn-block">Export Markdown</a>
+                <form method="post" action="/admin/sessions/{{ session.id }}/synthesize/retry" id="regenerate-form"
+                      onsubmit="return confirm('Regenerate synthesis? This will replace the current analysis.');">
+                    <button type="submit" class="btn btn-ghost btn-block" id="regenerate-btn">Regenerate Synthesis</button>
+                </form>
+                {% endif %}
+                <form method="post" action="/admin/sessions/{{ session.id }}/reopen"
+                      onsubmit="return confirm('Reopen engagement?\n\n{% if synthesis_themes %}WARNING: This will clear the current synthesis. You will need to regenerate it after closing again.{% else %}Participants will be able to submit or resubmit.{% endif %}');">
+                    <button type="submit" class="btn btn-ghost btn-block">Reopen Engagement</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Right column: Member status #}
+        <div class="session-right-col">
+            <h2>Participants</h2>
+            <div class="member-list" id="member-status-list">
+                {% for member in member_status %}
+                <div class="member-row" data-member-id="{{ member.id }}">
+                    <span class="member-name">{{ member.name }}</span>
+                    <span class="member-status {% if member.submitted %}done{% else %}waiting{% endif %}">
+                        {% if member.submitted %}&#10003;{% else %}&hellip;{% endif %}
+                    </span>
+                    {% if session.state.value == 'capturing' and member.submitted %}
+                    <form method="post" action="/admin/sessions/{{ session.id }}/member/{{ member.id }}/clear"
+                          onsubmit="return confirm('Clear {{ member.name }}\'s submission?');" class="clear-form">
+                        <button type="submit" class="btn-clear" title="Clear submission">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Facilitator section (shown when synthesis is available in closed or revealed state) #}
+    {% if synthesis_themes and session.state.value in ['closed', 'revealed'] %}
+    <div class="facilitator-section">
+        <div class="facilitator-card">
+            <h2>Facilitator Notes</h2>
+            <form method="post" action="/admin/sessions/{{ session.id }}/notes">
+                <textarea name="facilitator_notes" rows="3" placeholder="Session observations, context, follow-up items...">{{ session.facilitator_notes or '' }}</textarea>
+                <button type="submit" class="btn btn-primary btn-small">Save</button>
+            </form>
+            {% if session.facilitator_notes_updated_at %}
+            <p class="last-saved">Last saved: {{ session.facilitator_notes_updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% endif %}
+        </div>
+
+        <div class="facilitator-card">
+            <h2>Recalibration Action</h2>
+            <form method="post" action="/admin/sessions/{{ session.id }}/notes">
+                <textarea name="recalibration_action" rows="3" placeholder="ONE action the team commits to...">{{ session.recalibration_action or '' }}</textarea>
+                <button type="submit" class="btn btn-primary btn-small">Save</button>
+            </form>
+            {% if session.recalibration_action_updated_at %}
+            <p class="last-saved">Last saved: {{ session.recalibration_action_updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Synthesis results (shown when available) #}
+    {% if synthesis_themes %}
+    <div class="synthesis-results">
+        <div class="synthesis-card">
+            <h2>What We Heard</h2>
+            <p class="themes-text">{{ synthesis_themes }}</p>
+        </div>
+
+        {% if synthesis_statements %}
+        <div class="synthesis-card">
+            <h2>Key Insights</h2>
+            <ul class="insights-list">
+                {% for stmt in synthesis_statements %}
+                <li>
+                    <span class="insight-text">{{ stmt.statement }}</span>
+                    <span class="insight-attr">&mdash; {{ stmt.participants|join(', ') }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if synthesis_gap_type %}
+        <div class="synthesis-card">
+            <h2>Diagnosis</h2>
+            <p class="diagnosis-text">Suggested area to work on: <strong>{{ synthesis_gap_type }}</strong></p>
+
+            <h2>Rationale</h2>
+            <p class="rationale-text">{{ synthesis_gap_reasoning }}</p>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    {# Participant Responses (shown when synthesis is available) #}
+    {% if synthesis_themes and participant_responses %}
+    <div class="participant-responses-section">
+        <h2>Participant Responses</h2>
+        <div class="responses-grid">
+            {% for response in participant_responses %}
+            <div class="response-card">
+                <div class="response-header">
+                    <span class="participant-name">{{ response.name }}</span>
+                </div>
+                {% if response.image_url %}
+                <div class="response-image">
+                    <img src="{{ response.image_url }}" alt="Selected image">
+                </div>
+                {% endif %}
+                <ul class="response-bullets">
+                    {% for bullet in response.bullets %}
+                    <li>{{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if session.state.value == 'capturing' %}
+<script src="/static/js/polling.js?v=4"></script>
+{% endif %}
+
+{% if session.state.value == 'closed' and synthesis_pending %}
+<script>
+(function() {
+    'use strict';
+    const form = document.getElementById('synthesize-form');
+    const btn = document.getElementById('synthesize-btn');
+    const hint = document.getElementById('synthesize-hint');
+
+    if (form && btn) {
+        form.addEventListener('submit', function() {
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            btn.classList.add('loading');
+            if (hint) {
+                hint.innerHTML = '<span class="spinner-inline"></span> This may take 30-60 seconds...';
+            }
+        });
+    }
+})();
+</script>
+{% endif %}
+
+{% if synthesis_generating %}
+{# Synthesis is being generated - poll for completion #}
+<script>
+(function() {
+    'use strict';
+    const sessionId = {{ session.id }};
+    const POLL_INTERVAL = 3000;
+
+    async function checkSynthesis() {
+        try {
+            const response = await fetch(`/admin/sessions/${sessionId}/synthesis-status`);
+            if (!response.ok) return;
+
+            const data = await response.json();
+            if (data.status === 'complete' || data.status === 'failed') {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Synthesis poll error:', error);
+        }
+    }
+
+    setInterval(checkSynthesis, POLL_INTERVAL);
+    console.log('Synthesis status polling started');
+})();
+</script>
+{% endif %}
+
+{% if synthesis_themes %}
+{# Handle regenerate button loading state #}
+<script>
+(function() {
+    'use strict';
+    const form = document.getElementById('regenerate-form');
+    const btn = document.getElementById('regenerate-btn');
+
+    if (form && btn) {
+        form.addEventListener('submit', function(e) {
+            // Only proceed if confirm returned true (form is actually submitting)
+            setTimeout(function() {
+                btn.disabled = true;
+                btn.textContent = 'Regenerating...';
+                btn.classList.add('btn-loading');
+            }, 10);
+        });
+    }
+})();
+</script>
+{% endif %}
+{% endblock %}
