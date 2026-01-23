@@ -19,8 +19,9 @@ from app.routers import images_router, auth_router, admin_router, teams_router, 
 
 # Define paths
 APP_DIR = Path(__file__).parent
-TEMPLATES_DIR = APP_DIR / "templates"
-STATIC_DIR = APP_DIR / "static"
+BASE_DIR = APP_DIR.parent  # Parent of app/ is the site root
+TEMPLATES_DIR = BASE_DIR / "templates"
+STATIC_DIR = BASE_DIR / "static"
 
 
 @asynccontextmanager
@@ -103,7 +104,7 @@ def root(request: Request):
     from fastapi.responses import HTMLResponse
     from pathlib import Path
 
-    template_path = APP_DIR / "templates" / "landing.html"
+    template_path = TEMPLATES_DIR / "landing.html"
     html_content = template_path.read_text()
     return HTMLResponse(content=html_content)
 

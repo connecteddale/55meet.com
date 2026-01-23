@@ -1,267 +1,255 @@
-# The 55
+# 55meet.com (The 55)
 
-**Leadership alignment diagnostics - 55 minutes, once a month.**
+Leadership alignment diagnostics tool.
 
-The 55 is a real-time facilitation tool that helps leadership teams catch alignment problems before they become execution problems. Teams meet monthly to surface how they're *actually* executing their strategy, identify gaps, and commit to one recalibration action.
+## Overview
 
-## The 55 Meeting Flow
+- **Domains**: 55meet.com, 55.connecteddale.com
+- **Type**: FastAPI application
+- **Port**: 8055
+- **Service**: the55
 
-1. **Capture (5 min)** - Participants select an image representing their current state and explain why in 1-5 bullet points
-2. **Surface (10 min)** - AI synthesizes responses into themes, insights, and diagnoses the gap type
-3. **Read (25 min)** - Facilitator leads discussion through the synthesis
-4. **Set (15 min)** - Team commits to ONE recalibration action
+## Purpose
 
-## Gap Types
+"The 55" is a team alignment diagnostic tool that helps leadership teams:
+1. Surface individual perspectives on strategy
+2. Identify alignment and gaps
+3. Facilitate meaningful conversations
+4. Track evolution over time
 
-The 55 diagnoses one of three gap types:
+## How It Works
 
-- **Direction** - Team lacks shared understanding of goals or priorities
-- **Alignment** - Team's work is disconnected or uncoordinated
-- **Commitment** - Individual interests override collective success
+1. **Setup**: Create a team and add members
+2. **Session**: Start a monthly session
+3. **Respond**: Members select images and provide bullets
+4. **Reveal**: Show all responses together
+5. **Synthesize**: AI generates themes and identifies gaps
+6. **Recalibrate**: Take action on misalignments
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- SQLite 3
-- Anthropic API key (for AI synthesis)
-
-### Installation
-
-```bash
-# Clone and enter directory
-cd the55
-
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your values (see Configuration below)
-
-# Run development server
-uvicorn app.main:app --reload --port 8055
-```
-
-Visit http://localhost:8055/health to verify.
-
-## Configuration
-
-Create `.env` file with:
-
-```env
-# Required
-SECRET_KEY=your-secret-key-min-32-chars
-FACILITATOR_PASSWORD_HASH=argon2-hash-of-password
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Optional (defaults shown)
-DEBUG=false
-DATABASE_URL=sqlite:///db/the55.db
-IMAGE_LIBRARY_PATH=app/static/images/library/reducedlive
-IMAGES_PER_PAGE=42
-IMAGE_CACHE_TTL=300
-```
-
-### Generating Password Hash
-
-```python
-from pwdlib import PasswordHash
-hasher = PasswordHash.recommended()
-print(hasher.hash("your-password"))
-```
-
-## Project Structure
+## Directory Structure
 
 ```
-the55/
+/var/www/sites/55meet.com/
 ├── app/
-│   ├── main.py              # FastAPI app entry point
-│   ├── config.py            # Pydantic settings
-│   ├── dependencies.py      # Auth & DB dependencies
-│   ├── routers/
-│   │   ├── admin.py         # Dashboard routes
-│   │   ├── auth.py          # Login/logout
-│   │   ├── teams.py         # Team CRUD
-│   │   ├── members.py       # Member management
-│   │   ├── sessions.py      # Session control & synthesis
-│   │   ├── participant.py   # Participant flow (join, respond)
-│   │   ├── images.py        # Image browser API
-│   │   └── qr.py            # QR code generation
-│   ├── services/
-│   │   ├── auth.py          # Password verification
-│   │   ├── images.py        # Image library with caching
-│   │   └── synthesis.py     # Claude API integration
-│   ├── db/
-│   │   ├── database.py      # SQLAlchemy setup
-│   │   └── models.py        # ORM models
-│   ├── schemas/
-│   │   └── __init__.py      # Pydantic schemas for Claude
-│   ├── templates/           # Jinja2 HTML templates
-│   └── static/
-│       ├── css/main.css     # All styles
-│       ├── js/              # Client-side scripts
-│       └── images/library/  # 200+ evocative images
+│   ├── main.py            # FastAPI application entry
+│   ├── config.py          # Configuration
+│   ├── dependencies.py    # Dependency injection
+│   ├── routers/           # API route modules
+│   │   ├── teams.py
+│   │   ├── sessions.py
+│   │   ├── members.py
+│   │   └── responses.py
+│   ├── schemas/           # Pydantic models
+│   ├── services/          # Business logic
+│   └── db/                # Database models
+├── templates/             # Jinja2 HTML templates
+├── static/                # CSS, JS, images
+│   ├── css/
+│   ├── js/
+│   └── images/
 ├── db/
-│   └── the55.db             # SQLite database
-├── logs/                    # Access & error logs
-├── nginx/                   # nginx config
-├── scripts/                 # Utility scripts
+│   └── the55.db           # SQLite database
+├── logs/
+│   ├── access.log
+│   ├── error.log
+│   ├── nginx_access.log
+│   └── nginx_error.log
+├── scripts/               # Utility scripts
+├── venv/                  # Python virtual environment
 ├── requirements.txt
-├── .env.example
-└── README.md
+└── .env                   # Environment variables
 ```
 
 ## Database Schema
 
-### Teams
-- `id`, `company_name`, `team_name`, `code` (unique join code)
-- `strategy_statement` - The "3AM test" statement
-- `image_prompt`, `bullet_prompt` - Customizable participant prompts
+### teams
+Leadership teams using the system.
 
-### Members
-- `id`, `team_id`, `name`
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| company_name | VARCHAR | Company/organization |
+| team_name | VARCHAR | Team name |
+| code | VARCHAR | Unique access code |
+| strategy_statement | TEXT | Team's strategy statement |
+| image_prompt | TEXT | AI prompt for image generation |
+| bullet_prompt | TEXT | AI prompt for bullet themes |
 
-### Sessions
-- `id`, `team_id`, `month` (YYYY-MM format)
-- `state` - draft → capturing → closed → revealed
-- `synthesis_themes`, `synthesis_statements` (JSON), `synthesis_gap_type`, `synthesis_gap_reasoning`
-- `facilitator_notes`, `recalibration_action` with timestamps
+### members
+Team members.
 
-### Responses
-- `id`, `session_id`, `member_id`
-- `image_id` (filename stem), `bullets` (JSON array)
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| team_id | INTEGER | Foreign key to teams |
+| name | VARCHAR | Member name |
 
-## Session State Machine
+### sessions
+Monthly diagnostic sessions.
 
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| team_id | INTEGER | Foreign key to teams |
+| month | VARCHAR | "YYYY-MM" format |
+| state | VARCHAR | 'active', 'revealed', 'closed' |
+| synthesis_themes | TEXT | AI-generated themes |
+| synthesis_statements | TEXT | Key alignment statements |
+| synthesis_gap_type | VARCHAR | Type of gap identified |
+| synthesis_gap_reasoning | TEXT | Explanation of gap |
+| suggested_recalibrations | TEXT | Recommended actions |
+| facilitator_notes | TEXT | Notes from session |
+| recalibration_action | TEXT | Chosen action |
+| recalibration_completed | BOOLEAN | Action completed |
+
+### responses
+Individual member responses.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| session_id | INTEGER | Foreign key to sessions |
+| member_id | INTEGER | Foreign key to members |
+| image_id | VARCHAR | Selected image identifier |
+| bullets | TEXT | Member's bullet points |
+
+## Key Endpoints
+
+### Public Pages
+- `/` - Landing page
+- `/health` - Health check endpoint
+- `/team/{code}` - Team dashboard
+- `/session/{code}` - Current session
+- `/respond/{code}/{member_id}` - Member response form
+
+### API Routes
+- `POST /api/teams` - Create team
+- `GET /api/teams/{code}` - Get team info
+- `POST /api/sessions` - Create session
+- `POST /api/responses` - Submit response
+- `POST /api/sessions/{id}/reveal` - Reveal responses
+- `POST /api/sessions/{id}/synthesize` - Generate AI synthesis
+- `POST /api/sessions/{id}/close` - Close session
+
+### Facilitator
+- `/facilitator/{code}` - Facilitator view
+- `/synthesis/{session_id}` - Synthesis results
+
+## Configuration
+
+### Environment Variables (.env)
+
+```bash
+OPENAI_API_KEY=...       # For AI synthesis
+SECRET_KEY=...           # Session security
+DATABASE_URL=...         # SQLite path
 ```
-DRAFT → CAPTURING → CLOSED → REVEALED
-          ↑____________|
-          (reopen)
-```
 
-- **DRAFT**: Session created, not yet started
-- **CAPTURING**: Participants can join and submit responses
-- **CLOSED**: Capture complete, synthesis can be generated
-- **REVEALED**: Synthesis visible to participants (optional)
+### Nginx Config
 
-## Key User Flows
-
-### Facilitator Flow
-1. Login at `/admin`
-2. Create team with members
-3. Start session for a team/month
-4. Share QR code or team code with participants
-5. Monitor submissions in real-time
-6. Close capture when ready
-7. Generate AI synthesis
-8. Lead discussion, record notes
-9. Set recalibration action
-
-### Participant Flow
-1. Scan QR or visit `/join` with team code
-2. Select name from team roster
-3. View strategy statement
-4. Browse images, select one
-5. Enter 1-5 bullet points explaining choice
-6. Submit and wait for reveal
-
-## API Endpoints
-
-### Public
-- `GET /` - Landing page
-- `GET /join` - Participant entry
-- `GET /health` - Health check
-
-### Facilitator (requires auth)
-- `GET /admin` - Dashboard
-- `GET /admin/sessions/{id}` - Session control
-- `POST /admin/sessions/{id}/synthesize` - Trigger AI synthesis
-- `GET /admin/sessions/{id}/export/markdown` - Export report
-
-### Participant (no auth)
-- `POST /participant/join` - Join session
-- `GET /participant/respond/{session_id}` - Image browser
-- `POST /participant/submit` - Submit response
-
-## Production Deployment
+`/etc/nginx/sites-available/55.connecteddale.com`
 
 ### Systemd Service
 
-```ini
-[Unit]
-Description=The 55 - Leadership Alignment Diagnostics
-After=network.target
+`/etc/systemd/system/the55.service`
 
-[Service]
-User=www-data
-WorkingDirectory=/var/www/the55
-Environment="PATH=/var/www/the55/venv/bin"
-ExecStart=/var/www/the55/venv/bin/gunicorn app.main:app \
-    --workers 2 \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --bind 127.0.0.1:8055 \
-    --access-logfile /var/www/the55/logs/access.log \
-    --error-logfile /var/www/the55/logs/error.log
-Restart=always
+## Common Tasks
 
-[Install]
-WantedBy=multi-user.target
+### Restart Application
+
+```bash
+sudo systemctl restart the55
 ```
 
-### nginx Configuration
+### View Logs
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name 55meet.com;
+```bash
+# Application logs
+tail -f /var/www/sites/55meet.com/logs/error.log
 
-    location / {
-        proxy_pass http://127.0.0.1:8055;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location /static/ {
-        alias /var/www/the55/app/static/;
-        expires 7d;
-    }
-}
+# Nginx logs
+tail -f /var/www/sites/55meet.com/logs/nginx_access.log
 ```
 
-## AI Synthesis
+### Database Access
 
-The synthesis uses Claude (Sonnet) to analyze team responses and generate:
+```bash
+sqlite3 /var/www/sites/55meet.com/db/the55.db
 
-1. **Themes** - 2-4 sentence summary of what the team is experiencing
-2. **Attributed Statements** - Specific insights with participant names
-3. **Gap Diagnosis** - Direction, Alignment, or Commitment
-4. **Rationale** - Why this gap type was diagnosed
+# Useful queries
+SELECT id, company_name, team_name, code FROM teams;
+SELECT id, team_id, month, state FROM sessions ORDER BY created_at DESC LIMIT 10;
+SELECT m.name, r.image_id FROM responses r JOIN members m ON r.member_id = m.id WHERE r.session_id = X;
+```
 
-The prompt includes the team's strategy statement and all participant responses (image selection + bullet points).
+### Create New Team (via API)
 
-## Image Library
+```bash
+curl -X POST https://55meet.com/api/teams \
+  -H "Content-Type: application/json" \
+  -d '{"company_name": "Acme Corp", "team_name": "Executive Team", "code": "ACME123"}'
+```
 
-- 200+ evocative, metaphorical images
-- Auto-discovered from `IMAGE_LIBRARY_PATH` directory
-- Session-seeded randomization (consistent order per session)
-- 5-minute cache TTL for performance
-- Web-optimized versions in `/reducedlive/` subdirectory
+### Check Health
 
-## Browser Compatibility
+```bash
+curl https://55meet.com/health
+# Returns: {"status": "healthy"}
+```
 
-Tested on:
-- Chrome, Safari, Firefox (desktop)
-- iOS Safari, Chrome (mobile)
-- Samsung Internet, Chrome (Android)
+## Session States
 
-Targets devices from the last 3-4 years.
+```
+active → revealed → closed
+```
 
-## License
+- **active**: Members can submit/update responses
+- **revealed**: All responses visible, synthesis available
+- **closed**: Session archived, cannot modify
 
-Private - ConnectedDale
+## Troubleshooting
+
+### Session stuck in wrong state
+
+```sql
+-- Check current state
+SELECT id, month, state FROM sessions WHERE team_id = X ORDER BY created_at DESC;
+
+-- Update if needed (use carefully)
+UPDATE sessions SET state = 'active' WHERE id = Y;
+```
+
+### AI synthesis not working
+
+1. Check OpenAI API key in `.env`
+2. Check logs for API errors:
+   ```bash
+   grep -i openai /var/www/sites/55meet.com/logs/error.log
+   ```
+
+### Member can't access response form
+
+1. Verify member exists:
+   ```sql
+   SELECT * FROM members WHERE team_id = X;
+   ```
+2. Verify session is active:
+   ```sql
+   SELECT state FROM sessions WHERE team_id = X ORDER BY created_at DESC LIMIT 1;
+   ```
+
+### 502 Bad Gateway
+
+```bash
+sudo systemctl status the55
+sudo systemctl restart the55
+journalctl -u the55 -n 50
+```
+
+## Architecture Notes
+
+- FastAPI with async support
+- Jinja2 templates for server-rendered HTML
+- SQLAlchemy ORM for database
+- OpenAI API for synthesis features
+- Uvicorn as ASGI server (via Gunicorn)
