@@ -333,7 +333,7 @@ async def respond_form(
     library = get_image_library()
     per_page = settings.images_per_page  # Default 20
 
-    shuffled_images = library.get_shuffled_images(seed=session.id)
+    shuffled_images = library.get_shuffled_images(seed=session.id, limit=60)
     total_images = len(shuffled_images)
 
     # Generate page ranges based on image indices (0-indexed)

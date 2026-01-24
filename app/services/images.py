@@ -83,7 +83,7 @@ class ImageLibrary:
         self.discover_images()  # Ensure cache is populated
         return self._id_to_filename.get(opaque_id)
 
-    def get_shuffled_images(self, seed: int) -> List[ImageInfo]:
+    def get_shuffled_images(self, seed: int, limit: int = None) -> List[ImageInfo]:
         """
         Return images in deterministic random order for given seed.
 
@@ -92,20 +92,24 @@ class ImageLibrary:
 
         Args:
             seed: Integer seed (typically session_id)
+            limit: Maximum number of images to return (None for all)
 
         Returns:
-            List of ImageInfo in shuffled order
+            List of ImageInfo in shuffled order, truncated to limit if specified
         """
         images = self.discover_images().copy()
         rng = random.Random(seed)
         rng.shuffle(images)
+        if limit is not None:
+            images = images[:limit]
         return images
 
     def get_paginated_images(
         self,
         seed: int,
         page: int = 1,
-        per_page: int = 20
+        per_page: int = 20,
+        limit: int = None
     ) -> dict:
         """
         Return paginated images with metadata.
@@ -114,11 +118,12 @@ class ImageLibrary:
             seed: Integer seed for randomization
             page: Page number (1-indexed)
             per_page: Images per page
+            limit: Maximum total images to consider (None for all)
 
         Returns:
             Dict with images, total, page, per_page, total_pages
         """
-        all_images = self.get_shuffled_images(seed)
+        all_images = self.get_shuffled_images(seed, limit=limit)
         total = len(all_images)
         total_pages = (total + per_page - 1) // per_page  # ceiling division
 
