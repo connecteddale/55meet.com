@@ -1328,23 +1328,41 @@ input[type="month"] {
     border: 2px solid transparent;
     border-radius: 8px;
     overflow: hidden;
-    transition: border-color 0.15s, transform 0.15s;
+    transition: border-color 0.2s var(--ease-out), transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
     background: var(--color-bg-secondary);
+    -webkit-tap-highlight-color: transparent;
 }
 
-.image-card:hover {
-    border-color: var(--color-border);
+/* Desktop hover only - no hover flash on mobile touch */
+@media (hover: hover) {
+    .image-card:hover {
+        border-color: var(--color-border);
+        transform: scale(1.01);
+    }
 }
 
-.image-card:focus {
+/* Touch/tap active state for mobile */
+.image-card:active {
+    transform: scale(0.98);
+    transition-duration: 0.05s;
+}
+
+.image-card:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
 }
 
 .image-card.selected {
     border-color: var(--color-primary);
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+}
+
+/* Prevent hover override on selected state */
+@media (hover: hover) {
+    .image-card.selected:hover {
+        transform: scale(1.03);
+    }
 }
 
 .image-card img {
