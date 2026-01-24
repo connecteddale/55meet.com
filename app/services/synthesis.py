@@ -11,8 +11,10 @@ from typing import List
 
 from anthropic import AsyncAnthropic
 
+from datetime import datetime
+
 from app.db.database import SessionLocal
-from app.db.models import Session, Response
+from app.db.models import Session, Response, SessionState
 from app.schemas import SynthesisOutput
 
 
@@ -151,6 +153,12 @@ async def _generate_and_store_synthesis(session_id: int) -> None:
         session.synthesis_gap_type = result.gap_type
         session.synthesis_gap_reasoning = result.gap_reasoning
         session.suggested_recalibrations = json.dumps(result.suggested_recalibrations)
+
+        # Auto-reveal: transition CLOSED -> REVEALED after successful synthesis
+        if session.state == SessionState.CLOSED:
+            session.state = SessionState.REVEALED
+            session.revealed_at = datetime.utcnow()
+
         db.commit()
 
     except Exception as e:

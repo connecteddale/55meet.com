@@ -237,8 +237,8 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
 
 
 @router.post("/{session_id}/close")
-async def close_capture(session_id: int, auth: AuthDep, db: DbDep):
-    """Transition session from capturing to closed."""
+async def close_capture(session_id: int, background_tasks: BackgroundTasks, auth: AuthDep, db: DbDep):
+    """Transition session from capturing to closed, then auto-trigger synthesis."""
     session = db.query(Session).filter(Session.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -251,7 +251,12 @@ async def close_capture(session_id: int, auth: AuthDep, db: DbDep):
 
     session.state = SessionState.CLOSED
     session.closed_at = datetime.utcnow()
+
+    # Auto-trigger synthesis: set marker and queue background task
+    session.synthesis_themes = "GENERATING..."
     db.commit()
+
+    background_tasks.add_task(run_synthesis_task, session_id)
 
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
