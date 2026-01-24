@@ -34,6 +34,42 @@ async def join_form(request: Request, code: str = None):
     )
 
 
+@router.get("/{code}")
+async def auto_join(
+    request: Request,
+    code: str,
+    db: DbDep
+):
+    """Auto-join from URL (e.g. QR code scan). Validates code and skips to appropriate step."""
+    code = code.strip().upper()
+
+    team = db.query(Team).filter(Team.code == code).first()
+    if not team:
+        return RedirectResponse(url="/join", status_code=303)
+
+    # Get CAPTURING sessions
+    sessions = db.query(SessionModel).filter(
+        SessionModel.team_id == team.id,
+        SessionModel.state == SessionState.CAPTURING
+    ).order_by(SessionModel.month.desc()).all()
+
+    if not sessions:
+        return RedirectResponse(url="/join", status_code=303)
+
+    # Auto-skip month picker if only one session active
+    if len(sessions) == 1:
+        return RedirectResponse(
+            url=f"/join/{code}/session/{sessions[0].id}/name",
+            status_code=303
+        )
+
+    # Multiple sessions - show month picker
+    return RedirectResponse(
+        url=f"/join/{code}/session",
+        status_code=303
+    )
+
+
 @router.post("")
 async def join_team(
     request: Request,
@@ -63,7 +99,14 @@ async def join_team(
             {"request": request, "error": "No active sessions for this team. Please wait for your facilitator."}
         )
 
-    # Redirect to session selection
+    # Auto-skip month picker if only one session active
+    if len(active_sessions) == 1:
+        return RedirectResponse(
+            url=f"/join/{team.code}/session/{active_sessions[0].id}/name",
+            status_code=303
+        )
+
+    # Multiple sessions - show month picker
     return RedirectResponse(
         url=f"/join/{team.code}/session",
         status_code=303
@@ -90,6 +133,13 @@ async def select_session_form(
 
     if not sessions:
         return RedirectResponse(url="/join", status_code=303)
+
+    # Auto-skip month picker if only one session active
+    if len(sessions) == 1:
+        return RedirectResponse(
+            url=f"/join/{code}/session/{sessions[0].id}/name",
+            status_code=303
+        )
 
     return templates.TemplateResponse(
         "participant/select_session.html",
@@ -209,9 +259,9 @@ async def select_name(
             status_code=303
         )
 
-    # Redirect to strategy confirmation page
+    # Redirect directly to respond page (strategy screen bypassed)
     return RedirectResponse(
-        url=f"/join/{code}/session/{session_id}/member/{member_id}/strategy",
+        url=f"/join/{code}/session/{session_id}/member/{member_id}/respond",
         status_code=303
     )
 
@@ -224,47 +274,13 @@ async def show_strategy(
     member_id: int,
     db: DbDep
 ):
-    """Show strategy statement before proceeding to response."""
+    """Redirect to respond page (strategy screen bypassed for reduced flow)."""
     code = code.strip().upper()
-    team = db.query(Team).filter(Team.code == code).first()
-    if not team:
-        return RedirectResponse(url="/join", status_code=303)
 
-    session = db.query(SessionModel).filter(
-        SessionModel.id == session_id,
-        SessionModel.team_id == team.id,
-        SessionModel.state == SessionState.CAPTURING
-    ).first()
-
-    if not session:
-        return RedirectResponse(url=f"/join/{code}/session", status_code=303)
-
-    member = db.query(Member).filter(
-        Member.id == member_id,
-        Member.team_id == team.id
-    ).first()
-
-    if not member:
-        return RedirectResponse(
-            url=f"/join/{code}/session/{session_id}/name",
-            status_code=303
-        )
-
-    # Check if member already has a response
-    existing_response = db.query(Response).filter(
-        Response.session_id == session_id,
-        Response.member_id == member_id
-    ).first()
-
-    return templates.TemplateResponse(
-        "participant/strategy.html",
-        {
-            "request": request,
-            "team": team,
-            "session": session,
-            "member": member,
-            "has_response": existing_response is not None
-        }
+    # Redirect directly to respond - keeps old bookmarks/links working
+    return RedirectResponse(
+        url=f"/join/{code}/session/{session_id}/member/{member_id}/respond",
+        status_code=303
     )
 
 
