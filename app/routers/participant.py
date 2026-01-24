@@ -612,10 +612,35 @@ async def get_participant_status(
     members = db.query(Member).filter(Member.team_id == team.id).all()
     responses = db.query(Response).filter(Response.session_id == session_id).all()
 
+    # Build synthesis progress for CLOSED state
+    synthesis_progress = None
+    if session.state == SessionState.CLOSED:
+        if session.synthesis_themes is None:
+            synthesis_progress = {
+                "status": "pending",
+                "message": "Preparing analysis..."
+            }
+        elif session.synthesis_themes.lower() == "generating...":
+            synthesis_progress = {
+                "status": "generating",
+                "message": "Analyzing team responses..."
+            }
+        elif "failed" in session.synthesis_themes.lower():
+            synthesis_progress = {
+                "status": "failed",
+                "message": "Analysis encountered an issue. Your facilitator will retry."
+            }
+        else:
+            synthesis_progress = {
+                "status": "complete",
+                "message": "Analysis complete!"
+            }
+
     return JSONResponse({
         "session_id": session_id,
         "state": session.state.value,
         "total_members": len(members),
         "submitted_count": len(responses),
-        "can_edit": session.state == SessionState.CAPTURING
+        "can_edit": session.state == SessionState.CAPTURING,
+        "synthesis_progress": synthesis_progress
     })
