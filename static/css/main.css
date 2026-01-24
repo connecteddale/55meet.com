@@ -1090,51 +1090,67 @@ input[type="month"] {
     min-width: 150px;
 }
 
-/* Name List */
-.name-list {
+/* Name Card Grid */
+.name-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: var(--space-6);
+}
+
+.name-card {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-    margin-bottom: var(--space-6);
-    text-align: left;
-}
-
-.name-option {
-    display: flex;
     align-items: center;
-    gap: var(--space-2);
+    justify-content: center;
     padding: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
+    min-height: 80px;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-bg);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    font-family: inherit;
+    font-size: inherit;
 }
 
-.name-option:hover:not(.responded) {
+.name-card:active:not(.responded) {
+    transform: scale(0.97);
+}
+
+.name-card.selected {
     border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
-.name-option input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--color-primary);
-}
-
-.name-option.responded {
-    opacity: 0.5;
+.name-card.responded {
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
-.name-text {
-    flex: 1;
+.name-card-text {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    text-align: center;
+    word-break: break-word;
 }
 
-.responded-badge {
-    font-size: var(--font-size-xs);
+.name-card-badge {
+    font-size: 0.6875rem;
     color: var(--color-text-muted);
-    background: var(--color-bg-secondary);
-    padding: var(--space-1) var(--space-2);
-    border-radius: 4px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+@media (hover: hover) {
+    .name-card:hover:not(.responded):not(.selected) {
+        border-color: var(--color-primary);
+        background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg));
+    }
 }
 
 /* Strategy Page */

@@ -18,28 +18,45 @@
         <p class="select-subtitle">Select your name from the list</p>
 
         <form method="post" action="/join/{{ team.code }}/session/{{ session.id }}/name">
-            <div class="name-list">
+            <div class="name-grid" id="name-grid">
                 {% for member in members %}
-                <label class="name-option {% if member.id in responded_ids %}responded{% endif %}">
-                    <input
-                        type="radio"
-                        name="member_id"
-                        value="{{ member.id }}"
-                        {% if member.id in responded_ids %}disabled{% endif %}
-                        required
-                    >
-                    <span class="name-text">{{ member.name }}</span>
+                <button type="button"
+                        class="name-card {% if member.id in responded_ids %}responded{% endif %}"
+                        data-member-id="{{ member.id }}"
+                        {% if member.id in responded_ids %}disabled aria-disabled="true"{% endif %}
+                        aria-label="{{ member.name }}{% if member.id in responded_ids %} (already responded){% endif %}">
+                    <span class="name-card-text">{{ member.name }}</span>
                     {% if member.id in responded_ids %}
-                    <span class="responded-badge">Already responded</span>
+                    <span class="name-card-badge">Done</span>
                     {% endif %}
-                </label>
+                </button>
                 {% endfor %}
             </div>
+            <input type="hidden" name="member_id" id="selected-member" required>
 
             <button type="submit" class="btn btn-primary btn-large btn-block">
                 Continue
             </button>
         </form>
+
+        <script>
+        (function() {
+            const cards = document.querySelectorAll('.name-card:not(.responded)');
+            const hiddenInput = document.getElementById('selected-member');
+            const submitBtn = document.querySelector('.btn-primary');
+
+            submitBtn.disabled = true;
+
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.name-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    hiddenInput.value = this.dataset.memberId;
+                    submitBtn.disabled = false;
+                });
+            });
+        })();
+        </script>
     </div>
 </div>
 {% endblock %}
