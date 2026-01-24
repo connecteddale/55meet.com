@@ -1,0 +1,47 @@
+/* Page Transitions - View Transitions API */
+
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: fade-out 200ms var(--ease-out);
+}
+::view-transition-new(root) {
+    animation: fade-in 200ms var(--ease-out);
+}
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@view-transition-navigation(back) {
+    &::view-transition-old(root) {
+        animation: slide-to-right 250ms var(--ease-out);
+    }
+    &::view-transition-new(root) {
+        animation: slide-from-left 250ms var(--ease-out);
+    }
+}
+@keyframes slide-to-right {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(30px); opacity: 0; }
+}
+@keyframes slide-from-left {
+    from { transform: translateX(-30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: auto;
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.01ms !important;
+    }
+}
