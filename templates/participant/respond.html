@@ -13,6 +13,13 @@
 
 {% block content %}
 <div class="image-browser">
+    {% if team.strategy_statement %}
+    <div class="strategy-banner">
+        <span class="strategy-banner-label">Our Strategy:</span>
+        <span class="strategy-banner-text">{{ team.strategy_statement }}</span>
+    </div>
+    {% endif %}
+
     <!-- Sticky Header: Instructions + Pagination -->
     <div class="image-browser-sticky">
         <div class="browser-instruction">
