@@ -17,7 +17,6 @@ from app.db.database import Base
 
 class SessionState(enum.Enum):
     """Session lifecycle states."""
-    DRAFT = "draft"
     CAPTURING = "capturing"
     CLOSED = "closed"
     REVEALED = "revealed"
@@ -62,7 +61,7 @@ class Session(Base):
     id = Column(Integer, primary_key=True, index=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     month = Column(String(7), nullable=False)  # Format: "2025-05"
-    state = Column(Enum(SessionState), default=SessionState.DRAFT, nullable=False)
+    state = Column(Enum(SessionState), default=SessionState.CAPTURING, nullable=False)
     synthesis_themes = Column(Text, nullable=True)
     synthesis_statements = Column(Text, nullable=True)
     synthesis_gap_type = Column(String(50), nullable=True)

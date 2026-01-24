@@ -310,10 +310,7 @@ async def respond_form(
 
     # State validation: handle non-CAPTURING states gracefully
     if session.state != SessionState.CAPTURING:
-        if session.state == SessionState.DRAFT:
-            # Session not active yet
-            return RedirectResponse(url="/join", status_code=303)
-        elif existing_response:
+        if existing_response:
             # CLOSED or REVEALED with existing response - go to waiting
             return RedirectResponse(
                 url=f"/join/{code}/session/{session_id}/member/{member_id}/waiting",
@@ -557,10 +554,7 @@ async def view_synthesis(
         return RedirectResponse(url=f"/join/{code}/session", status_code=303)
 
     # Validate session state
-    if session.state == SessionState.DRAFT:
-        # Session not active
-        return RedirectResponse(url="/join", status_code=303)
-    elif session.state in (SessionState.CAPTURING, SessionState.CLOSED):
+    if session.state in (SessionState.CAPTURING, SessionState.CLOSED):
         # Synthesis not ready yet - redirect to waiting
         # Find a member to redirect with (use first response's member)
         response = db.query(Response).filter(Response.session_id == session_id).first()
