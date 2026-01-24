@@ -58,7 +58,7 @@
                 <!-- Selected image shown here via JS -->
             </div>
             <h3>{{ team.bullet_prompt or "Describe why this image describes how you are executing your strategy" }}</h3>
-            <p>Enter 1-5 bullet points explaining your choice.</p>
+            <p>Enter at least one bullet point explaining your choice.</p>
 
             {% if error %}
             <div class="form-error">{{ error }}</div>
@@ -72,22 +72,22 @@
                        maxlength="500"
                        required>
                 <input type="text"
-                       class="bullet-input"
+                       class="bullet-input bullet-input-hidden"
                        id="bullet-2"
                        placeholder="Bullet point 2 (optional)"
                        maxlength="500">
                 <input type="text"
-                       class="bullet-input"
+                       class="bullet-input bullet-input-hidden"
                        id="bullet-3"
                        placeholder="Bullet point 3 (optional)"
                        maxlength="500">
                 <input type="text"
-                       class="bullet-input"
+                       class="bullet-input bullet-input-hidden"
                        id="bullet-4"
                        placeholder="Bullet point 4 (optional)"
                        maxlength="500">
                 <input type="text"
-                       class="bullet-input"
+                       class="bullet-input bullet-input-hidden"
                        id="bullet-5"
                        placeholder="Bullet point 5 (optional)"
                        maxlength="500">
@@ -469,4 +469,5 @@
     init();
 })();
 </script>
+<script src="/static/js/progressive-inputs.js"></script>
 {% endblock %}
