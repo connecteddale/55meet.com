@@ -25,6 +25,10 @@
     transform: none;
     transition: none;
   }
+
+  html {
+    scroll-snap-type: none;
+  }
 }
 
 /* ========================================
@@ -40,6 +44,7 @@
   padding: var(--space-16) var(--container-padding);
   text-align: center;
   position: relative;
+  scroll-snap-align: start;
 }
 
 .landing-content {
@@ -75,6 +80,7 @@
 
 .landing-body {
   font-size: var(--text-lg);
+  font-weight: 300;
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-4);
@@ -90,6 +96,9 @@
 .landing-emphasis {
   color: var(--color-text) !important;
   font-weight: 500;
+  text-align: left;
+  padding-left: var(--space-6);
+  border-left: 2px solid var(--color-border-light);
 }
 
 /* ========================================
@@ -117,9 +126,10 @@
   margin: 0 auto;
 }
 
-/* Scroll indicator */
+/* Scroll snap + smooth */
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 .landing-scroll-cue {
@@ -176,6 +186,7 @@ html {
 
 .landing-dark .landing-emphasis {
   color: white !important;
+  border-left-color: rgba(255, 255, 255, 0.25);
 }
 
 /* ========================================
@@ -193,7 +204,7 @@ html {
 .landing-stat-group {
   display: flex;
   justify-content: center;
-  gap: var(--space-12);
+  gap: var(--space-20);
   margin-bottom: var(--space-8);
 }
 
@@ -204,7 +215,7 @@ html {
 }
 
 .landing-stat-number {
-  font-size: clamp(3rem, 2rem + 4vw, 5rem);
+  font-size: clamp(5rem, 3rem + 10vw, 12rem);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -286,12 +297,18 @@ html {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: #d97706;
+  border-color: #d97706;
+  color: white;
 }
 
 .landing-cta:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 32px rgba(217, 119, 6, 0.3);
+  background: #b45309;
+  border-color: #b45309;
   text-decoration: none;
+  color: white;
 }
 
 /* ========================================
@@ -301,6 +318,7 @@ html {
 .landing-footer {
   padding: var(--space-6) var(--container-padding);
   border-top: 1px solid var(--color-border-light);
+  scroll-snap-align: end;
 }
 
 .landing-footer-content {
@@ -373,11 +391,11 @@ html {
   }
 
   .landing-stat-group {
-    gap: var(--space-8);
+    gap: var(--space-12);
   }
 
   .landing-stat-number {
-    font-size: 3rem;
+    font-size: clamp(3.5rem, 2rem + 8vw, 6rem);
   }
 
   .landing-contrast-grid {
