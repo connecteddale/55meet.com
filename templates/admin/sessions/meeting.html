@@ -141,11 +141,26 @@
     </section>
     {% endif %}
 
-    {# Footer #}
-    <footer class="meeting-footer">
-        <span class="keyboard-hint">{% if session.state.value == 'revealed' %}Press 1, 2, 3 for detail levels{% endif %}</span>
-        <a href="/admin/sessions/{{ session.id }}" class="exit-meeting">Exit to Session</a>
-    </footer>
+    {# Control Strip - Fixed bottom bar with contextual actions #}
+    <div class="meeting-control-strip" id="control-strip" data-session-id="{{ session.id }}">
+        <div class="control-strip-left">
+            <a href="/admin/sessions/{{ session.id }}" class="control-link">Exit Meeting</a>
+        </div>
+        <div class="control-strip-center">
+            <span class="control-state-label" id="state-label">{{ session.state.value | title }}</span>
+        </div>
+        <div class="control-strip-right">
+            {% if session.state.value == 'capturing' %}
+            <button class="control-btn control-btn-close" id="btn-close-capture" onclick="closeCaptureFromStrip()">
+                Close Capture
+            </button>
+            {% elif session.state.value == 'closed' %}
+            <span class="control-hint">Auto-revealing when ready...</span>
+            {% elif session.state.value == 'revealed' %}
+            <span class="keyboard-hint">Keys 1, 2, 3 for detail levels</span>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
 

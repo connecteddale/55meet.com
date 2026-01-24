@@ -110,6 +110,10 @@
                 return;
             }
 
+            // Update state label in control strip
+            const stateLabel = document.getElementById('state-label');
+            if (stateLabel) stateLabel.textContent = data.state.charAt(0).toUpperCase() + data.state.slice(1);
+
             // Update UI for capture mode
             if (currentState === 'draft' || currentState === 'capturing') {
                 updateCaptureUI(data);
@@ -128,10 +132,22 @@
         stopPolling();
 
         if (toState === 'revealed') {
-            // Trigger ceremony reveal animation before reload
             triggerCeremonyReveal();
         } else {
-            // Other transitions - reload immediately
+            // Wrap reload in View Transition for smooth fade
+            transitionReload();
+        }
+    }
+
+    /**
+     * Reload with View Transition API for smooth state changes
+     */
+    function transitionReload() {
+        if (document.startViewTransition) {
+            document.startViewTransition(() => {
+                window.location.reload();
+            });
+        } else {
             window.location.reload();
         }
     }
@@ -163,19 +179,22 @@
      * Trigger ceremony reveal animation (MEET-07)
      */
     function triggerCeremonyReveal() {
-        // Add transition class to body
         document.body.classList.add('meeting-transitioning');
 
-        // Collapse capture section if visible
         const captureSection = document.getElementById('capture-section');
         if (captureSection) {
             captureSection.classList.add('collapsing');
         }
 
-        // After collapse animation, reload to show synthesis
         setTimeout(() => {
-            window.location.reload();
-        }, 800); // Match CSS transition duration
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    window.location.reload();
+                });
+            } else {
+                window.location.reload();
+            }
+        }, 800);
     }
 
     /**
@@ -255,3 +274,40 @@
     // Clean up on page unload
     window.addEventListener('beforeunload', stopPolling);
 })();
+
+/**
+ * Close capture from the meeting control strip (LIVE-04)
+ */
+async function closeCaptureFromStrip() {
+    const btn = document.getElementById('btn-close-capture');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Closing...';
+
+    const strip = document.getElementById('control-strip');
+    const sessionId = strip ? strip.dataset.sessionId : null;
+    if (!sessionId) return;
+
+    try {
+        const response = await fetch(`/admin/sessions/${sessionId}/close`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            const label = document.getElementById('state-label');
+            if (label) label.textContent = 'Closed';
+            btn.textContent = 'Closed';
+        } else {
+            btn.disabled = false;
+            btn.textContent = 'Close Capture';
+            console.error('Close capture failed:', response.status);
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Close Capture';
+        console.error('Close capture error:', err);
+    }
+}

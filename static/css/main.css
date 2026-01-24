@@ -3117,6 +3117,7 @@ button[type="submit"].btn-loading::after {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-bottom: 60px;
 }
 
 /* Capture Section - Two column layout */
@@ -3434,29 +3435,82 @@ button[type="submit"].btn-loading::after {
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* Footer */
-.meeting-footer {
+/* Control Strip - Fixed bottom bar (LIVE-04) */
+.meeting-control-strip {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: var(--space-4) var(--space-6);
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-6);
+    background: rgba(10, 10, 20, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    z-index: 100;
 }
 
-.meeting-footer .keyboard-hint {
-    position: static;
-    color: rgba(255, 255, 255, 0.3);
-    font-size: var(--text-sm);
+.control-strip-left,
+.control-strip-right {
+    flex: 1;
 }
 
-.exit-meeting {
+.control-strip-right {
+    text-align: right;
+}
+
+.control-strip-center {
+    text-align: center;
+}
+
+.control-link {
     color: rgba(255, 255, 255, 0.4);
     font-size: var(--text-sm);
     text-decoration: none;
+    transition: color 0.2s;
 }
 
-.exit-meeting:hover {
+.control-link:hover {
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
+}
+
+.control-state-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.control-btn {
+    padding: var(--space-2) var(--space-5);
+    border-radius: 6px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.control-btn-close {
+    background: #dc2626;
+    color: white;
+}
+
+.control-btn-close:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.control-hint {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: var(--text-sm);
+    font-style: italic;
 }
 
 /* Responsive: Stack on narrow screens */
@@ -3469,12 +3523,6 @@ button[type="submit"].btn-loading::after {
     .meeting-qr-code {
         width: 300px;
         height: 300px;
-    }
-
-    .meeting-footer {
-        flex-direction: column;
-        gap: var(--space-2);
-        text-align: center;
     }
 }
 
