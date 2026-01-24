@@ -652,11 +652,20 @@ async def get_participant_status(
                 "message": "Analysis complete!"
             }
 
+    # Build submitted member names (privacy: names only, no IDs)
+    submitted_ids = {r.member_id for r in responses}
+    submitted_members = [
+        {"name": m.name}
+        for m in members
+        if m.id in submitted_ids
+    ]
+
     return JSONResponse({
         "session_id": session_id,
         "state": session.state.value,
         "total_members": len(members),
         "submitted_count": len(responses),
+        "submitted_members": submitted_members,
         "can_edit": session.state == SessionState.CAPTURING,
         "synthesis_progress": synthesis_progress
     })

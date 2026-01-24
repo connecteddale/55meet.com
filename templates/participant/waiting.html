@@ -38,6 +38,12 @@
             </span>
         </div>
 
+        <div class="submitted-names" id="submitted-names" style="display: none; margin-top: 1.5rem; text-align: left; width: 100%; max-width: 320px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">Submitted:</p>
+            <ul id="names-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            </ul>
+        </div>
+
         <div class="waiting-actions" id="waiting-actions">
             {% if session.state.value == 'capturing' %}
             <a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond"
@@ -70,16 +76,34 @@
             const messageEl = document.getElementById('waiting-message');
             const actionsEl = document.getElementById('waiting-actions');
 
+            // Update submitted names list
+            const namesList = document.getElementById('names-list');
+            if (namesList && data.submitted_members && data.submitted_members.length > 0) {
+                document.getElementById('submitted-names').style.display = 'block';
+                namesList.innerHTML = data.submitted_members.map(m =>
+                    `<li style="background: var(--color-primary-light, #e8f4f8); color: var(--color-primary-dark, #1a5276); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 500;">${m.name}</li>`
+                ).join('');
+            } else if (namesList) {
+                document.getElementById('submitted-names').style.display = 'none';
+            }
+
             if (data.state === 'revealed') {
-                // Redirect to synthesis view
-                window.location.href = `/join/${teamCode}/session/${sessionId}/synthesis`;
+                // Redirect to synthesis view with View Transition
+                const url = `/join/${teamCode}/session/${sessionId}/synthesis`;
+                if (document.startViewTransition) {
+                    document.startViewTransition(() => {
+                        window.location.href = url;
+                    });
+                } else {
+                    window.location.href = url;
+                }
                 return;
             } else if (data.state === 'closed') {
                 messageEl.textContent = 'Capture is closed. Waiting for facilitator to reveal synthesis.';
                 // Hide edit button when closed
                 actionsEl.innerHTML = '';
             } else if (data.state === 'capturing') {
-                messageEl.textContent = `Your response has been saved. Waiting for others (${data.submitted_count}/${data.total_members})...`;
+                messageEl.textContent = `Waiting for others (${data.submitted_count}/${data.total_members})...`;
                 // Ensure edit button is visible
                 if (!document.getElementById('edit-btn')) {
                     actionsEl.innerHTML = `<a href="/join/${teamCode}/session/${sessionId}/member/${memberId}/respond" class="btn btn-secondary" id="edit-btn">Edit Response</a>`;
