@@ -1,0 +1,21 @@
+# Environment files (secrets)
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+
+# Database
+db/
+
+# Virtual environment
+venv/
+
+# User-uploaded images (too large for git)
+static/images/library/
+
+# OS files
+.DS_Store
