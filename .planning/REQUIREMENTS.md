@@ -82,33 +82,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEMO-01 | TBD | Pending |
-| DEMO-02 | TBD | Pending |
-| DEMO-03 | TBD | Pending |
-| DEMO-04 | TBD | Pending |
-| DEMO-05 | TBD | Pending |
-| DEMO-06 | TBD | Pending |
-| DEMO-07 | TBD | Pending |
-| DEMO-08 | TBD | Pending |
-| DEMO-09 | TBD | Pending |
-| DEMO-10 | TBD | Pending |
-| DEMO-11 | TBD | Pending |
-| DEMO-12 | TBD | Pending |
-| DEMO-13 | TBD | Pending |
-| DEMO-14 | TBD | Pending |
-| DEMO-15 | TBD | Pending |
-| DEMO-16 | TBD | Pending |
-| DEMO-17 | TBD | Pending |
-| DEMO-18 | TBD | Pending |
-| DEMO-19 | TBD | Pending |
-| DEMO-20 | TBD | Pending |
-| DEMO-21 | TBD | Pending |
+| DEMO-01 | Phase 25 | Pending |
+| DEMO-02 | Phase 25 | Pending |
+| DEMO-03 | Phase 25 | Pending |
+| DEMO-04 | Phase 25 | Pending |
+| DEMO-05 | Phase 25 | Pending |
+| DEMO-06 | Phase 25 | Pending |
+| DEMO-07 | Phase 25 | Pending |
+| DEMO-08 | Phase 25 | Pending |
+| DEMO-09 | Phase 25 | Pending |
+| DEMO-10 | Phase 25 | Pending |
+| DEMO-11 | Phase 25 | Pending |
+| DEMO-12 | Phase 25 | Pending |
+| DEMO-13 | Phase 25 | Pending |
+| DEMO-14 | Phase 25 | Pending |
+| DEMO-15 | Phase 25 | Pending |
+| DEMO-16 | Phase 25 | Pending |
+| DEMO-17 | Phase 25 | Pending |
+| DEMO-18 | Phase 25 | Pending |
+| DEMO-19 | Phase 25 | Pending |
+| DEMO-20 | Phase 25 | Pending |
+| DEMO-21 | Phase 25 | Pending |
 
 **Coverage:**
 - v2.5 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 (awaiting roadmap)
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-27*
-*Last updated: 2026-01-27 after initial definition*
+*Last updated: 2026-01-27 after roadmap creation*
