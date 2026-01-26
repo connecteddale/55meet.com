@@ -2,17 +2,28 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-25)
+See: .planning/PROJECT.md (updated 2026-01-27)
 
 **Core value:** The 55 catches alignment problems before they become execution problems. 55 minutes. Once a month. The truth about where the team actually is.
-**Current focus:** Planning next milestone
+**Current focus:** v2.5 Interactive Demo
 
 ## Current Position
 
-Phase: — (between milestones)
+Phase: Not started (defining requirements)
 Plan: —
-Status: v2.4 Effortless shipped and archived
-Last activity: 2026-01-24 - v2.4 milestone complete
+Status: Defining requirements for v2.5
+Last activity: 2026-01-27 — Milestone v2.5 Interactive Demo started
+
+## Current Milestone: v2.5 Interactive Demo
+
+**Goal:** Let landing page visitors experience Signal Capture and see what synthesis reveals — without needing a real team.
+
+**Key decisions from questioning:**
+- Fictional company: ClearBrief ($65M legal tech SaaS)
+- Strategy: "Help law firms win clients through transparency — open billing, open matters, no surprises."
+- Team: Visitor + 4 fictional members (names shuffled from pool)
+- Gap revealed: Alignment (handoff/coordination between product and client teams)
+- No AI calls — all content pre-baked except visitor's image selection
 
 ## Milestone History
 
@@ -47,7 +58,6 @@ All decisions logged in PROJECT.md Key Decisions table.
 
 - Landing page copy review - user to revise narrative content
 - Landing page scroll indicator - add visual cue that content continues below fold
-- Interactive Demo - deferred from v2.2, consider for future milestone
 
 ### Blockers/Concerns
 
@@ -56,11 +66,12 @@ Non-blocking, carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-24
-Stopped at: v2.4 milestone archived
+Last session: 2026-01-27
+Stopped at: Defining v2.5 requirements
 Resume file: None
 
 ## Next Steps
 
-1. Start next milestone (`/gsd:new-milestone`)
-2. Or work on pending todos
+1. Complete requirements definition
+2. Create roadmap
+3. Begin `/gsd:plan-phase 25`

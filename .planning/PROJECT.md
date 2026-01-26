@@ -98,13 +98,22 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 
 <!-- Current scope. Building toward these. -->
 
-(No active requirements — next milestone to be defined)
+**v2.5 Interactive Demo:**
+- Self-guided demo experience for landing page visitors
+- Fictional company context: ClearBrief ($65M legal tech SaaS)
+- Pre-defined strategy statement (no user input to get stuck on)
+- Team of 4 fictional members with shuffled names from pool
+- Signal Capture tease before visitor experiences it
+- Visitor completes real Signal Capture (image selection + bullets)
+- Visitor's response shown alongside pre-baked team responses
+- Pre-crafted synthesis revealing Alignment gap (handoff/coordination)
+- No AI API calls — all content pre-generated except visitor's input
+- Matches existing app UX patterns and design system
 
 ### Out of Scope
 
 <!-- Explicit boundaries -->
 
-- Interactive demo — deferred from v2.2, consider for future milestone
 - User accounts for participants — frictionless entry is core to the experience
 - Email/SMS notifications — manual facilitation for now
 - Payment/billing — not a commercial product yet
@@ -211,4 +220,4 @@ Original phases (10-29, 34-37) renumbered to 1-24:
 | 37 | 24 | meeting-view-live-feedback |
 
 ---
-*Last updated: 2026-01-25 after GSD reorganization*
+*Last updated: 2026-01-27 after v2.5 Interactive Demo milestone started*
