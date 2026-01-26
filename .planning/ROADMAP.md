@@ -29,18 +29,19 @@ The Interactive Demo milestone delivers a self-guided experience for landing pag
   7. Visitor sees pre-crafted synthesis revealing handoff/coordination gap
   8. Visitor sees clear call-to-action at conclusion
   9. Demo uses existing design system with View Transitions throughout
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 25-01: TBD
-- [ ] 25-02: TBD
-- [ ] 25-03: TBD
+- [ ] 25-01-PLAN.md — Demo router foundation + intro page with ClearBrief context
+- [ ] 25-02-PLAN.md — Signal Capture experience (image browser + bullets)
+- [ ] 25-03-PLAN.md — Team responses display (visitor + 4 pre-baked)
+- [ ] 25-04-PLAN.md — Synthesis reveal + CTAs + landing page link
 
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 25. Interactive Demo | v2.5 | 0/TBD | Not started | - |
+| 25. Interactive Demo | v2.5 | 0/4 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-27*
