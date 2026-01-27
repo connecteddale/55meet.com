@@ -10,6 +10,7 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter, Request
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 router = APIRouter(prefix="/demo", tags=["demo"])
@@ -86,5 +87,37 @@ async def demo_intro(request: Request):
             "company": DEMO_COMPANY,
             "team_members": team_members,
             "seed": seed
+        }
+    )
+
+
+@router.get("/signal")
+async def demo_signal(request: Request):
+    """Demo Signal Capture page - visitor selects image and enters bullets.
+
+    Requires seed parameter for consistent image ordering.
+    Stores response in sessionStorage (no database).
+    """
+    # Seed is required for consistent image ordering
+    seed_param = request.query_params.get("seed")
+    if not seed_param:
+        # Must start from beginning to get proper context
+        return RedirectResponse(url="/demo", status_code=302)
+
+    try:
+        seed = int(seed_param)
+    except (ValueError, TypeError):
+        return RedirectResponse(url="/demo", status_code=302)
+
+    team_members = get_shuffled_team(seed)
+
+    return templates.TemplateResponse(
+        "demo/signal.html",
+        {
+            "request": request,
+            "company": DEMO_COMPANY,
+            "team_members": team_members,
+            "seed": seed,
+            "per_page": 20  # Same as real app
         }
     )
