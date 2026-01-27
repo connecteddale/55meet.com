@@ -14,7 +14,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.db.database import Base, engine
-from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router
+from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router, demo_router
 
 
 # Define paths
@@ -62,6 +62,7 @@ app.include_router(sessions_router)
 app.include_router(images_router)
 app.include_router(participant_router)
 app.include_router(qr_router)
+app.include_router(demo_router)
 
 
 # Custom exception handlers

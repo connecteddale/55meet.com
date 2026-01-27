@@ -8,5 +8,6 @@ from app.routers.members import router as members_router
 from app.routers.sessions import router as sessions_router
 from app.routers.participant import router as participant_router
 from app.routers.qr import router as qr_router
+from app.routers.demo import router as demo_router
 
-__all__ = ["auth_router", "admin_router", "images_router", "teams_router", "members_router", "sessions_router", "participant_router", "qr_router"]
+__all__ = ["auth_router", "admin_router", "images_router", "teams_router", "members_router", "sessions_router", "participant_router", "qr_router", "demo_router"]
