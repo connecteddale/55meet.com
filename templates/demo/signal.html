@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}Signal Capture - Demo{% endblock %}
+
+{% block header %}
+<header class="demo-header">
+    <div class="container">
+        <h1><a href="/">The 55</a></h1>
+        <div class="demo-header-badges">
+            <span class="demo-badge">Demo</span>
+            <span class="company-badge">{{ company.name }}</span>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<style>
+    .demo-header {
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border-light);
+        padding: var(--space-4) 0;
+        view-transition-name: demo-header;
+    }
+
+    .demo-header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .demo-header h1 {
+        font-size: var(--text-xl);
+        letter-spacing: var(--tracking-snug);
+    }
+
+    .demo-header-badges {
+        display: flex;
+        gap: var(--space-2);
+        align-items: center;
+    }
+
+    .demo-badge {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 600;
+    }
+
+    .company-badge {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-secondary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        border: 1px solid var(--color-border-light);
+    }
+
+    .image-browser {
+        max-width: 1200px;
+        margin: 0 auto;
+        view-transition-name: demo-content;
+    }
+
+    .strategy-banner {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 8px;
+        padding: var(--space-4);
+        margin-bottom: var(--space-6);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        align-items: baseline;
+    }
+
+    .strategy-banner-label {
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .strategy-banner-text {
+        font-size: var(--text-base);
+        color: var(--color-text);
+        font-style: italic;
+    }
+
+    .image-browser-sticky {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg);
+        padding: var(--space-4) 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--color-border-light);
+        margin-bottom: var(--space-4);
+    }
+
+    .browser-instruction {
+        text-align: center;
+        margin-bottom: var(--space-4);
+    }
+
+    .browser-instruction h2 {
+        font-size: var(--text-2xl);
+        letter-spacing: var(--tracking-tight);
+        margin-bottom: var(--space-2);
+    }
+
+    .browser-instruction p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-base);
+        max-width: 60ch;
+        margin: 0 auto;
+    }
+
+    .pagination-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .pagination-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-2) var(--space-4);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 6px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--color-text);
+        cursor: pointer;
+        transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        background: var(--color-bg-tertiary);
+        border-color: var(--color-border);
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-indicator {
+        font-size: var(--text-sm);
+        color: var(--color-text-secondary);
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .jump-to-selection {
+        text-align: center;
+        margin-top: var(--space-3);
+        opacity: 0;
+        height: 0;
+        overflow: hidden;
+        transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    .jump-to-selection.visible {
+        opacity: 1;
+        height: auto;
+    }
+
+    .jump-to-selection button {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        border: none;
+        padding: var(--space-2) var(--space-4);
+        border-radius: 6px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .jump-to-selection button:hover {
+        background: var(--color-primary);
+        color: white;
+    }
+
+    .image-grid-container {
+        margin-bottom: var(--space-8);
+    }
+
+    .image-page {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: var(--space-4);
+        opacity: 0;
+        transition: opacity var(--duration-normal) var(--ease-out);
+    }
+
+    .image-page.active {
+        opacity: 1;
+    }
+
+    .image-page-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--color-border-light);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .image-card {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all var(--duration-fast) var(--ease-out);
+        background: var(--color-bg-secondary);
+    }
+
+    .image-card:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-md);
+    }
+
+    .image-card:focus {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
+    .image-card.selected {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+
+    .image-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bullet-section {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 12px;
+        padding: var(--space-6);
+        margin-bottom: var(--space-6);
+        view-transition-name: bullet-section;
+    }
+
+    .selected-image-preview {
+        max-width: 200px;
+        margin: 0 auto var(--space-6);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    .selected-image-preview img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .bullet-section h3 {
+        font-size: var(--text-lg);
+        text-align: center;
+        margin-bottom: var(--space-2);
+    }
+
+    .bullet-section > p {
+        text-align: center;
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-4);
+    }
+
+    .bullet-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .bullet-input {
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid var(--color-border-light);
+        border-radius: 8px;
+        font-size: var(--text-base);
+        width: 100%;
+        background: var(--color-bg);
+        transition: border-color var(--duration-fast) var(--ease-out),
+                    box-shadow var(--duration-fast) var(--ease-out);
+    }
+
+    .bullet-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+
+    .bullet-input-hidden {
+        display: none;
+    }
+
+    .bullet-input-reveal {
+        animation: reveal-input 0.3s var(--ease-out);
+    }
+
+    @keyframes reveal-input {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .submit-section {
+        text-align: center;
+        padding: var(--space-6) 0;
+        view-transition-name: submit-section;
+    }
+
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-4) var(--space-8);
+        border-radius: 8px;
+        font-size: var(--text-lg);
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: var(--color-primary-dark);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-submit.loading {
+        pointer-events: none;
+    }
+
+    .selection-hint {
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+        margin-top: var(--space-3);
+    }
+
+    @media (max-width: 640px) {
+        .image-page {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--space-3);
+        }
+
+        .browser-instruction h2 {
+            font-size: var(--text-xl);
+        }
+
+        .demo-header-badges {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-1);
+        }
+    }
+</style>
+
+<div class="image-browser" data-seed="{{ seed }}" data-per-page="{{ per_page }}">
+    <div class="strategy-banner">
+        <span class="strategy-banner-label">Strategy:</span>
+        <span class="strategy-banner-text">"{{ company.strategy }}"</span>
+    </div>
+
+    <!-- Sticky Header: Instructions + Pagination -->
+    <div class="image-browser-sticky">
+        <div class="browser-instruction">
+            <h2>Your Turn</h2>
+            <p>Select the image that best represents how this team is executing their strategy.</p>
+        </div>
+        <div class="pagination-header">
+            <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
+                <span class="pagination-arrow">&larr;</span> Prev
+            </button>
+            <span class="page-indicator" id="page-indicator">Page 1 of 3</span>
+            <button type="button" id="next-btn" class="pagination-btn" aria-label="Next page">
+                Next <span class="pagination-arrow">&rarr;</span>
+            </button>
+        </div>
+        <div class="jump-to-selection" id="jump-to-selection">
+            <button type="button" id="jump-btn">Jump to your selection</button>
+        </div>
+    </div>
+
+    <!-- Image Grid Container (loaded via AJAX) -->
+    <div class="image-grid-container" id="image-grid-container">
+        <div class="image-page active" id="image-page">
+            <!-- Images loaded via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Bullet Point Section (shown after image selection) -->
+    <div class="bullet-section" id="bullet-section" style="display: none;">
+        <div class="selected-image-preview" id="selected-image-preview">
+            <!-- Selected image shown here via JS -->
+        </div>
+        <h3>Why did you choose this image?</h3>
+        <p>Enter at least one bullet point explaining your choice.</p>
+
+        <div class="bullet-inputs">
+            <input type="text"
+                   class="bullet-input"
+                   id="bullet-1"
+                   placeholder="Bullet point 1 (required)"
+                   maxlength="500">
+            <input type="text"
+                   class="bullet-input bullet-input-hidden"
+                   id="bullet-2"
+                   placeholder="Bullet point 2 (optional)"
+                   maxlength="500">
+            <input type="text"
+                   class="bullet-input bullet-input-hidden"
+                   id="bullet-3"
+                   placeholder="Bullet point 3 (optional)"
+                   maxlength="500">
+            <input type="text"
+                   class="bullet-input bullet-input-hidden"
+                   id="bullet-4"
+                   placeholder="Bullet point 4 (optional)"
+                   maxlength="500">
+            <input type="text"
+                   class="bullet-input bullet-input-hidden"
+                   id="bullet-5"
+                   placeholder="Bullet point 5 (optional)"
+                   maxlength="500">
+        </div>
+    </div>
+
+    <!-- Submit Section -->
+    <div class="submit-section" id="submit-section">
+        <button type="button" id="submit-btn" class="btn-submit" disabled>
+            See Team Responses
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </button>
+        <p class="selection-hint" id="selection-hint">Select an image to continue</p>
+    </div>
+</div>
+
+<script src="/static/js/demo-signal.js"></script>
+<script src="/static/js/progressive-inputs.js"></script>
+{% endblock %}
