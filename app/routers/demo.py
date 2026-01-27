@@ -162,6 +162,28 @@ async def demo_signal(request: Request):
     )
 
 
+# Pre-baked synthesis data - reveals Alignment gap
+# Participant names are placeholders that get replaced with shuffled team names
+DEMO_SYNTHESIS = {
+    "themes": "Your team is aligned on WHERE you're going, but the WORK isn't fitting together. The drag is in the handoffs - particularly between product development and client-facing teams. Each function is executing independently, creating gaps where value should compound.",
+    "gap_type": "Alignment",
+    "statements": [
+        {
+            "statement": "Product development and client-facing teams are operating on different timelines",
+            "participants": ["CTO", "VP Sales"]  # Roles - will be replaced with first names
+        },
+        {
+            "statement": "Features are being built without clear alignment to client priorities",
+            "participants": ["CTO", "CFO"]
+        },
+        {
+            "statement": "Handoffs between departments are where momentum is lost",
+            "participants": ["CFO", "COO"]
+        }
+    ]
+}
+
+
 @router.get("/responses")
 async def demo_responses(request: Request):
     """Demo Responses page - shows visitor's response alongside pre-baked team responses.
@@ -206,6 +228,51 @@ async def demo_responses(request: Request):
             "request": request,
             "company": DEMO_COMPANY,
             "team_responses": team_responses,
+            "seed": seed
+        }
+    )
+
+
+@router.get("/synthesis")
+async def demo_synthesis(request: Request):
+    """Demo Synthesis page - reveals the Alignment gap with pre-baked analysis.
+
+    Requires seed parameter for consistent team names.
+    Clears sessionStorage on load so next demo starts fresh.
+    """
+    # Seed is required for consistent team names
+    seed_param = request.query_params.get("seed")
+    if not seed_param:
+        # Must start from beginning to get proper context
+        return RedirectResponse(url="/demo", status_code=302)
+
+    try:
+        seed = int(seed_param)
+    except (ValueError, TypeError):
+        return RedirectResponse(url="/demo", status_code=302)
+
+    # Get shuffled team to map role -> first_name
+    team_members = get_shuffled_team(seed)
+    role_to_name = {member["role"]: member["first_name"] for member in team_members}
+
+    # Build synthesis data with actual team member names
+    synthesis_statements = []
+    for stmt in DEMO_SYNTHESIS["statements"]:
+        # Replace role placeholders with actual first names
+        participant_names = [role_to_name.get(role, role) for role in stmt["participants"]]
+        synthesis_statements.append({
+            "statement": stmt["statement"],
+            "participants": participant_names
+        })
+
+    return templates.TemplateResponse(
+        "demo/synthesis.html",
+        {
+            "request": request,
+            "company": DEMO_COMPANY,
+            "synthesis_themes": DEMO_SYNTHESIS["themes"],
+            "synthesis_gap_type": DEMO_SYNTHESIS["gap_type"],
+            "synthesis_statements": synthesis_statements,
             "seed": seed
         }
     )

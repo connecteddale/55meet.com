@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Synthesis Reveal - Demo - The 55{% endblock %}
+
+{% block header %}
+<header class="participant-header">
+    <div class="container">
+        <h1>The 55</h1>
+        <span class="team-badge demo-badge">Demo</span>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="synthesis-page demo-synthesis">
+    <div class="synthesis-header">
+        <h2>What We Found</h2>
+        <p class="synthesis-subtitle">{{ company.name }} Team Synthesis</p>
+    </div>
+
+    {% if synthesis_gap_type %}
+    <div class="synthesis-section gap-section">
+        <h3>Primary Gap</h3>
+        <div class="gap-indicator gap-{{ synthesis_gap_type|lower }}">
+            <span class="gap-type">{{ synthesis_gap_type }}</span>
+        </div>
+        <p class="gap-description">
+            {% if synthesis_gap_type == 'Direction' %}
+            The team may lack shared understanding of goals or priorities.
+            {% elif synthesis_gap_type == 'Alignment' %}
+            The team's work may be disconnected or uncoordinated.
+            {% elif synthesis_gap_type == 'Commitment' %}
+            Individual interests may be overriding collective success.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_themes %}
+    <div class="synthesis-section themes-section">
+        <h3>Team Themes</h3>
+        <p class="themes-text">{{ synthesis_themes }}</p>
+    </div>
+    {% endif %}
+
+    {% if synthesis_statements %}
+    <div class="synthesis-section statements-section">
+        <h3>Key Insights</h3>
+        <ul class="insights-list">
+            {% for stmt in synthesis_statements %}
+            <li class="insight-item">
+                <span class="insight-text">{{ stmt.statement }}</span>
+                <span class="insight-attribution">({{ stmt.participants|join(', ') }})</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="demo-cta-section">
+        <h3>Ready to find your team's drag?</h3>
+        <p>The 55 is a 55-minute monthly diagnostic that makes real divergence visible - so you can fix what's actually slowing you down.</p>
+
+        <div class="demo-cta-buttons">
+            <a href="mailto:dale@connecteddale.com?subject=The%2055%20Inquiry" class="btn btn-primary btn-large">Book Your First Session</a>
+            <a href="/" class="btn btn-secondary">Learn More</a>
+        </div>
+
+        <p class="demo-restart">
+            <a href="/demo">Restart Demo</a>
+        </p>
+    </div>
+</div>
+
+<style>
+/* Demo-specific CTA section styling */
+.demo-cta-section {
+    margin-top: var(--spacing-8, 4rem);
+    padding: var(--spacing-6, 3rem) var(--spacing-4, 2rem);
+    text-align: center;
+    background: var(--color-surface-secondary, #f5f5f7);
+    border-radius: var(--radius-lg, 12px);
+}
+
+.demo-cta-section h3 {
+    margin-bottom: var(--spacing-3, 1rem);
+    font-size: var(--text-xl, 1.5rem);
+    color: var(--color-text, #1d1d1f);
+}
+
+.demo-cta-section > p {
+    margin-bottom: var(--spacing-5, 2rem);
+    color: var(--color-text-secondary, #6e6e73);
+    max-width: 40ch;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.demo-cta-buttons {
+    display: flex;
+    gap: var(--spacing-3, 1rem);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.demo-restart {
+    margin-top: var(--spacing-5, 2rem);
+}
+
+.demo-restart a {
+    color: var(--color-text-tertiary, #86868b);
+    font-size: var(--text-sm, 0.875rem);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.demo-restart a:hover {
+    color: var(--color-text-secondary, #6e6e73);
+}
+
+/* Demo badge styling */
+.demo-badge {
+    background: var(--color-primary, #0066cc);
+    color: white;
+}
+
+/* Synthesis page refinements for demo */
+.demo-synthesis .synthesis-header h2 {
+    font-size: var(--text-2xl, 2rem);
+}
+</style>
+
+<script>
+// Clear demo state on synthesis page load (ready for next demo)
+sessionStorage.removeItem('the55-demo-response');
+</script>
+{% endblock %}
