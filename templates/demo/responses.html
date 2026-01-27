@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}Team Responses - Demo{% endblock %}
+
+{% block header %}
+<header class="demo-header">
+    <div class="container">
+        <h1><a href="/">The 55</a></h1>
+        <span class="demo-badge">Demo</span>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<style>
+    .demo-header {
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border-light);
+        padding: var(--space-4) 0;
+    }
+
+    .demo-header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .demo-header h1 {
+        font-size: var(--text-xl);
+        letter-spacing: var(--tracking-snug);
+    }
+
+    .demo-badge {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 600;
+    }
+
+    .demo-responses {
+        max-width: 960px;
+        margin: 0 auto;
+        view-transition-name: demo-content;
+    }
+
+    .responses-hero {
+        text-align: center;
+        padding: var(--space-8) 0 var(--space-6);
+    }
+
+    .responses-hero h2 {
+        font-size: var(--text-3xl);
+        letter-spacing: var(--tracking-tight);
+        margin-bottom: var(--space-3);
+    }
+
+    .responses-hero p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-lg);
+        max-width: 50ch;
+        margin: 0 auto;
+    }
+
+    .responses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-6);
+        padding: var(--space-6) 0;
+    }
+
+    .response-card {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow var(--duration-fast) var(--ease-out);
+    }
+
+    .response-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    #visitor-response-card {
+        border: 2px solid var(--color-primary);
+        background: var(--color-primary-light);
+    }
+
+    #visitor-response-card .response-name {
+        color: var(--color-primary);
+    }
+
+    #visitor-response-card.loading .response-content {
+        opacity: 0.5;
+    }
+
+    .response-image {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: var(--color-bg-tertiary);
+    }
+
+    .response-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .response-content {
+        padding: var(--space-4);
+    }
+
+    .response-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: var(--space-3);
+    }
+
+    .response-name {
+        font-weight: 700;
+        font-size: var(--text-lg);
+    }
+
+    .response-role {
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+    }
+
+    .response-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .response-bullets li {
+        position: relative;
+        padding-left: var(--space-4);
+        margin-bottom: var(--space-2);
+        font-size: var(--text-base);
+        line-height: var(--leading-relaxed);
+        color: var(--color-text);
+    }
+
+    .response-bullets li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.6em;
+        width: 6px;
+        height: 6px;
+        background: var(--color-primary);
+        border-radius: 50%;
+    }
+
+    .response-bullets li:last-child {
+        margin-bottom: 0;
+    }
+
+    .pattern-section {
+        text-align: center;
+        padding: var(--space-8) 0;
+        border-top: 1px solid var(--color-border-light);
+        margin-top: var(--space-6);
+    }
+
+    .pattern-section h3 {
+        font-size: var(--text-xl);
+        margin-bottom: var(--space-3);
+    }
+
+    .pattern-section p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-base);
+        max-width: 50ch;
+        margin: 0 auto var(--space-6);
+    }
+
+    .demo-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-4) var(--space-8);
+        border-radius: 8px;
+        font-size: var(--text-lg);
+        font-weight: 600;
+        text-decoration: none;
+        transition: background var(--duration-fast) var(--ease-out),
+                    box-shadow var(--duration-fast) var(--ease-out),
+                    transform var(--duration-fast) var(--ease-out);
+    }
+
+    .demo-cta:hover {
+        background: var(--color-primary-dark);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .demo-cta:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .demo-cta svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Loading state for visitor card */
+    .response-card.loading .response-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loading-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--color-border-light);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+        .responses-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .responses-hero h2 {
+            font-size: var(--text-2xl);
+        }
+    }
+</style>
+
+<div class="demo-responses">
+    <section class="responses-hero">
+        <h2>Team Responses</h2>
+        <p>Here's what the {{ company.name }} leadership team shared.</p>
+    </section>
+
+    <div class="responses-grid">
+        {# Visitor response card - populated by JavaScript from sessionStorage #}
+        <div class="response-card loading" id="visitor-response-card">
+            <div class="response-image">
+                <div class="loading-spinner"></div>
+            </div>
+            <div class="response-content">
+                <div class="response-header">
+                    <span class="response-name">You</span>
+                    <span class="response-role">Demo Participant</span>
+                </div>
+                <ul class="response-bullets">
+                    <li>Loading your response...</li>
+                </ul>
+            </div>
+        </div>
+
+        {# Team response cards - server-rendered #}
+        {% for response in team_responses %}
+        <div class="response-card">
+            <div class="response-image">
+                <img src="{{ response.image_url }}" alt="Selected image by {{ response.first_name }}">
+            </div>
+            <div class="response-content">
+                <div class="response-header">
+                    <span class="response-name">{{ response.name }}</span>
+                    <span class="response-role">{{ response.role }}</span>
+                </div>
+                <ul class="response-bullets">
+                    {% for bullet in response.bullets %}
+                    <li>{{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <section class="pattern-section">
+        <h3>Notice any patterns?</h3>
+        <p>Each person is working hard, but are they pulling in the same direction?</p>
+
+        <a href="/demo/synthesis?seed={{ seed }}" class="demo-cta">
+            See What We Found
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </a>
+    </section>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    const DEMO_STATE_KEY = 'the55-demo-response';
+    const visitorCard = document.getElementById('visitor-response-card');
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function loadVisitorResponse() {
+        try {
+            const saved = sessionStorage.getItem(DEMO_STATE_KEY);
+            if (!saved) {
+                // No response saved - redirect back to start
+                window.location.href = '/demo';
+                return;
+            }
+
+            const data = JSON.parse(saved);
+
+            // Validate we have required data
+            if (!data.imageUrl || !data.bullets || data.bullets.length === 0) {
+                window.location.href = '/demo';
+                return;
+            }
+
+            // Populate visitor card
+            const imageContainer = visitorCard.querySelector('.response-image');
+            imageContainer.innerHTML = `<img src="${escapeHtml(data.imageUrl)}" alt="Your selected image">`;
+
+            const bulletsList = visitorCard.querySelector('.response-bullets');
+            bulletsList.innerHTML = data.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+
+            // Remove loading state
+            visitorCard.classList.remove('loading');
+
+        } catch (e) {
+            console.error('Failed to load visitor response:', e);
+            window.location.href = '/demo';
+        }
+    }
+
+    // Load visitor response on page load
+    loadVisitorResponse();
+})();
+</script>
+{% endblock %}

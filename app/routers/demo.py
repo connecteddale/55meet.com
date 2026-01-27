@@ -91,6 +91,45 @@ async def demo_intro(request: Request):
     )
 
 
+# Pre-baked team responses - each shows Alignment gap indicators
+# These are matched with team members by role during rendering
+DEMO_RESPONSES = [
+    {
+        "role": "CTO",
+        "image_filename": "maze-in-a-green-field-2026-01-06-11-09-08-utc.jpg",
+        "bullets": [
+            "We're building features but product and sales aren't synced on what clients actually need first"
+        ]
+    },
+    {
+        "role": "CFO",
+        "image_filename": "athlete-passing-relay-baton-2026-01-05-06-20-17-utc.jpg",
+        "bullets": [
+            "Projects start strong but stall at the handoff between dev and client success"
+        ]
+    },
+    {
+        "role": "VP Sales",
+        "image_filename": "foggy-path-2026-01-06-08-58-05-utc.jpg",
+        "bullets": [
+            "I'm selling capabilities we don't have yet while engineering builds things nobody asked for"
+        ]
+    },
+    {
+        "role": "COO",
+        "image_filename": "abstract-grunge-retro-clock-gears-background-2026-01-08-23-43-46-utc.jpg",
+        "bullets": [
+            "Everyone's working hard but the pieces aren't connecting"
+        ]
+    }
+]
+
+
+def get_response_image_url(filename: str) -> str:
+    """Return full URL path for a library image."""
+    return f"/static/images/library/reducedlive/{filename}"
+
+
 @router.get("/signal")
 async def demo_signal(request: Request):
     """Demo Signal Capture page - visitor selects image and enters bullets.
@@ -119,5 +158,54 @@ async def demo_signal(request: Request):
             "team_members": team_members,
             "seed": seed,
             "per_page": 20  # Same as real app
+        }
+    )
+
+
+@router.get("/responses")
+async def demo_responses(request: Request):
+    """Demo Responses page - shows visitor's response alongside pre-baked team responses.
+
+    Requires seed parameter for consistent team names.
+    Visitor response comes from sessionStorage (populated by JavaScript).
+    """
+    # Seed is required for consistent team names
+    seed_param = request.query_params.get("seed")
+    if not seed_param:
+        # Must start from beginning to get proper context
+        return RedirectResponse(url="/demo", status_code=302)
+
+    try:
+        seed = int(seed_param)
+    except (ValueError, TypeError):
+        return RedirectResponse(url="/demo", status_code=302)
+
+    # Get shuffled team members
+    team_members = get_shuffled_team(seed)
+
+    # Build team responses by combining team member names with pre-baked responses
+    team_responses = []
+    for member in team_members:
+        # Find matching response by role
+        response_data = next(
+            (r for r in DEMO_RESPONSES if r["role"] == member["role"]),
+            None
+        )
+        if response_data:
+            team_responses.append({
+                "name": member["name"],
+                "first_name": member["first_name"],
+                "role": member["role"],
+                "image_url": get_response_image_url(response_data["image_filename"]),
+                "bullets": response_data["bullets"]
+            })
+
+    return templates.TemplateResponse(
+        "demo/responses.html",
+        {
+            "request": request,
+            "company": DEMO_COMPANY,
+            "team_responses": team_responses,
+            "seed": seed
         }
     )
