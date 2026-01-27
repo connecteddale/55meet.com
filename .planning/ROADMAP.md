@@ -3,7 +3,7 @@
 ## Milestones
 
 - v2.0-v2.4: Foundation through Effortless (Phases 1-24) - SHIPPED
-- **v2.5 Interactive Demo** - Phase 25 (current)
+- v2.5 Interactive Demo - Phase 25 - SHIPPED (2026-01-27)
 
 ## Overview
 
@@ -11,7 +11,7 @@ The Interactive Demo milestone delivers a self-guided experience for landing pag
 
 ## Phases
 
-- [ ] **Phase 25: Interactive Demo** - Complete demo flow with Signal Capture integration
+- [x] **Phase 25: Interactive Demo** - Complete demo flow with Signal Capture integration - COMPLETE
 
 ## Phase Details
 
@@ -32,17 +32,17 @@ The Interactive Demo milestone delivers a self-guided experience for landing pag
 **Plans**: 4 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — Demo router foundation + intro page with ClearBrief context
-- [ ] 25-02-PLAN.md — Signal Capture experience (image browser + bullets)
-- [ ] 25-03-PLAN.md — Team responses display (visitor + 4 pre-baked)
-- [ ] 25-04-PLAN.md — Synthesis reveal + CTAs + landing page link
+- [x] 25-01-PLAN.md — Demo router foundation + intro page with ClearBrief context
+- [x] 25-02-PLAN.md — Signal Capture experience (image browser + bullets)
+- [x] 25-03-PLAN.md — Team responses display (visitor + 4 pre-baked)
+- [x] 25-04-PLAN.md — Synthesis reveal + CTAs + landing page link
 
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 25. Interactive Demo | v2.5 | 0/4 | Planned | - |
+| 25. Interactive Demo | v2.5 | 4/4 | Complete | 2026-01-27 |
 
 ---
 *Roadmap created: 2026-01-27*
-*Last updated: 2026-01-27*
+*Last updated: 2026-01-27 — v2.5 shipped*
