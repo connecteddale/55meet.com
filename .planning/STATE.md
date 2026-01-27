@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 ## Current Position
 
 Phase: 25 (Interactive Demo)
-Plan: 3 of TBD
-Status: In progress
-Last activity: 2026-01-27 — Completed 25-03-PLAN.md (Demo Responses Page)
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 25-04-PLAN.md (Demo Synthesis Page)
 
-Progress: [==========================>] v2.0-v2.4 complete, v2.5 plans 01-03 done
+Progress: [============================] v2.0-v2.5 complete, Phase 25 done (4/4 plans)
 
 ## Current Milestone: v2.5 Interactive Demo
 
 **Goal:** Let landing page visitors experience Signal Capture and see what synthesis reveals — without needing a real team.
 
 **Phases:**
-- Phase 25: Interactive Demo (21 requirements — all in one phase for faster iteration)
+- Phase 25: Interactive Demo (4 plans complete)
 
 **Key decisions:**
 - Fictional company: ClearBrief ($65M legal tech SaaS)
@@ -29,6 +29,13 @@ Progress: [==========================>] v2.0-v2.4 complete, v2.5 plans 01-03 don
 - Team: Visitor + 4 fictional members (names shuffled from pool)
 - Gap revealed: Alignment (handoff/coordination)
 - No AI calls — all content pre-baked except visitor's image selection
+
+**Demo flow complete:**
+1. Landing page (/) - "See how it works" CTA
+2. Demo intro (/demo) - ClearBrief context and team
+3. Signal capture (/demo/signal) - Image browse and selection
+4. Responses (/demo/responses) - Visitor + 4 team responses
+5. Synthesis (/demo/synthesis) - Alignment gap reveal with CTAs
 
 ## Milestone History
 
@@ -39,19 +46,18 @@ Progress: [==========================>] v2.0-v2.4 complete, v2.5 plans 01-03 don
 | v2.2 | World Class UX | 14-19 | 2026-01-22 |
 | v2.3 | PDF Export | 20 | 2026-01-22 |
 | v2.4 | Effortless | 21-24 | 2026-01-24 |
+| v2.5 | Interactive Demo | 25 | 2026-01-27 |
 
 ## Performance Metrics
 
-**v2.4 Velocity:**
-- Plans completed: 9
-- Commits: 13
-- Files: 17 modified (682 ins, 211 del)
-- Duration: 1 day (2026-01-24)
+**v2.5 Velocity:**
+- Plans completed: 4
+- Duration: 1 day (2026-01-27)
 
-**Overall (v2.0-v2.4):**
-- Total plans: 50
-- Total milestones: 5
-- Total phases: 24
+**Overall (v2.0-v2.5):**
+- Total plans: 54
+- Total milestones: 6
+- Total phases: 25
 
 ## Accumulated Context
 
@@ -71,11 +77,12 @@ Non-blocking, carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-27T07:10:00Z
-Stopped at: Completed 25-03-PLAN.md (Demo Responses Page)
+Last session: 2026-01-27T06:57:00Z
+Stopped at: Completed 25-04-PLAN.md (Demo Synthesis Page) - Phase 25 complete
 Resume file: None
 
 ## Next Steps
 
-1. Execute 25-04-PLAN.md — Demo Synthesis page
-2. Continue with remaining demo phase plans
+1. User testing of complete demo flow
+2. Gather feedback on demo effectiveness
+3. Define next milestone (v2.6)
