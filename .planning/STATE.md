@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 ## Current Position
 
 Phase: 25 (Interactive Demo)
-Plan: 1 of TBD
+Plan: 2 of TBD
 Status: In progress
-Last activity: 2026-01-27 — Completed 25-01-PLAN.md (Demo Router Foundation)
+Last activity: 2026-01-27 — Completed 25-02-PLAN.md (Signal Capture Page)
 
-Progress: [========================>] v2.0-v2.4 complete, v2.5 plan 01 done
+Progress: [=========================>] v2.0-v2.4 complete, v2.5 plans 01-02 done
 
 ## Current Milestone: v2.5 Interactive Demo
 
@@ -71,11 +71,11 @@ Non-blocking, carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-27T06:37:53Z
-Stopped at: Completed 25-01-PLAN.md (Demo Router Foundation)
+Last session: 2026-01-27T06:53:00Z
+Stopped at: Completed 25-02-PLAN.md (Signal Capture Page)
 Resume file: None
 
 ## Next Steps
 
-1. Execute 25-02-PLAN.md — Signal Capture page
+1. Execute 25-03-PLAN.md — Demo Responses page
 2. Continue with remaining demo phase plans
