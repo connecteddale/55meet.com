@@ -90,10 +90,12 @@ Complete. See MILESTONES.md for details.
   6. Landing page links to connecteddale.com/releases/Snapshot.html article
   7. Trademark notation consistent (Snapshot™ on first use, Snapshot thereafter)
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 26-01: TBD (to be defined during plan-phase)
+- [ ] 26-01-PLAN.md — Rebrand Signal Capture to Snapshot across entire app
+- [ ] 26-02-PLAN.md — Add client example cards section to landing page
+- [ ] 26-03-PLAN.md — Add outcomes section and enhance CTA
 
 #### Phase 27: Demo Ending Personalization
 
@@ -143,10 +145,10 @@ Phases execute in numeric order: 26 → 27 → 28
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-25 | v2.0-v2.5 | - | Complete | 2026-01-27 |
-| 26. Landing Page Trust & Outcomes | v2.6 | 0/TBD | Not started | - |
+| 26. Landing Page Trust & Outcomes | v2.6 | 0/3 | Planned | - |
 | 27. Demo Ending Personalization | v2.6 | 0/TBD | Not started | - |
 | 28. SEO & Conversion Tracking | v2.6 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-28*
-*Last updated: 2026-01-28 after v2.6 POC Ready milestone started*
+*Last updated: 2026-01-29 after Phase 26 planning complete*
