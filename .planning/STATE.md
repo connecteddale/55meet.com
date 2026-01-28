@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-01-27)
 
 Phase: 25 (Interactive Demo)
 Plan: 4 of 4
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 25-04-PLAN.md (Demo Synthesis Page)
+Status: UAT in progress
+Last activity: 2026-01-28 — UX fixes during UAT (centering, synthesis "You" inclusion, badges)
 
 Progress: [============================] v2.0-v2.5 complete, Phase 25 done (4/4 plans)
 
@@ -28,7 +28,8 @@ Progress: [============================] v2.0-v2.5 complete, Phase 25 done (4/4 
 - Strategy: "Help law firms win clients through transparency — open billing, open matters, no surprises."
 - Team: Visitor + 4 fictional members (names shuffled from pool)
 - Gap revealed: Alignment (handoff/coordination)
-- No AI calls — all content pre-baked except visitor's image selection
+- Real AI synthesis call on layers page (background while user reads)
+- Visitor ("You") must appear in at least 1 attributed theme (validated/injected if AI omits)
 
 **Demo flow complete:**
 1. Landing page (/) - "See how it works" CTA
@@ -77,12 +78,25 @@ Non-blocking, carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-27T06:57:00Z
-Stopped at: Completed 25-04-PLAN.md (Demo Synthesis Page) - Phase 25 complete
-Resume file: None
+Last session: 2026-01-28T14:45:00Z
+Stopped at: UAT testing of Phase 25 - fixing UX issues as discovered
+Resume file: .planning/phases/25-interactive-demo/25-UAT.md
+
+## Recent Fixes (2026-01-28)
+
+- Fixed text centering across all pages (root cause: global `p { max-width: 65ch }`)
+- Added `max-width: none` to eyebrows and analysing text
+- Added floating "55meet" badge to landing page
+- Added "Demo" badge to demo intro page
+- Fixed synthesis to include visitor ("You") in attributed themes
+- Added validation to inject "You" if AI omits them
+- "See Layer 1" button disabled until analysis completes
+- Analysis runs in background on layers page (not blocking on signal page)
+- Updated copy throughout demo flow
 
 ## Next Steps
 
-1. User testing of complete demo flow
-2. Gather feedback on demo effectiveness
-3. Define next milestone (v2.6)
+1. Continue UAT testing of demo flow
+2. Verify "You" appears in synthesis themes consistently
+3. Gather feedback on demo effectiveness
+4. Define next milestone (v2.6)
