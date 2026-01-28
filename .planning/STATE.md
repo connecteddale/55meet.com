@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 ## Current Position
 
 Phase: 26 of 28 (Landing Page Trust & Outcomes)
-Plan: 2 of 13 completed (26-02)
+Plan: 1 of 13 completed (26-01)
 Status: In progress
-Last activity: 2026-01-28 — Completed 26-02-PLAN.md
+Last activity: 2026-01-28 — Completed 26-01-PLAN.md (Snapshot Rebrand)
 
-Progress: [██████████████████████████████░░] 56/61 plans completed (92%)
+Progress: [██████████████████████████████░░] 55/61 plans completed (90%)
 
 ## Current Milestone: v2.6 POC Ready
 
@@ -51,7 +51,7 @@ Progress: [███████████████████████
 - Total phases shipped: 25
 
 **v2.6 Progress:**
-- Plans completed: 2
+- Plans completed: 1
 - Phases completed: 0
 
 ## Accumulated Context
@@ -66,10 +66,10 @@ Recent decisions affecting v2.6:
 - Privacy-first tracking: SQLite event logging chosen over external analytics (no cookies, data ownership)
 - Snapshot™ rebrand: "Signal Capture" renamed to "Snapshot™" (trademark of Dale Williams)
 
-**Phase 26-02 (Client Examples):**
-- CSS pseudo-elements for Before/After labels: Keeps HTML semantic while maintaining visual hierarchy
-- Section positioning between Evidence and Drift: Problem → proof → solution conversion flow
-- Three diverse client examples: Shows variety of industries and both gap types (Direction/Alignment)
+**Phase 26-01 (Snapshot Rebrand):**
+- Trademark notation pattern: ™ on first visible use per page, omitted on subsequent uses for readability
+- HTML titles and code comments use plain "Snapshot" without trademark
+- Landing page article link uses existing .landing-link CSS class for consistency
 
 ### Pending Todos
 
@@ -105,9 +105,9 @@ Three client vignettes for "What finding the drag looks like" section:
 
 ## Session Continuity
 
-Last session: 2026-01-28 23:15:35 UTC
-Stopped at: Completed 26-02-PLAN.md (Client Examples Section)
+Last session: 2026-01-28 23:16:47 UTC
+Stopped at: Completed 26-01-PLAN.md (Snapshot Rebrand)
 Resume file: None
 
 ---
-*Updated: 2026-01-28 after 26-02 execution*
+*Updated: 2026-01-28 after 26-01 execution*
