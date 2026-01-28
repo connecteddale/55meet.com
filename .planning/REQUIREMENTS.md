@@ -1,62 +1,55 @@
 # Requirements: The 55 App
 
-**Defined:** 2026-01-27
+**Defined:** 2026-01-28
 **Core Value:** The 55 catches alignment problems before they become execution problems.
 
-## v2.5 Requirements
+## v2.6 Requirements
 
-Requirements for Interactive Demo milestone. Each maps to roadmap phases.
+Requirements for POC Ready milestone. Each maps to roadmap phases.
 
-### Entry & Navigation
+### Landing Page Trust Signals
 
-- [ ] **DEMO-01**: Landing page has "Try the Demo" call-to-action
-- [ ] **DEMO-02**: Demo is accessible at dedicated URL (/demo)
+- [ ] **LAND-01**: Landing page has "What finding the drag looks like" section
+- [ ] **LAND-02**: Section displays 3 client example cards with concrete scenarios
+- [ ] **LAND-03**: Cards show before/after transformation (problem → outcome)
+- [ ] **LAND-04**: Card design matches existing design system (Inter font, Apple colors)
 
-### Scene Setting
+### Landing Page Outcomes
 
-- [ ] **DEMO-03**: Demo displays ClearBrief company context (name, industry, revenue)
-- [ ] **DEMO-04**: Demo displays strategy statement
-- [ ] **DEMO-05**: Demo introduces fictional executive team (visitor + 4 members)
-- [ ] **DEMO-06**: Team member names are shuffled from a pool on each visit
+- [ ] **LAND-05**: Landing page has benefit-focused outcomes section
+- [ ] **LAND-06**: Outcomes describe what changes after finding the drag
+- [ ] **LAND-07**: Language is specific (faster execution, clearer priorities, less wasted work)
 
-### Signal Capture Tease
+### Landing Page CTA
 
-- [ ] **DEMO-07**: Demo states team has already responded using Signal Capture
-- [ ] **DEMO-08**: Demo invites visitor to experience how Signal Capture works
+- [ ] **LAND-08**: Final CTA section uses "You've felt the drag. Now find it"
+- [ ] **LAND-09**: Demo button prominent as primary action
+- [ ] **LAND-10**: Secondary email link to Dale (connectedworld@gmail.com)
 
-### Signal Capture Experience
+### Demo Ending Experience
 
-- [ ] **DEMO-09**: Visitor sees image browser matching real app experience
-- [ ] **DEMO-10**: Visitor can select an image
-- [ ] **DEMO-11**: Visitor can enter 1-5 bullet points explaining their choice
-- [ ] **DEMO-12**: Demo uses same 60-image random subset approach as real sessions
+- [ ] **DEMO-22**: Synthesis page replaces current CTAs with "imagine your team" challenge
+- [ ] **DEMO-23**: Challenge is visceral and personal ("What would finding YOUR drag be worth?")
+- [ ] **DEMO-24**: Challenge references specific quarter/time being lost
+- [ ] **DEMO-25**: Challenge uses synthesis gap type (Direction/Alignment/Commitment) to personalize
+- [ ] **DEMO-26**: Email CTA to connectedworld@gmail.com with pre-filled subject
 
-### Team Responses
+### SEO/Meta
 
-- [ ] **DEMO-13**: Four pre-baked team responses exist (one per fictional member)
-- [ ] **DEMO-14**: Each pre-baked response shows Alignment gap indicators
-- [ ] **DEMO-15**: Visitor's response appears alongside the 4 pre-baked responses
+- [ ] **META-01**: Landing page meta description mentions Signal Capture
+- [ ] **META-02**: Meta description mentions three gap types (Direction, Alignment, Commitment)
 
-### Synthesis Reveal
+### Conversion Tracking
 
-- [ ] **DEMO-16**: Pre-crafted synthesis shows Alignment gap
-- [ ] **DEMO-17**: Synthesis display matches real app synthesis UI
-- [ ] **DEMO-18**: Demo concludes with clear call-to-action
-
-### UX Consistency
-
-- [ ] **DEMO-19**: Demo uses existing design system
-- [ ] **DEMO-20**: Demo uses View Transitions API like real app
-- [ ] **DEMO-21**: Demo is fully responsive (mobile-first)
+- [ ] **TRACK-01**: ConversionEvent SQLite model logs CTA interactions
+- [ ] **TRACK-02**: Demo completion events logged (reached synthesis page)
+- [ ] **TRACK-03**: Email CTA click events logged
+- [ ] **TRACK-04**: Landing page → demo click events logged
+- [ ] **TRACK-05**: Admin can query conversion metrics (direct SQLite or simple endpoint)
 
 ## Future Requirements
 
 Deferred to future milestones.
-
-### Landing Page Polish
-
-- **LAND-01**: Landing page copy review and revision
-- **LAND-02**: Scroll indicator showing content continues below fold
 
 ### Additional Capture Techniques
 
@@ -65,16 +58,22 @@ Deferred to future milestones.
 - **CAPT-03**: Headline technique implementation
 - **CAPT-04**: One Word technique implementation
 
+### Multi-Facilitator
+
+- **MULTI-01**: Architect for multiple facilitators (do not build yet)
+
 ## Out of Scope
 
 Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Real AI synthesis in demo | Expensive, unnecessary — pre-baked content sufficient |
-| User accounts for demo | Frictionless experience is key |
-| Saving demo responses | No persistence needed for demo |
-| Multiple demo scenarios | Start with one scenario, iterate |
+| Contact form | Research shows mailto: outperforms forms by 50%+ |
+| A/B testing infrastructure | Manual observation sufficient for POC volume |
+| External analytics (GA, Plausible) | Server-side tracking sufficient, privacy-first |
+| Newsletter signup | Single CTA focus — multiple CTAs reduce conversion |
+| Calendar booking integration | Email-first, Dale handles scheduling manually |
+| Client testimonial videos | Text examples sufficient for POC |
 
 ## Traceability
 
@@ -82,33 +81,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEMO-01 | Phase 25 | Pending |
-| DEMO-02 | Phase 25 | Pending |
-| DEMO-03 | Phase 25 | Pending |
-| DEMO-04 | Phase 25 | Pending |
-| DEMO-05 | Phase 25 | Pending |
-| DEMO-06 | Phase 25 | Pending |
-| DEMO-07 | Phase 25 | Pending |
-| DEMO-08 | Phase 25 | Pending |
-| DEMO-09 | Phase 25 | Pending |
-| DEMO-10 | Phase 25 | Pending |
-| DEMO-11 | Phase 25 | Pending |
-| DEMO-12 | Phase 25 | Pending |
-| DEMO-13 | Phase 25 | Pending |
-| DEMO-14 | Phase 25 | Pending |
-| DEMO-15 | Phase 25 | Pending |
-| DEMO-16 | Phase 25 | Pending |
-| DEMO-17 | Phase 25 | Pending |
-| DEMO-18 | Phase 25 | Pending |
-| DEMO-19 | Phase 25 | Pending |
-| DEMO-20 | Phase 25 | Pending |
-| DEMO-21 | Phase 25 | Pending |
+| LAND-01 | Phase 26 | Pending |
+| LAND-02 | Phase 26 | Pending |
+| LAND-03 | Phase 26 | Pending |
+| LAND-04 | Phase 26 | Pending |
+| LAND-05 | Phase 26 | Pending |
+| LAND-06 | Phase 26 | Pending |
+| LAND-07 | Phase 26 | Pending |
+| LAND-08 | Phase 26 | Pending |
+| LAND-09 | Phase 26 | Pending |
+| LAND-10 | Phase 26 | Pending |
+| DEMO-22 | Phase 26 | Pending |
+| DEMO-23 | Phase 26 | Pending |
+| DEMO-24 | Phase 26 | Pending |
+| DEMO-25 | Phase 26 | Pending |
+| DEMO-26 | Phase 26 | Pending |
+| META-01 | Phase 26 | Pending |
+| META-02 | Phase 26 | Pending |
+| TRACK-01 | Phase 26 | Pending |
+| TRACK-02 | Phase 26 | Pending |
+| TRACK-03 | Phase 26 | Pending |
+| TRACK-04 | Phase 26 | Pending |
+| TRACK-05 | Phase 26 | Pending |
 
 **Coverage:**
-- v2.5 requirements: 21 total
-- Mapped to phases: 21
+- v2.6 requirements: 22 total
+- Mapped to phases: 22
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-01-27*
-*Last updated: 2026-01-27 after roadmap creation*
+*Requirements defined: 2026-01-28*
+*Last updated: 2026-01-28 after initial definition*
