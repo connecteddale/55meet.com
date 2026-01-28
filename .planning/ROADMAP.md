@@ -113,10 +113,11 @@ Plans:
   5. Demo ending replaces generic footer with conversion-focused experience (no calendar link, no restart)
   6. Demo intro explains Snapshot™ (perception capture before filtering)
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 27-01: TBD (to be defined during plan-phase)
+- [ ] 27-01-PLAN.md — Enhance demo intro with Snapshot explanation
+- [ ] 27-02-PLAN.md — Transform synthesis footer into conversion section
 
 #### Phase 28: SEO & Conversion Tracking
 
@@ -146,9 +147,9 @@ Phases execute in numeric order: 26 → 27 → 28
 |-------|-----------|----------------|--------|-----------|
 | 1-25 | v2.0-v2.5 | - | Complete | 2026-01-27 |
 | 26. Landing Page Trust & Outcomes | v2.6 | 3/3 | Complete | 2026-01-29 |
-| 27. Demo Ending Personalization | v2.6 | 0/TBD | Not started | - |
+| 27. Demo Ending Personalization | v2.6 | 0/2 | Planned | - |
 | 28. SEO & Conversion Tracking | v2.6 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-28*
-*Last updated: 2026-01-29 after Phase 26 execution complete*
+*Last updated: 2026-01-29 after Phase 27 planning complete*
