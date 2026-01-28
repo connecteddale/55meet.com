@@ -51,6 +51,7 @@
         document.getElementById('bullet-4'),
         document.getElementById('bullet-5')
     ];
+    const readyText = document.getElementById('ready-text');
 
     // ========================================
     // State Management (sessionStorage)
@@ -274,13 +275,18 @@
         submitBtn.disabled = !(hasImage && hasValidBullet);
 
         if (hasImage && hasValidBullet) {
-            selectionHint.textContent = 'Ready to see what the team chose';
-        } else if (hasImage && bulletText.length > 0) {
-            selectionHint.textContent = 'Please enter at least two words';
-        } else if (hasImage) {
-            selectionHint.textContent = 'Enter at least one bullet point';
+            readyText.style.display = 'block';
+            selectionHint.style.display = 'none';
         } else {
-            selectionHint.textContent = 'Select an image to continue';
+            readyText.style.display = 'none';
+            selectionHint.style.display = 'block';
+            if (hasImage && bulletText.length > 0) {
+                selectionHint.textContent = 'Please enter at least two words';
+            } else if (hasImage) {
+                selectionHint.textContent = 'Enter at least one bullet point';
+            } else {
+                selectionHint.textContent = 'Select an image to continue';
+            }
         }
     }
 
@@ -298,7 +304,7 @@
     // Navigation
     // ========================================
 
-    async function navigateToResponses() {
+    function navigateToResponses() {
         const bullets = getBullets();
 
         // Validate at least 1 bullet with 2+ words
@@ -310,34 +316,7 @@
         // Save final state
         saveDemoState(selectedImageId, selectedImageUrl, bullets);
 
-        // Show loading state on button
-        const submitBtn = document.getElementById('submit-btn');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = 'Analyzing responses... <span class="loading-spinner-small"></span>';
-        submitBtn.disabled = true;
-
-        // Pre-generate synthesis before navigating
-        try {
-            const response = await fetch('/demo/api/synthesize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    seed: seed,
-                    bullets: bullets,
-                    image_id: selectedImageId || null
-                })
-            });
-
-            if (response.ok) {
-                const synthesis = await response.json();
-                // Cache the result for the layers page
-                sessionStorage.setItem('the55-demo-synthesis', JSON.stringify(synthesis));
-            }
-        } catch (e) {
-            console.warn('Pre-synthesis failed, will generate on layers page:', e);
-        }
-
-        // Navigate with View Transition if supported
+        // Navigate immediately - synthesis will happen on the layers page
         const url = `/demo/layers?seed=${seed}`;
 
         if (document.startViewTransition) {

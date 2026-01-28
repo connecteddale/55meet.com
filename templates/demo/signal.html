@@ -354,7 +354,7 @@
     <!-- Sticky Header: Instructions + Pagination -->
     <div class="image-browser-sticky">
         <div class="browser-instruction">
-            <p>Select the image that best represents how your team is executing your strategy of:<br><strong>{{ company.strategy }}</strong></p>
+            <p>Select the image that best represents how your team is executing your 3am strategy of:<br><strong>{{ company.strategy }}</strong></p>
         </div>
         <div class="pagination-header">
             <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
@@ -416,6 +416,7 @@
 
     <!-- Submit Section -->
     <div class="submit-section" id="submit-section">
+        <p class="ready-text" id="ready-text" style="display: none; font-size: var(--text-lg); color: var(--color-text); margin-bottom: var(--space-4); text-align: center;">Ready to see what the team chose</p>
         <button type="button" id="submit-btn" class="demo-cta" disabled>
             See Team Responses
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

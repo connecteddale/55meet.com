@@ -49,6 +49,10 @@
         text-transform: uppercase;
         letter-spacing: 0.1em;
         margin-bottom: var(--space-4);
+        width: 100%;
+        max-width: none;
+        display: block;
+        text-align: center;
     }
 
     .demo-headline {
@@ -271,6 +275,25 @@
         text-decoration: none;
     }
 
+    .demo-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-4);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        z-index: 100;
+        text-decoration: none;
+    }
+
+    .demo-badge-floating:hover {
+        background: var(--color-primary-dark);
+        text-decoration: none;
+    }
+
     @media (max-width: 640px) {
         .demo-headline {
             font-size: var(--text-3xl);
@@ -301,6 +324,7 @@
 </style>
 
 <a href="/" class="brand-badge-floating">55meet</a>
+<a href="/demo" class="demo-badge-floating">Demo</a>
 
 <main>
     <!-- Section 1: Hero -->
@@ -347,17 +371,27 @@
             <div class="demo-strategy-banner">
                 <div class="strategy-label">3AM Strategy* Statement</div>
                 <p class="strategy-statement">{{ company.strategy }}</p>
-                <p class="strategy-footnote">*3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am, without reaching for a slide deck. <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a></p>
+                <p class="strategy-footnote">*3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am (without reaching for a slide deck). <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a></p>
             </div>
 
-            <p class="demo-body">Your strategy is clear. But are you going as fast as you should?</p>
+            </div>
+        <a href="#question" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+    </section>
+
+    <!-- Section 4: The Question -->
+    <section id="question" class="demo-section demo-section-dark">
+        <div class="demo-content reveal">
+            <h2 class="demo-headline">Your strategy is clear.</h2>
+            <p class="demo-body">But are you going as fast as you should?</p>
         </div>
         <a href="#process" class="demo-scroll-cue" aria-label="Scroll down">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </a>
     </section>
 
-    <!-- Section 4: Signal Capture Intro -->
+    <!-- Section 5: Signal Capture Intro -->
     <section id="process" class="demo-section">
         <div class="demo-content reveal">
             <p class="demo-eyebrow">The Process</p>
@@ -372,9 +406,8 @@
     <!-- Section 5: Team -->
     <section id="team" class="demo-section demo-section-dark">
         <div class="demo-content reveal">
-            <p class="demo-eyebrow">Your Leadership Team</p>
+            <p class="demo-eyebrow">Your ClearBrief Inc. Leadership Team</p>
             <h2 class="demo-headline">They've completed Signal Capture™</h2>
-            <p class="demo-body">Now it's your turn to add your signal alongside theirs.</p>
 
             <div class="demo-team-grid">
                 {% for member in team_members %}
@@ -388,17 +421,8 @@
                 </div>
                 {% endfor %}
             </div>
-        </div>
-        <a href="#begin" class="demo-scroll-cue" aria-label="Scroll down">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-        </a>
-    </section>
 
-    <!-- Section 6: Begin -->
-    <section id="begin" class="demo-section demo-section-muted">
-        <div class="demo-content reveal">
-            <p class="demo-eyebrow">Your Turn</p>
-            <p class="demo-body">Join your team. Experience the Signal Capture™ process that kicks off each 55meet.</p>
+            <p class="demo-body">Now it's your turn to add your signal alongside theirs.</p>
 
             <a href="/demo/signal?seed={{ seed }}" class="demo-cta">
                 Add Your Signal

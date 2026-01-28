@@ -489,6 +489,11 @@ def build_demo_synthesis_prompt(responses: List[dict], strategy_statement: str) 
 
     return f"""You are analyzing responses from a leadership team's monthly alignment diagnostic.
 
+## CRITICAL REQUIREMENT - READ FIRST
+The participant named "You" is the CEO who just completed this exercise. Their comments MUST be included.
+In the attributed statements section, "You" MUST appear as a participant in at least 1 statement.
+If you fail to include "You" in the output, the synthesis is invalid.
+
 ## Context
 The team's strategy statement (the "3AM test" - what someone should know at 3AM):
 "{strategy_statement}"
@@ -503,7 +508,7 @@ Synthesize these responses into four parts:
 
 1. **Themes** (2-4 sentences): High-level summary of what the team is experiencing. Focus on patterns across responses.
 
-2. **Attributed Statements**: Specific insights with attribution. Format each as a statement followed by the names of team members whose responses support it.
+2. **Attributed Statements**: Specific insights with attribution. Format each as a statement followed by the names of team members whose responses support it. Every person must appear in at least one statement. Each participant should recognise their comments reflected in the themes.
 
 3. **Gap Diagnosis**: Identify the primary gap type from exactly one of these three options:
    - **Direction**: Team lacks shared understanding of goals or priorities
@@ -520,12 +525,15 @@ Respond ONLY with valid JSON matching this schema:
 {json.dumps(json_schema, indent=2)}
 ```
 
-IMPORTANT:
+IMPORTANT - VALIDATION RULES:
 - gap_type MUST be exactly one of: "Direction", "Alignment", or "Commitment"
 - gap_reasoning MUST explain WHY this gap type was chosen based on evidence
 - statements array should contain 3-6 attributed insights
-- Each statement.participants array should contain 1-3 team member names (use first names only)
-- suggested_recalibrations MUST contain exactly 3 actionable items"""
+- "You" MUST appear in the participants array of at least 1 statement (this is the CEO - mandatory)
+- All other team members should appear in at least one statement
+- suggested_recalibrations MUST contain exactly 3 actionable items
+
+FAILURE TO INCLUDE "You" IN AT LEAST 1 STATEMENT WILL INVALIDATE THE RESPONSE."""
 
 
 @router.post("/api/synthesize")
@@ -596,12 +604,24 @@ async def demo_synthesize_api(request_body: DemoSynthesisRequest):
         result_data = json.loads(response_text)
         result = SynthesisOutput(**result_data)
 
+        # Validate that "You" appears in statements - fix if missing
+        statements_data = [s.model_dump() for s in result.statements]
+        you_included = any("You" in s.get("participants", []) for s in statements_data)
+
+        if not you_included:
+            # Claude didn't include "You" - inject into first statement
+            print("WARNING: AI did not include 'You' in synthesis - injecting")
+            if statements_data:
+                statements_data[0]["participants"].append("You")
+        else:
+            print("OK: AI included 'You' in synthesis")
+
         # Return synthesis data
         return JSONResponse(content={
             "themes": result.themes,
             "gap_type": result.gap_type,
             "gap_reasoning": result.gap_reasoning,
-            "statements": [s.model_dump() for s in result.statements],
+            "statements": statements_data,
             "suggested_recalibrations": result.suggested_recalibrations
         })
 

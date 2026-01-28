@@ -84,6 +84,10 @@
         text-transform: uppercase;
         letter-spacing: 0.1em;
         margin-bottom: var(--space-4);
+        text-align: center;
+        width: 100%;
+        max-width: none;
+        display: block;
     }
 
     .slide-headline {
@@ -91,6 +95,7 @@
         letter-spacing: var(--tracking-tight);
         margin-bottom: var(--space-6);
         line-height: var(--leading-tight);
+        text-align: center;
     }
 
     .slide-body {
@@ -294,6 +299,7 @@
     /* CTA Button */
     .slide-cta {
         margin-top: var(--space-8);
+        text-align: center;
     }
 
     .demo-cta {
@@ -390,7 +396,8 @@
             <p class="slide-body">In The 55, the facilitator guides the group through these layers, respecting each participant's choice about what to share.</p>
 
             <div class="slide-cta">
-                <button type="button" class="demo-cta" data-next="2">
+                <p class="analysing-text" id="analysing-text" style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3); width: 100%; max-width: none; display: block; text-align: center;">Analysing team responses...</p>
+                <button type="button" class="demo-cta" data-next="2" id="layer1-btn" disabled style="opacity: 0.5; cursor: wait;">
                     See Layer 1
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -512,7 +519,7 @@
             <p class="slide-eyebrow">The Outcome</p>
             <h2 class="slide-headline">Finding the gap</h2>
             <p class="slide-body">Using these three layers, the facilitator guides the team to identify the underlying gap — the root cause of the drag they're experiencing.</p>
-            <p class="slide-body">For ClearBrief, here's what emerged...</p>
+            <p class="slide-body">This is the view that the facilitator will see. And then guide the conversation to uncover the best and most effective intervention to execute the strategy. The time frame will be the next 30 days.</p>
 
             <div class="slide-cta">
                 <a href="/demo/synthesis?seed={{ seed }}" class="demo-cta">
@@ -587,30 +594,87 @@
     // Load CEO comments
     loadCeoComments();
 
-    // Load pre-generated synthesis from cache (generated on signal page)
-    function loadSynthesis() {
+    // Enable the Layer 1 button when analysis is ready
+    function enableLayer1Button() {
+        const btn = document.getElementById('layer1-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
+    }
+
+    // Generate synthesis via API while user reads this page
+    async function generateSynthesis() {
+        const analysingText = document.getElementById('analysing-text');
+
+        // Check for cached synthesis first
         const cached = sessionStorage.getItem(SYNTHESIS_CACHE_KEY);
         if (cached) {
             try {
                 const synthesis = JSON.parse(cached);
-                console.log('Loading cached synthesis:', synthesis);
+                console.log('Using cached synthesis');
                 updateSynthesisUI(synthesis);
-                // Show indicator that AI synthesis loaded
-                const indicator = document.createElement('div');
-                indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:#10b981;color:white;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;';
-                indicator.textContent = 'AI Synthesis Loaded';
-                document.body.appendChild(indicator);
-                setTimeout(() => indicator.remove(), 3000);
+                if (analysingText) {
+                    analysingText.textContent = 'Analysis complete ✓';
+                    analysingText.style.color = 'var(--color-primary)';
+                }
+                enableLayer1Button();
+                return;
             } catch (e) {
                 console.error('Failed to parse cached synthesis:', e);
             }
-        } else {
-            console.warn('No cached synthesis found - using server-rendered fallback');
-            // Show indicator that fallback is being used
-            const indicator = document.createElement('div');
-            indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:#f59e0b;color:white;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;';
-            indicator.textContent = 'Using Fallback (no cache)';
-            document.body.appendChild(indicator);
+        }
+
+        // Get visitor bullets from sessionStorage
+        const demoState = sessionStorage.getItem(DEMO_STATE_KEY);
+        let bullets = [];
+        let imageId = null;
+        if (demoState) {
+            try {
+                const state = JSON.parse(demoState);
+                bullets = state.bullets || [];
+                imageId = state.imageId || null;
+            } catch (e) {
+                console.warn('Failed to parse demo state:', e);
+            }
+        }
+
+        // Call synthesis API
+        try {
+            const response = await fetch('/demo/api/synthesize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    seed: seed,
+                    bullets: bullets,
+                    image_id: imageId
+                })
+            });
+
+            if (response.ok) {
+                const synthesis = await response.json();
+                // Cache the result
+                sessionStorage.setItem(SYNTHESIS_CACHE_KEY, JSON.stringify(synthesis));
+                updateSynthesisUI(synthesis);
+                if (analysingText) {
+                    analysingText.textContent = 'Analysis complete ✓';
+                    analysingText.style.color = 'var(--color-primary)';
+                }
+                enableLayer1Button();
+            } else {
+                console.warn('Synthesis API failed, using fallback');
+                if (analysingText) {
+                    analysingText.textContent = 'Using prepared analysis';
+                }
+                enableLayer1Button();
+            }
+        } catch (e) {
+            console.warn('Synthesis request failed:', e);
+            if (analysingText) {
+                analysingText.textContent = 'Using prepared analysis';
+            }
+            enableLayer1Button();
         }
     }
 
@@ -646,8 +710,8 @@
         }
     }
 
-    // Load pre-generated synthesis on page load
-    loadSynthesis();
+    // Generate synthesis on page load (runs in background while user reads)
+    generateSynthesis();
 })();
 </script>
 {% endblock %}
