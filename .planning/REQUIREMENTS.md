@@ -34,9 +34,16 @@ Requirements for POC Ready milestone. Each maps to roadmap phases.
 - [ ] **DEMO-25**: Challenge uses synthesis gap type (Direction/Alignment/Commitment) to personalize
 - [ ] **DEMO-26**: Email CTA to connectedworld@gmail.com with pre-filled subject
 
+### Snapshot™ Rebrand
+
+- [ ] **SNAP-01**: All "Signal Capture" references renamed to "Snapshot™" across entire app
+- [ ] **SNAP-02**: Landing page links to connecteddale.com/releases/Snapshot.html article
+- [ ] **SNAP-03**: Demo intro explains Snapshot™ (perception capture before filtering)
+- [ ] **SNAP-04**: Consistent trademark notation (Snapshot™ on first use, Snapshot thereafter)
+
 ### SEO/Meta
 
-- [ ] **META-01**: Landing page meta description mentions Signal Capture
+- [ ] **META-01**: Landing page meta description mentions Snapshot™
 - [ ] **META-02**: Meta description mentions three gap types (Direction, Alignment, Commitment)
 
 ### Conversion Tracking
@@ -91,24 +98,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LAND-08 | Phase 26 | Pending |
 | LAND-09 | Phase 26 | Pending |
 | LAND-10 | Phase 26 | Pending |
-| DEMO-22 | Phase 26 | Pending |
-| DEMO-23 | Phase 26 | Pending |
-| DEMO-24 | Phase 26 | Pending |
-| DEMO-25 | Phase 26 | Pending |
-| DEMO-26 | Phase 26 | Pending |
-| META-01 | Phase 26 | Pending |
-| META-02 | Phase 26 | Pending |
-| TRACK-01 | Phase 26 | Pending |
-| TRACK-02 | Phase 26 | Pending |
-| TRACK-03 | Phase 26 | Pending |
-| TRACK-04 | Phase 26 | Pending |
-| TRACK-05 | Phase 26 | Pending |
+| DEMO-22 | Phase 27 | Pending |
+| DEMO-23 | Phase 27 | Pending |
+| DEMO-24 | Phase 27 | Pending |
+| DEMO-25 | Phase 27 | Pending |
+| DEMO-26 | Phase 27 | Pending |
+| SNAP-01 | Phase 26 | Pending |
+| SNAP-02 | Phase 26 | Pending |
+| SNAP-03 | Phase 27 | Pending |
+| SNAP-04 | Phase 26 | Pending |
+| META-01 | Phase 28 | Pending |
+| META-02 | Phase 28 | Pending |
+| TRACK-01 | Phase 28 | Pending |
+| TRACK-02 | Phase 28 | Pending |
+| TRACK-03 | Phase 28 | Pending |
+| TRACK-04 | Phase 28 | Pending |
+| TRACK-05 | Phase 28 | Pending |
 
 **Coverage:**
-- v2.6 requirements: 22 total
-- Mapped to phases: 22
+- v2.6 requirements: 26 total
+- Mapped to phases: 26
 - Unmapped: 0
+- Coverage: 100%
 
 ---
 *Requirements defined: 2026-01-28*
-*Last updated: 2026-01-28 after initial definition*
+*Last updated: 2026-01-28 after roadmap creation (traceability section)*

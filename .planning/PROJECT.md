@@ -111,13 +111,16 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 <!-- Current scope. Building toward these. -->
 
 **v2.6 POC Ready:**
+- Rebrand "Signal Capture" to "Snapshot™" across entire app
 - Landing page "What finding the drag looks like" section with 3 client example cards
 - Benefit-focused language showing outcomes after finding the drag
 - Strengthened final CTA: "You've felt the drag. Now find it"
 - Demo end experience: visceral "Now imagine your team" challenge
 - Personal urgency: what would finding YOUR drag be worth?
 - Email CTA to connectedworld@gmail.com
-- Updated meta description with Signal Capture™ and three gap types
+- Link to Snapshot™ article (connecteddale.com/releases/Snapshot.html)
+- Updated meta description with Snapshot™ and three gap types
+- Conversion tracking (SQLite event logging)
 
 ### Out of Scope
 
