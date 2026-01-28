@@ -114,22 +114,37 @@
         </p>
     </section>
 
-    <!-- Footer Links -->
-    <footer class="tools-footer">
-        <div class="footer-links">
-            <a href="https://calendar.app.google/omyaNipJt4E6cu1r9" target="_blank" rel="noopener" class="footer-link primary">
-                Book your 1st session
+    <!-- Conversion Section - Personalized by Gap Type -->
+    <section class="demo-conversion-section">
+        {% if synthesis_gap_type == 'Direction' %}
+            <h2 class="conversion-headline">Imagine your team pulling in the same direction.</h2>
+            <p class="conversion-challenge">What would finding YOUR direction drag be worth? A quarter? Two?</p>
+            <p class="conversion-body">Right now, your team may lack shared understanding of goals or priorities. The 55 catches this drift before it compounds.</p>
+        {% elif synthesis_gap_type == 'Alignment' %}
+            <h2 class="conversion-headline">Imagine your team's work actually fitting together.</h2>
+            <p class="conversion-challenge">What would finding YOUR alignment drag be worth? A quarter? Two?</p>
+            <p class="conversion-body">Right now, your team's work may be disconnected or uncoordinated. The 55 catches this drift before it compounds.</p>
+        {% elif synthesis_gap_type == 'Commitment' %}
+            <h2 class="conversion-headline">Imagine everyone rowing the same boat.</h2>
+            <p class="conversion-challenge">What would finding YOUR commitment drag be worth? A quarter? Two?</p>
+            <p class="conversion-body">Right now, individual interests may be overriding collective success. The 55 catches this drift before it compounds.</p>
+        {% else %}
+            <h2 class="conversion-headline">Imagine finding your team's drag.</h2>
+            <p class="conversion-challenge">What would that be worth? A quarter? Two?</p>
+            <p class="conversion-body">The 55 catches alignment drift before it compounds.</p>
+        {% endif %}
+
+        <div class="conversion-cta-container">
+            <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20-%20{{ synthesis_gap_type }}%20Gap%20Demo" class="conversion-cta-primary">
+                Email Dale about my {{ synthesis_gap_type }} gap
             </a>
-            <a href="https://www.connecteddale.com" target="_blank" rel="noopener" class="footer-link">
-                More about Dale
-            </a>
-            <a href="/" class="footer-link">
-                Back to top
-            </a>
-            <a href="/demo" class="footer-link">
-                Restart demo
-            </a>
+            <p class="conversion-cta-helper">Dale facilitates The 55 monthly alignment diagnostic</p>
         </div>
+    </section>
+
+    <!-- Subtle secondary navigation -->
+    <footer class="demo-conversion-footer">
+        <a href="/demo" class="conversion-link-subtle">Start a new demo</a>
     </footer>
 </div>
 
