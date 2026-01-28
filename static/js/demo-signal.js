@@ -1,5 +1,5 @@
 /**
- * Demo Signal Capture JavaScript
+ * Demo Snapshot JavaScript
  *
  * Handles image browser, selection, and bullet input for demo experience.
  * Stores response in sessionStorage (no database writes for demo).

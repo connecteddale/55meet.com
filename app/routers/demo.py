@@ -123,7 +123,7 @@ def get_shuffled_team(seed: int) -> list:
 
 @router.get("")
 async def demo_intro(request: Request):
-    """Demo intro page - combined scrolling intro with company, team, and Signal Capture explanation."""
+    """Demo intro page - combined scrolling intro with company, team, and Snapshot explanation."""
     seed = get_demo_seed(request)
     team_members = get_shuffled_team(seed)
 
@@ -204,7 +204,7 @@ async def demo_team(request: Request):
 
 @router.get("/prepare")
 async def demo_prepare(request: Request):
-    """Demo prepare page - explains Signal Capture before starting."""
+    """Demo prepare page - explains Snapshot before starting."""
     # Seed is required for consistent team tracking
     seed_param = request.query_params.get("seed")
     if not seed_param:
@@ -230,7 +230,7 @@ async def demo_prepare(request: Request):
 
 @router.get("/prompt")
 async def demo_prompt(request: Request):
-    """Demo prompt page - shows strategy and invites Signal Capture."""
+    """Demo prompt page - shows strategy and invites Snapshot."""
     # Seed is required for consistent team tracking
     seed_param = request.query_params.get("seed")
     if not seed_param:
@@ -301,7 +301,7 @@ def get_response_image_url(filename: str) -> str:
 
 @router.get("/signal")
 async def demo_signal(request: Request):
-    """Demo Signal Capture page - visitor selects image and enters bullets.
+    """Demo Snapshot page - visitor selects image and enters bullets.
 
     Requires seed parameter for consistent image ordering.
     Stores response in sessionStorage (no database).
