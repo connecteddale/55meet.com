@@ -94,21 +94,30 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 - Meeting control strip with Close Capture and contextual state hints — v2.4
 - Live waiting screen: member name chips + View Transition redirect — v2.4
 
+**v2.5 Interactive Demo:**
+- Self-guided demo experience for landing page visitors — v2.5
+- Fictional company context: ClearBrief ($65M legal tech SaaS) — v2.5
+- Pre-defined strategy statement (no user input to get stuck on) — v2.5
+- Team of 4 fictional members with shuffled names from pool — v2.5
+- Signal Capture tease before visitor experiences it — v2.5
+- Visitor completes real Signal Capture (image selection + bullets) — v2.5
+- Visitor's response shown alongside pre-baked team responses — v2.5
+- Real AI synthesis call on layers page (background while user reads) — v2.5
+- Visitor ("You") validated/injected to appear in attributed themes — v2.5
+- Matches existing app UX patterns and design system — v2.5
+
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-**v2.5 Interactive Demo:**
-- Self-guided demo experience for landing page visitors
-- Fictional company context: ClearBrief ($65M legal tech SaaS)
-- Pre-defined strategy statement (no user input to get stuck on)
-- Team of 4 fictional members with shuffled names from pool
-- Signal Capture tease before visitor experiences it
-- Visitor completes real Signal Capture (image selection + bullets)
-- Visitor's response shown alongside pre-baked team responses
-- Pre-crafted synthesis revealing Alignment gap (handoff/coordination)
-- No AI API calls — all content pre-generated except visitor's input
-- Matches existing app UX patterns and design system
+**v2.6 POC Ready:**
+- Landing page "What finding the drag looks like" section with 3 client example cards
+- Benefit-focused language showing outcomes after finding the drag
+- Strengthened final CTA: "You've felt the drag. Now find it"
+- Demo end experience: visceral "Now imagine your team" challenge
+- Personal urgency: what would finding YOUR drag be worth?
+- Email CTA to connectedworld@gmail.com
+- Updated meta description with Signal Capture™ and three gap types
 
 ### Out of Scope
 
@@ -126,17 +135,18 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 
 ## Context
 
-**Current state (post-v2.4):**
+**Current state (post-v2.5):**
 - Full facilitation tool at 55.connecteddale.com / 55meet.com
 - Automated lifecycle: close → synthesize → reveal (no manual steps)
 - Participant flow: 4 screens (QR scan → name → browse+select → waiting → results)
+- Interactive demo: ClearBrief scenario with real AI synthesis
 - View Transitions API: smooth animated page transitions throughout
 - Touch-optimized: card grids, scale animations, progressive inputs
 - Live feedback: waiting screen shows member names, meeting view has control strip
 - PDF export: Presentation-ready session reports with fpdf2/Inter font
 - Design system: Inter font, Apple-inspired colors, fluid typography
 - WCAG 2.1 AA accessibility compliant
-- ~9,000 LOC across Python/HTML/CSS/JS
+- ~10,000 LOC across Python/HTML/CSS/JS
 
 **The 55 background:**
 - Monthly alignment diagnostic Dale facilitates with leadership teams
@@ -178,7 +188,7 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 | Apple-inspired color palette | Minimalist, professional appearance | Good — v2.2 shipped |
 | Fluid typography with clamp() | Responsive scaling without breakpoints | Good — works at all sizes |
 | State-driven meeting screen | Single template, multiple modes via conditionals | Good — simpler than separate views |
-| Defer Interactive Demo | Prioritize core experience over marketing demo | Pending |
+| Defer Interactive Demo | Prioritize core experience over marketing demo | Good — v2.5 shipped |
 | fpdf2 for PDF export | Pure Python, no system deps, active maintenance | Good — clean integration |
 | Inter TTF font embedding | Matches design system, SIL license allows embedding | Good — consistent branding |
 | Remove DRAFT state entirely | No value in dead code path; sessions start immediately | Good — simpler lifecycle |
@@ -220,4 +230,4 @@ Original phases (10-29, 34-37) renumbered to 1-24:
 | 37 | 24 | meeting-view-live-feedback |
 
 ---
-*Last updated: 2026-01-27 after v2.5 Interactive Demo milestone started*
+*Last updated: 2026-01-28 after v2.6 POC Ready milestone started*

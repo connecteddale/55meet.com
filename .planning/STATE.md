@@ -2,41 +2,31 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-27)
+See: .planning/PROJECT.md (updated 2026-01-28)
 
 **Core value:** The 55 catches alignment problems before they become execution problems. 55 minutes. Once a month. The truth about where the team actually is.
-**Current focus:** v2.5 Interactive Demo - Phase 25
+**Current focus:** v2.6 POC Ready - Phase 26
 
 ## Current Position
 
-Phase: 25 (Interactive Demo)
-Plan: 4 of 4
-Status: UAT in progress
-Last activity: 2026-01-28 — UX fixes during UAT (centering, synthesis "You" inclusion, badges)
+Phase: 26 (POC Ready)
+Plan: Not started
+Status: Defining requirements
+Last activity: 2026-01-28 — Milestone v2.6 started
 
-Progress: [============================] v2.0-v2.5 complete, Phase 25 done (4/4 plans)
+Progress: [============================] v2.0-v2.5 complete, v2.6 starting
 
-## Current Milestone: v2.5 Interactive Demo
+## Current Milestone: v2.6 POC Ready
 
-**Goal:** Let landing page visitors experience Signal Capture and see what synthesis reveals — without needing a real team.
+**Goal:** Make landing page and demo convert visitors into clients — concrete examples, visceral challenge, clear CTA.
 
-**Phases:**
-- Phase 25: Interactive Demo (4 plans complete)
-
-**Key decisions:**
-- Fictional company: ClearBrief ($65M legal tech SaaS)
-- Strategy: "Help law firms win clients through transparency — open billing, open matters, no surprises."
-- Team: Visitor + 4 fictional members (names shuffled from pool)
-- Gap revealed: Alignment (handoff/coordination)
-- Real AI synthesis call on layers page (background while user reads)
-- Visitor ("You") must appear in at least 1 attributed theme (validated/injected if AI omits)
-
-**Demo flow complete:**
-1. Landing page (/) - "See how it works" CTA
-2. Demo intro (/demo) - ClearBrief context and team
-3. Signal capture (/demo/signal) - Image browse and selection
-4. Responses (/demo/responses) - Visitor + 4 team responses
-5. Synthesis (/demo/synthesis) - Alignment gap reveal with CTAs
+**Target features:**
+- "What finding the drag looks like" section with 3 client example cards
+- Benefit-focused outcomes language
+- Strengthened final CTA on landing page
+- Demo end experience with personal "imagine your team" challenge
+- Email CTA to connectedworld@gmail.com
+- Updated meta description (Signal Capture, three gap types)
 
 ## Milestone History
 
@@ -51,10 +41,6 @@ Progress: [============================] v2.0-v2.5 complete, Phase 25 done (4/4 
 
 ## Performance Metrics
 
-**v2.5 Velocity:**
-- Plans completed: 4
-- Duration: 1 day (2026-01-27)
-
 **Overall (v2.0-v2.5):**
 - Total plans: 54
 - Total milestones: 6
@@ -68,8 +54,7 @@ All decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-- Landing page copy review - user to revise narrative content
-- Landing page scroll indicator - add visual cue that content continues below fold
+None — cleared at milestone start.
 
 ### Blockers/Concerns
 
@@ -78,25 +63,5 @@ Non-blocking, carried forward:
 
 ## Session Continuity
 
-Last session: 2026-01-28T14:45:00Z
-Stopped at: UAT testing of Phase 25 - fixing UX issues as discovered
-Resume file: .planning/phases/25-interactive-demo/25-UAT.md
-
-## Recent Fixes (2026-01-28)
-
-- Fixed text centering across all pages (root cause: global `p { max-width: 65ch }`)
-- Added `max-width: none` to eyebrows and analysing text
-- Added floating "55meet" badge to landing page
-- Added "Demo" badge to demo intro page
-- Fixed synthesis to include visitor ("You") in attributed themes
-- Added validation to inject "You" if AI omits them
-- "See Layer 1" button disabled until analysis completes
-- Analysis runs in background on layers page (not blocking on signal page)
-- Updated copy throughout demo flow
-
-## Next Steps
-
-1. Continue UAT testing of demo flow
-2. Verify "You" appears in synthesis themes consistently
-3. Gather feedback on demo effectiveness
-4. Define next milestone (v2.6)
+Last session: 2026-01-28
+Stopped at: Milestone v2.6 initialization — requirements gathering
