@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class AttributedStatement(BaseModel):
     """An insight with attribution to supporting team members."""
+    name: str = Field(description="Short 1-3 word title for this theme (e.g., 'Handoff Friction', 'Resource Tension')")
     statement: str = Field(description="The insight or observation")
     participants: List[str] = Field(description="Names of team members supporting this insight")
 

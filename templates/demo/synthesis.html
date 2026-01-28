@@ -1,31 +1,103 @@
 {% extends "base.html" %}
 
-{% block title %}Synthesis Reveal - Demo - The 55{% endblock %}
+{% block title %}Facilitator Tools - Demo - The 55{% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block content %}
-<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/" class="brand-badge-floating">The 55</a>
 <a href="/demo" class="demo-badge-floating">Demo</a>
 
-<div class="synthesis-page demo-synthesis">
-    <div class="demo-strategy-banner">
-        <div class="strategy-label">3AM Strategy* Statement</div>
-        <p class="strategy-statement">
-            {{ company.strategy }}
-        </p>
-    </div>
-    <p class="strategy-footnote">
-        *3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am (without reaching for a slide deck). <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a>
-    </p>
+<div class="facilitator-tools-page">
+    <header class="tools-header">
+        <p class="tools-eyebrow">Facilitator Tools</p>
+        <h1 class="tools-headline">The Three Layers</h1>
+        <p class="tools-subheadline">What the facilitator uses to guide the conversation</p>
+    </header>
 
-    <div class="synthesis-header">
-        <h2>What Your Team Found</h2>
-        <p class="synthesis-subtitle">{{ company.name }} Synthesis</p>
-    </div>
+    <!-- Layer 1: High Level Insights -->
+    <section class="layer-section">
+        <div class="layer-header">
+            <span class="layer-number">1</span>
+            <h2>High Level Insights</h2>
+        </div>
+        <div class="layer-content highlight-box">
+            <p class="insights-text" id="synthesis-themes">{{ synthesis_themes or 'Loading synthesis...' }}</p>
+        </div>
+    </section>
 
-    <div class="synthesis-section gap-section" id="gap-section">
-        <h3>Primary Gap</h3>
+    <!-- Layer 2: Attributed Themes -->
+    <section class="layer-section">
+        <div class="layer-header">
+            <span class="layer-number">2</span>
+            <h2>Attributed Themes</h2>
+        </div>
+        <div class="layer-content" id="themes-container">
+            {% for stmt in synthesis_statements %}
+            <div class="theme-item">
+                {% if stmt.name %}<h4 class="theme-name">{{ stmt.name }}</h4>{% endif %}
+                <p class="theme-statement">{{ stmt.statement }}</p>
+                <div class="theme-participants">
+                    {% for name in stmt.participants %}
+                    <span class="participant-tag">{{ name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <p class="loading-text">Loading themes...</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Layer 3: Individual Comments -->
+    <section class="layer-section">
+        <div class="layer-header">
+            <span class="layer-number">3</span>
+            <h2>Individual Comments</h2>
+        </div>
+        <div class="layer-content">
+            <div class="comments-grid">
+                <!-- CEO (You) -->
+                <div class="comment-card ceo-card">
+                    <div class="comment-header">
+                        <div class="ceo-avatar">Y</div>
+                        <div>
+                            <div class="comment-name">You</div>
+                            <div class="comment-role">CEO</div>
+                        </div>
+                    </div>
+                    <ul class="comment-bullets" id="ceo-bullets">
+                        <li>Loading...</li>
+                    </ul>
+                </div>
+                <!-- Team members -->
+                {% for response in team_responses %}
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-photo">
+                            <img src="{{ response.photo_url }}" alt="{{ response.name }}">
+                        </div>
+                        <div>
+                            <div class="comment-name">{{ response.first_name }}</div>
+                            <div class="comment-role">{{ response.role }}</div>
+                        </div>
+                    </div>
+                    <ul class="comment-bullets">
+                        {% for bullet in response.bullets %}
+                        <li>{{ bullet }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Gap Indicator -->
+    <section class="gap-section">
+        <div class="gap-header">
+            <h2>Suggested Gap</h2>
+        </div>
         <div class="gap-indicator" id="gap-indicator">
             <span class="gap-type" id="gap-type">{{ synthesis_gap_type or 'Analyzing...' }}</span>
         </div>
@@ -40,40 +112,25 @@
             Analyzing your team's responses...
             {% endif %}
         </p>
-    </div>
+    </section>
 
-    <div class="synthesis-section themes-section">
-        <h3>Team Themes</h3>
-        <p class="themes-text" id="themes-text">{{ synthesis_themes or 'Loading synthesis...' }}</p>
-    </div>
-
-    <div class="synthesis-section statements-section">
-        <h3>Key Insights</h3>
-        <ul class="insights-list" id="insights-list">
-            {% for stmt in synthesis_statements %}
-            <li class="insight-item">
-                <span class="insight-text">{{ stmt.statement }}</span>
-                <span class="insight-attribution">({{ stmt.participants|join(', ') }})</span>
-            </li>
-            {% else %}
-            <li class="insight-item" style="color: var(--color-text-tertiary);">Loading insights...</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="demo-cta-section">
-        <h3>Ready to find your team's drag?</h3>
-        <p>The 55 is a 55-minute monthly diagnostic that makes real divergence visible - so you can fix what's actually slowing you down.</p>
-
-        <div class="demo-cta-buttons">
-            <a href="mailto:dale@connecteddale.com?subject=The%2055%20Inquiry" class="btn btn-primary btn-large">Book Your First Session</a>
-            <a href="/" class="btn btn-secondary">Learn More</a>
+    <!-- Footer Links -->
+    <footer class="tools-footer">
+        <div class="footer-links">
+            <a href="https://calendar.app.google/omyaNipJt4E6cu1r9" target="_blank" rel="noopener" class="footer-link primary">
+                Book your 1st session
+            </a>
+            <a href="https://www.connecteddale.com" target="_blank" rel="noopener" class="footer-link">
+                More about Dale
+            </a>
+            <a href="/" class="footer-link">
+                Back to top
+            </a>
+            <a href="/demo" class="footer-link">
+                Restart demo
+            </a>
         </div>
-
-        <p class="demo-restart">
-            <a href="/demo">Restart Demo</a>
-        </p>
-    </div>
+    </footer>
 </div>
 
 <style>
@@ -114,93 +171,322 @@
     text-decoration: none;
 }
 
-/* Strategy banner styling */
-.demo-strategy-banner {
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border-light);
-    border-radius: 8px;
-    padding: var(--space-4) var(--space-5);
-    margin-bottom: var(--space-2);
+/* Page layout */
+.facilitator-tools-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4) var(--space-8);
 }
 
-.strategy-label {
+/* Header */
+.tools-header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+}
+
+.tools-eyebrow {
+    font-size: var(--text-sm);
     font-weight: 600;
     color: var(--color-primary);
-    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-2);
+    max-width: none;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.tools-headline {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: var(--tracking-tight);
     margin-bottom: var(--space-2);
 }
 
-.strategy-statement {
-    font-size: var(--text-base);
-    font-style: italic;
+.tools-subheadline {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    max-width: none;
+}
+
+/* Layer sections */
+.layer-section {
+    margin-bottom: var(--space-8);
+}
+
+.layer-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.layer-number {
+    width: 32px;
+    height: 32px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    flex-shrink: 0;
+}
+
+.layer-header h2 {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin: 0;
+}
+
+.layer-content {
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+    padding: var(--space-5);
+}
+
+.layer-content.highlight-box {
+    background: linear-gradient(135deg, var(--color-bg-secondary) 0%, rgba(0, 102, 204, 0.05) 100%);
+    border: 1px solid var(--color-border-light);
+}
+
+.insights-text {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
     color: var(--color-text);
     margin: 0;
 }
 
-.strategy-footnote {
-    font-size: var(--text-xs);
+.loading-text {
     color: var(--color-text-tertiary);
-    margin: 0 0 var(--space-4) 0;
+    font-style: italic;
 }
 
-.strategy-footnote a {
+/* Themes */
+.theme-item {
+    padding: var(--space-4);
+    background: var(--color-bg);
+    border-radius: 8px;
+    margin-bottom: var(--space-3);
+}
+
+.theme-item:last-child {
+    margin-bottom: 0;
+}
+
+.theme-name {
+    font-size: var(--text-sm);
+    font-weight: 700;
     color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    margin: 0 0 var(--space-1) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.strategy-footnote a:hover {
-    color: var(--color-primary-dark);
+.theme-statement {
+    font-size: var(--text-base);
+    color: var(--color-text);
+    margin: 0 0 var(--space-2) 0;
+    line-height: var(--leading-relaxed);
 }
 
-/* Demo-specific CTA section styling */
-.demo-cta-section {
-    margin-top: var(--spacing-8, 4rem);
-    padding: var(--spacing-6, 3rem) var(--spacing-4, 2rem);
-    text-align: center;
-    background: var(--color-surface-secondary, #f5f5f7);
-    border-radius: var(--radius-lg, 12px);
-}
-
-.demo-cta-section h3 {
-    margin-bottom: var(--spacing-3, 1rem);
-    font-size: var(--text-xl, 1.5rem);
-    color: var(--color-text, #1d1d1f);
-}
-
-.demo-cta-section > p {
-    margin-bottom: var(--spacing-5, 2rem);
-    color: var(--color-text-secondary, #6e6e73);
-    max-width: 40ch;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.demo-cta-buttons {
+.theme-participants {
     display: flex;
-    gap: var(--spacing-3, 1rem);
-    justify-content: center;
     flex-wrap: wrap;
+    gap: var(--space-2);
 }
 
-.demo-restart {
-    margin-top: var(--spacing-5, 2rem);
+.participant-tag {
+    font-size: var(--text-xs);
+    background: var(--color-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
 }
 
-.demo-restart a {
-    color: var(--color-text-tertiary, #86868b);
-    font-size: var(--text-sm, 0.875rem);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+/* Comments grid */
+.comments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
 }
 
-.demo-restart a:hover {
-    color: var(--color-text-secondary, #6e6e73);
+.comment-card {
+    background: var(--color-bg);
+    border-radius: 8px;
+    padding: var(--space-4);
 }
 
-/* Synthesis page refinements for demo */
-.demo-synthesis .synthesis-header h2 {
-    font-size: var(--text-2xl, 2rem);
+.comment-card.ceo-card {
+    border: 2px solid var(--color-primary);
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.ceo-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--text-lg);
+}
+
+.comment-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.comment-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.comment-name {
+    font-weight: 600;
+    font-size: var(--text-sm);
+}
+
+.comment-role {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+}
+
+.comment-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.comment-bullets li {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    padding: var(--space-1) 0;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.comment-bullets li:first-child {
+    border-top: none;
+}
+
+/* Gap section */
+.gap-section {
+    padding: var(--space-8) var(--space-5);
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+    margin-bottom: var(--space-8);
+}
+
+.gap-header h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-secondary);
+}
+
+.gap-indicator {
+    display: block;
+    margin-bottom: var(--space-3);
+}
+
+.gap-type {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    background: var(--color-bg);
+    padding: var(--space-2) var(--space-6);
+    border-radius: 8px;
+    border: 2px solid var(--color-border);
+    display: inline-block;
+}
+
+.gap-description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    max-width: none;
+    margin: 0;
+    text-align: left;
+}
+
+/* Footer */
+.tools-footer {
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.footer-link {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: 6px;
+    transition: all var(--duration-fast) var(--ease-out);
+}
+
+.footer-link:hover {
+    color: var(--color-text);
+    background: var(--color-bg-secondary);
+    text-decoration: none;
+}
+
+.footer-link.primary {
+    background: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.footer-link.primary:hover {
+    background: var(--color-primary-dark);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .facilitator-tools-page {
+        padding-top: var(--space-12);
+    }
+
+    .tools-headline {
+        font-size: var(--text-2xl);
+    }
+
+    .comments-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-link {
+        width: 100%;
+        max-width: 240px;
+        text-align: center;
+    }
 }
 </style>
 
@@ -223,7 +509,33 @@
         'Commitment': 'Individual interests may be overriding collective success.'
     };
 
-    // Load cached synthesis from layers page
+    // Load CEO comments from session storage
+    function loadCeoComments() {
+        const ceoBullets = document.getElementById('ceo-bullets');
+        if (!ceoBullets) return;
+
+        try {
+            const saved = sessionStorage.getItem(DEMO_STATE_KEY);
+            if (!saved) {
+                ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+                return;
+            }
+
+            const data = JSON.parse(saved);
+            if (!data.bullets || data.bullets.length === 0) {
+                ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+                return;
+            }
+
+            const html = data.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+            ceoBullets.innerHTML = html;
+        } catch (e) {
+            console.warn('Failed to load CEO comments:', e);
+            ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+        }
+    }
+
+    // Load cached synthesis
     function loadCachedSynthesis() {
         try {
             const cached = sessionStorage.getItem(SYNTHESIS_CACHE_KEY);
@@ -231,34 +543,36 @@
 
             const synthesis = JSON.parse(cached);
 
-            // Update gap type
-            const gapType = document.getElementById('gap-type');
-            const gapIndicator = document.getElementById('gap-indicator');
-            const gapDescription = document.getElementById('gap-description');
-            if (gapType && synthesis.gap_type) {
-                gapType.textContent = synthesis.gap_type;
-                gapIndicator.className = 'gap-indicator gap-' + synthesis.gap_type.toLowerCase();
-                gapDescription.textContent = synthesis.gap_reasoning || gapDescriptions[synthesis.gap_type] || '';
-            }
-
-            // Update themes
-            const themesText = document.getElementById('themes-text');
+            // Update themes text
+            const themesText = document.getElementById('synthesis-themes');
             if (themesText && synthesis.themes) {
                 themesText.textContent = synthesis.themes;
             }
 
-            // Update insights
-            const insightsList = document.getElementById('insights-list');
-            if (insightsList && synthesis.statements && synthesis.statements.length > 0) {
+            // Update gap
+            const gapType = document.getElementById('gap-type');
+            const gapDescription = document.getElementById('gap-description');
+            if (gapType && synthesis.gap_type) {
+                gapType.textContent = synthesis.gap_type;
+                gapDescription.textContent = synthesis.gap_reasoning || gapDescriptions[synthesis.gap_type] || '';
+            }
+
+            // Update attributed themes
+            const themesContainer = document.getElementById('themes-container');
+            if (themesContainer && synthesis.statements && synthesis.statements.length > 0) {
                 let html = '';
                 synthesis.statements.forEach(stmt => {
-                    const participants = stmt.participants.join(', ');
-                    html += `<li class="insight-item">
-                        <span class="insight-text">${escapeHtml(stmt.statement)}</span>
-                        <span class="insight-attribution">(${escapeHtml(participants)})</span>
-                    </li>`;
+                    const participantTags = stmt.participants.map(p =>
+                        `<span class="participant-tag">${escapeHtml(p)}</span>`
+                    ).join('');
+                    const nameHtml = stmt.name ? `<h4 class="theme-name">${escapeHtml(stmt.name)}</h4>` : '';
+                    html += `<div class="theme-item">
+                        ${nameHtml}
+                        <p class="theme-statement">${escapeHtml(stmt.statement)}</p>
+                        <div class="theme-participants">${participantTags}</div>
+                    </div>`;
                 });
-                insightsList.innerHTML = html;
+                themesContainer.innerHTML = html;
             }
 
         } catch (e) {
@@ -266,10 +580,11 @@
         }
     }
 
-    // Load synthesis
+    // Initialize
+    loadCeoComments();
     loadCachedSynthesis();
 
-    // Clear cache only when user clicks "Restart Demo"
+    // Clear cache when restarting demo
     document.querySelectorAll('a[href="/demo"]').forEach(link => {
         link.addEventListener('click', function() {
             sessionStorage.removeItem(DEMO_STATE_KEY);

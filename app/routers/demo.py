@@ -341,14 +341,17 @@ DEMO_SYNTHESIS = {
     "gap_type": "Alignment",
     "statements": [
         {
+            "name": "Timeline Mismatch",
             "statement": "Product development and client-facing teams are operating on different timelines",
             "participants": ["CTO", "VP Sales"]  # Roles - will be replaced with first names
         },
         {
+            "name": "Priority Disconnect",
             "statement": "Features are being built without clear alignment to client priorities",
             "participants": ["CTO", "CFO"]
         },
         {
+            "name": "Handoff Friction",
             "statement": "Handoffs between departments are where momentum is lost",
             "participants": ["CFO", "COO"]
         }
@@ -385,6 +388,7 @@ async def demo_layers(request: Request):
     for stmt in DEMO_SYNTHESIS["statements"]:
         participant_names = [role_to_name.get(role, role) for role in stmt["participants"]]
         synthesis_statements.append({
+            "name": stmt.get("name", ""),
             "statement": stmt["statement"],
             "participants": participant_names
         })
@@ -508,7 +512,11 @@ Synthesize these responses into four parts:
 
 1. **Themes** (2-4 sentences): High-level summary of what the team is experiencing. Focus on patterns across responses.
 
-2. **Attributed Statements**: Specific insights with attribution. Format each as a statement followed by the names of team members whose responses support it. Every person must appear in at least one statement. Each participant should recognise their comments reflected in the themes.
+2. **Attributed Statements**: Specific insights with attribution. Each statement needs:
+   - A short 1-3 word **name** that captures the theme (e.g., "Timeline Mismatch", "Priority Disconnect", "Handoff Friction")
+   - The full statement describing the insight
+   - The names of team members whose responses support it
+   Every person must appear in at least one statement. Each participant should recognise their comments reflected in the themes.
 
 3. **Gap Diagnosis**: Identify the primary gap type from exactly one of these three options:
    - **Direction**: Team lacks shared understanding of goals or priorities
@@ -529,6 +537,7 @@ IMPORTANT - VALIDATION RULES:
 - gap_type MUST be exactly one of: "Direction", "Alignment", or "Commitment"
 - gap_reasoning MUST explain WHY this gap type was chosen based on evidence
 - statements array should contain 3-6 attributed insights
+- Each statement MUST have a short 1-3 word "name" that captures the theme
 - "You" MUST appear in the participants array of at least 1 statement (this is the CEO - mandatory)
 - All other team members should appear in at least one statement
 - suggested_recalibrations MUST contain exactly 3 actionable items
@@ -635,6 +644,7 @@ async def demo_synthesize_api(request_body: DemoSynthesisRequest):
         for stmt in DEMO_SYNTHESIS["statements"]:
             participant_names = [role_to_name.get(role, role) for role in stmt["participants"]]
             fallback_statements.append({
+                "name": stmt.get("name", ""),
                 "statement": stmt["statement"],
                 "participants": participant_names
             })
@@ -682,9 +692,28 @@ async def demo_synthesis(request: Request):
         # Replace role placeholders with actual first names
         participant_names = [role_to_name.get(role, role) for role in stmt["participants"]]
         synthesis_statements.append({
+            "name": stmt.get("name", ""),
             "statement": stmt["statement"],
             "participants": participant_names
         })
+
+    # Build team responses for Layer 3 (Individual Comments)
+    team_responses = []
+    for member in team_members:
+        response_data = next(
+            (r for r in DEMO_RESPONSES if r["role"] == member["role"]),
+            None
+        )
+        if response_data:
+            name_key = member["name"].lower().replace(" ", "-")
+            photo_url = f"/static/images/demo/{name_key}.jpg"
+            team_responses.append({
+                "name": member["name"],
+                "first_name": member["first_name"],
+                "role": member["role"],
+                "photo_url": photo_url,
+                "bullets": response_data["bullets"]
+            })
 
     return no_cache_response(templates.TemplateResponse(
         "demo/synthesis.html",
@@ -693,7 +722,9 @@ async def demo_synthesis(request: Request):
             "company": DEMO_COMPANY,
             "synthesis_themes": DEMO_SYNTHESIS["themes"],
             "synthesis_gap_type": DEMO_SYNTHESIS["gap_type"],
+            "synthesis_gap_reasoning": DEMO_SYNTHESIS.get("gap_reasoning", ""),
             "synthesis_statements": synthesis_statements,
+            "team_responses": team_responses,
             "target_year": target_year,
             "seed": seed
         }

@@ -66,6 +66,7 @@
         <ul class="results-insights">
             {% for stmt in synthesis_statements %}
             <li>
+                {% if stmt.name %}<span class="insight-name">{{ stmt.name }}</span>{% endif %}
                 <span class="insight-text">{{ stmt.statement }}</span>
                 <span class="insight-attribution">&mdash; {{ stmt.participants|join(', ') }}</span>
             </li>

@@ -412,10 +412,6 @@ html {
     font-size: var(--text-2xl);
   }
 
-  .landing-section-headline br {
-    display: none;
-  }
-
   .landing-body {
     font-size: var(--text-base);
   }

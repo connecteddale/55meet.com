@@ -61,7 +61,10 @@ Synthesize these responses into four parts:
 
 1. **Themes** (2-4 sentences): High-level summary of what the team is experiencing. Focus on patterns across responses.
 
-2. **Attributed Statements**: Specific insights with attribution. Format each as a statement followed by the names of team members whose responses support it.
+2. **Attributed Statements**: Specific insights with attribution. Each statement needs:
+   - A short 1-3 word **name** that captures the theme (e.g., "Timeline Mismatch", "Priority Disconnect", "Handoff Friction")
+   - The full statement describing the insight
+   - The names of team members whose responses support it
 
 3. **Gap Diagnosis**: Identify the primary gap type from exactly one of these three options:
    - **Direction**: Team lacks shared understanding of goals or priorities
@@ -82,6 +85,7 @@ IMPORTANT:
 - gap_type MUST be exactly one of: "Direction", "Alignment", or "Commitment"
 - gap_reasoning MUST explain WHY this gap type was chosen based on evidence
 - statements array should contain 3-6 attributed insights
+- Each statement MUST have a short 1-3 word "name" that captures the theme
 - Each statement.participants array should contain 1-3 team member names
 - suggested_recalibrations MUST contain exactly 3 actionable items"""
 

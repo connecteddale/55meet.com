@@ -180,6 +180,15 @@
         border-bottom: none;
     }
 
+    .theme-name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--color-primary);
+        margin: 0 0 var(--space-1) 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
     .theme-statement {
         font-size: var(--text-base);
         margin-bottom: var(--space-2);
@@ -358,7 +367,7 @@
     }
 </style>
 
-<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/" class="brand-badge-floating">The 55</a>
 <a href="/demo" class="demo-badge-floating">Demo</a>
 
 <div class="layers-container">
@@ -438,6 +447,7 @@
             <div class="layer-content-box" id="themes-box">
                 {% for stmt in synthesis_statements %}
                 <div class="theme-item" data-theme-index="{{ loop.index0 }}">
+                    {% if stmt.name %}<h4 class="theme-name">{{ stmt.name }}</h4>{% endif %}
                     <p class="theme-statement">{{ stmt.statement }}</p>
                     <div class="theme-participants">
                         {% for name in stmt.participants %}
@@ -518,12 +528,12 @@
         <div class="slide-content">
             <p class="slide-eyebrow">The Outcome</p>
             <h2 class="slide-headline">Finding the gap</h2>
-            <p class="slide-body">Using these three layers, the facilitator guides the team to identify the underlying gap — the root cause of the drag they're experiencing.</p>
-            <p class="slide-body">This is the view that the facilitator will see. And then guide the conversation to uncover the best and most effective intervention to execute the strategy. The time frame will be the next 30 days.</p>
+            <p class="slide-body">Using these three layers, the facilitator guides the team to identify the underlying gap — the root cause of the drag they're experiencing. The magic is in the conversation and discovering the biggest lever that can accelerate the strategy in the month ahead.</p>
+            <p class="slide-body">Let's go behind the curtain — here's what the facilitator sees.</p>
 
             <div class="slide-cta">
                 <a href="/demo/synthesis?seed={{ seed }}" class="demo-cta">
-                    See The Gap
+                    Facilitator Tools
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
@@ -690,7 +700,9 @@
         if (themesBox && synthesis.statements) {
             let html = '';
             synthesis.statements.forEach(stmt => {
+                const nameHtml = stmt.name ? `<h4 class="theme-name">${escapeHtml(stmt.name)}</h4>` : '';
                 html += `<div class="theme-item">
+                    ${nameHtml}
                     <p class="theme-statement">${escapeHtml(stmt.statement)}</p>
                     <div class="theme-participants">
                         ${stmt.participants.map(p => `<span class="participant-tag">${escapeHtml(p)}</span>`).join('')}
