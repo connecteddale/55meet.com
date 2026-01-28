@@ -559,3 +559,62 @@ html {
     padding: var(--space-5);
   }
 }
+
+/* ========================================
+   Outcomes Section
+   ======================================== */
+
+.landing-outcomes-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-8) auto 0;
+  max-width: 480px;
+  text-align: left;
+}
+
+.landing-outcomes-list li {
+  font-size: var(--text-lg);
+  color: var(--color-text);
+  padding: var(--space-3) 0;
+  padding-left: var(--space-6);
+  position: relative;
+  line-height: var(--leading-relaxed);
+}
+
+.landing-outcomes-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.1em;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+/* ========================================
+   Enhanced CTA Section
+   ======================================== */
+
+.landing-cta-secondary {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+.landing-cta-secondary a {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.landing-cta-secondary a:hover {
+  color: var(--color-primary);
+}
+
+@media (max-width: 640px) {
+  .landing-outcomes-list li {
+    font-size: var(--text-base);
+  }
+}
