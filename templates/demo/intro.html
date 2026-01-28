@@ -1,172 +1,224 @@
 {% extends "base.html" %}
 
-{% block title %}Try The 55 - Interactive Demo{% endblock %}
+{% block title %}Demo - The 55{% endblock %}
 
-{% block header %}
-<header class="demo-header">
-    <div class="container">
-        <h1><a href="/">The 55</a></h1>
-        <span class="demo-badge">Demo</span>
-    </div>
-</header>
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
 <style>
-    .demo-header {
-        background: var(--color-bg);
-        border-bottom: 1px solid var(--color-border-light);
-        padding: var(--space-4) 0;
+    /* Scroll snap for full-page sections */
+    html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
     }
 
-    .demo-header .container {
+    /* Demo intro - scrolling sections like landing page */
+    .demo-section {
+        min-height: 100vh;
+        min-height: 100dvh;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
+        padding: var(--space-8) var(--space-4);
+        position: relative;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
     }
 
-    .demo-header h1 {
-        font-size: var(--text-xl);
-        letter-spacing: var(--tracking-snug);
-    }
-
-    .demo-badge {
-        background: var(--color-primary-light);
-        color: var(--color-primary);
-        padding: var(--space-1) var(--space-3);
-        border-radius: 9999px;
-        font-size: var(--text-sm);
-        font-weight: 600;
-    }
-
-    .demo-intro {
-        max-width: 640px;
-        margin: 0 auto;
-        view-transition-name: demo-content;
-    }
-
-    .demo-hero {
+    .demo-content {
+        max-width: 720px;
         text-align: center;
-        padding: var(--space-8) 0 var(--space-12);
     }
 
-    .demo-hero h2 {
-        font-size: var(--text-3xl);
-        letter-spacing: var(--tracking-tight);
-        margin-bottom: var(--space-4);
+    .demo-content.reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
     }
 
-    .demo-hero p {
-        color: var(--color-text-secondary);
-        font-size: var(--text-lg);
-        max-width: 50ch;
-        margin: 0 auto;
+    .demo-content.revealed {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    .demo-company-card {
-        background: var(--color-bg-secondary);
-        border: 1px solid var(--color-border-light);
-        border-radius: 12px;
-        padding: var(--space-6);
-        margin-bottom: var(--space-8);
-        view-transition-name: company-card;
-    }
-
-    .company-header {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        margin-bottom: var(--space-4);
-    }
-
-    .company-name {
-        font-size: var(--text-2xl);
-        font-weight: 700;
-        letter-spacing: var(--tracking-tight);
-    }
-
-    .company-industry {
-        background: var(--color-primary);
-        color: white;
-        padding: var(--space-1) var(--space-2);
-        border-radius: 6px;
-        font-size: var(--text-xs);
-        font-weight: 600;
-    }
-
-    .company-revenue {
-        color: var(--color-text-secondary);
+    .demo-eyebrow {
         font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--color-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
         margin-bottom: var(--space-4);
     }
 
-    .company-strategy {
-        font-size: var(--text-lg);
-        line-height: var(--leading-relaxed);
-        color: var(--color-text);
-        border-left: 3px solid var(--color-primary);
-        padding-left: var(--space-4);
-        font-style: italic;
-    }
-
-    .demo-team-section {
-        margin-bottom: var(--space-8);
-    }
-
-    .demo-team-section h3 {
-        font-size: var(--text-xl);
-        margin-bottom: var(--space-2);
-    }
-
-    .demo-team-section .section-subtitle {
-        color: var(--color-text-secondary);
-        font-size: var(--text-base);
+    .demo-headline {
+        font-size: var(--text-4xl);
+        letter-spacing: var(--tracking-tight);
+        line-height: var(--leading-tight);
         margin-bottom: var(--space-6);
     }
 
+    .demo-subheadline {
+        font-size: var(--text-xl);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-4);
+    }
+
+    .demo-body {
+        font-size: var(--text-lg);
+        color: var(--color-text-secondary);
+        line-height: var(--leading-relaxed);
+        margin-bottom: var(--space-4);
+    }
+
+    .demo-body:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .demo-strategy-quote {
+        font-size: var(--text-xl);
+        font-style: italic;
+        color: var(--color-text);
+        line-height: var(--leading-relaxed);
+        margin: var(--space-6) 0;
+    }
+
+    .demo-scroll-cue {
+        position: absolute;
+        bottom: var(--space-8);
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--color-text-tertiary);
+        transition: color var(--duration-fast) var(--ease-out);
+        animation: bounce 2s infinite;
+    }
+
+    .demo-scroll-cue:hover {
+        color: var(--color-primary);
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+        40% { transform: translateX(-50%) translateY(-10px); }
+        60% { transform: translateX(-50%) translateY(-5px); }
+    }
+
+    /* Section variants */
+    .demo-section-dark {
+        background: var(--color-bg-secondary);
+    }
+
+    .demo-section-muted {
+        background: var(--color-bg-tertiary);
+    }
+
+    /* ARR metrics */
+    .demo-metrics {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-4);
+        margin: var(--space-6) 0;
+        flex-wrap: wrap;
+    }
+
+    .demo-metric {
+        text-align: center;
+    }
+
+    .demo-metric-value {
+        font-size: var(--text-3xl);
+        font-weight: 700;
+        color: var(--color-text);
+        display: block;
+    }
+
+    .demo-metric-label {
+        font-size: var(--text-sm);
+        color: var(--color-text-secondary);
+    }
+
+    .demo-metric-arrow {
+        font-size: var(--text-2xl);
+        color: var(--color-primary);
+    }
+
+    /* Strategy banner */
+    .demo-strategy-banner {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border-light);
+        border-radius: 12px;
+        padding: var(--space-6);
+        margin: var(--space-6) 0;
+        text-align: left;
+    }
+
+    .strategy-label {
+        font-weight: 600;
+        color: var(--color-primary);
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-2);
+    }
+
+    .strategy-statement {
+        font-size: var(--text-lg);
+        font-style: italic;
+        color: var(--color-text);
+        margin: 0;
+        line-height: var(--leading-relaxed);
+    }
+
+    .strategy-footnote {
+        font-size: var(--text-xs);
+        color: var(--color-text-tertiary);
+        margin-top: var(--space-4);
+    }
+
+    /* Team grid - compact */
     .demo-team-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: var(--space-4);
+        margin: var(--space-4) auto;
+        max-width: 500px;
     }
 
-    .demo-member-card {
-        background: var(--color-bg-tertiary);
-        border: 1px solid var(--color-border-light);
-        border-radius: 8px;
-        padding: var(--space-4);
+    .demo-team-member {
         text-align: center;
     }
 
-    .member-name {
+    .demo-team-photo {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto var(--space-2);
+        border: 2px solid var(--color-border-light);
+    }
+
+    .demo-team-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .demo-team-name {
         font-weight: 600;
-        font-size: var(--text-base);
-        margin-bottom: var(--space-1);
-    }
-
-    .member-role {
-        color: var(--color-text-secondary);
         font-size: var(--text-sm);
+        margin-bottom: 0;
     }
 
-    .demo-tease {
-        text-align: center;
-        padding: var(--space-8) 0;
-        border-top: 1px solid var(--color-border-light);
+    .demo-team-role {
+        font-size: var(--text-xs);
+        color: var(--color-primary);
+        margin-bottom: 0;
     }
 
-    .demo-tease h3 {
-        font-size: var(--text-xl);
-        margin-bottom: var(--space-3);
+    .demo-team-bio {
+        display: none;
     }
 
-    .demo-tease p {
-        color: var(--color-text-secondary);
-        font-size: var(--text-base);
-        max-width: 50ch;
-        margin: 0 auto var(--space-6);
-    }
-
+    /* CTA button */
     .demo-cta {
         display: inline-flex;
         align-items: center;
@@ -178,6 +230,7 @@
         font-size: var(--text-lg);
         font-weight: 600;
         text-decoration: none;
+        margin-top: var(--space-8);
         transition: background var(--duration-fast) var(--ease-out),
                     box-shadow var(--duration-fast) var(--ease-out),
                     transform var(--duration-fast) var(--ease-out);
@@ -199,47 +252,187 @@
         width: 20px;
         height: 20px;
     }
+
+    /* Floating brand badge */
+    .brand-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        left: var(--space-4);
+        color: var(--color-text);
+        font-size: var(--text-lg);
+        font-weight: 700;
+        text-decoration: none;
+        z-index: 100;
+        letter-spacing: var(--tracking-snug);
+    }
+
+    .brand-badge-floating:hover {
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+        .demo-headline {
+            font-size: var(--text-3xl);
+        }
+
+        .demo-subheadline {
+            font-size: var(--text-lg);
+        }
+
+        .demo-body {
+            font-size: var(--text-base);
+        }
+
+        .demo-team-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-2);
+        }
+
+        .demo-team-photo {
+            width: 56px;
+            height: 56px;
+        }
+
+        .demo-metric-value {
+            font-size: var(--text-2xl);
+        }
+    }
 </style>
 
-<div class="demo-intro">
-    <section class="demo-hero">
-        <h2>Experience The 55</h2>
-        <p>See how a leadership team surfaces what's really going on</p>
-    </section>
+<a href="/" class="brand-badge-floating">55meet</a>
 
-    <div class="demo-company-card">
-        <div class="company-header">
-            <span class="company-name">{{ company.name }}</span>
-            <span class="company-industry">{{ company.industry }}</span>
+<main>
+    <!-- Section 1: Hero -->
+    <section class="demo-section">
+        <div class="demo-content">
+            <p class="demo-eyebrow">The 55 Demo</p>
+            <h1 class="demo-headline">Step into the CEO chair</h1>
+            <p class="demo-subheadline">For the next few minutes, you're leading ClearBrief Inc.</p>
         </div>
-        <p class="company-revenue">{{ company.revenue }}</p>
-        <p class="company-strategy">"{{ company.strategy }}"</p>
-    </div>
-
-    <section class="demo-team-section">
-        <h3>The {{ company.name }} Leadership Team</h3>
-        <p class="section-subtitle">has already completed their Signal Capture...</p>
-
-        <div class="demo-team-grid">
-            {% for member in team_members %}
-            <div class="demo-member-card">
-                <div class="member-name">{{ member.name }}</div>
-                <div class="member-role">{{ member.role }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="demo-tease">
-        <h3>Now it's your turn.</h3>
-        <p>Experience how Signal Capture works by selecting an image that represents how this team is executing their strategy.</p>
-
-        <a href="/demo/signal?seed={{ seed }}" class="demo-cta">
-            Begin Signal Capture
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
+        <a href="#company" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </a>
     </section>
-</div>
+
+    <!-- Section 2: Company -->
+    <section id="company" class="demo-section demo-section-dark">
+        <div class="demo-content reveal">
+            <p class="demo-eyebrow">Your Company</p>
+            <h2 class="demo-headline">{{ company.name }}</h2>
+            <p class="demo-body">A LegalTech SaaS business you've built over 6 years. Team of 85, revenue of $53m last year.</p>
+            <p class="demo-body">You have ambitious plans. But lately, something feels off.</p>
+        </div>
+        <a href="#strategy" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+    </section>
+
+    <!-- Section 3: Strategy -->
+    <section id="strategy" class="demo-section">
+        <div class="demo-content reveal">
+            <p class="demo-eyebrow">Your Goal</p>
+            <div class="demo-metrics">
+                <div class="demo-metric">
+                    <span class="demo-metric-value">{{ company.current_arr }}</span>
+                    <span class="demo-metric-label">this year</span>
+                </div>
+                <span class="demo-metric-arrow">&rarr;</span>
+                <div class="demo-metric">
+                    <span class="demo-metric-value">{{ company.target_arr }}</span>
+                    <span class="demo-metric-label">by {{ target_year }}</span>
+                </div>
+            </div>
+
+            <div class="demo-strategy-banner">
+                <div class="strategy-label">3AM Strategy* Statement</div>
+                <p class="strategy-statement">{{ company.strategy }}</p>
+                <p class="strategy-footnote">*3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am, without reaching for a slide deck. <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a></p>
+            </div>
+
+            <p class="demo-body">Your strategy is clear. But are you going as fast as you should?</p>
+        </div>
+        <a href="#process" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+    </section>
+
+    <!-- Section 4: Signal Capture Intro -->
+    <section id="process" class="demo-section">
+        <div class="demo-content reveal">
+            <p class="demo-eyebrow">The Process</p>
+            <h2 class="demo-headline">The 55 Meet plus Signal Capture™</h2>
+            <p class="demo-body">Signal Capture™ is a unique team process that bypasses people's internal editor and reveals what they actually think, not what they think they should say.</p>
+        </div>
+        <a href="#team" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+    </section>
+
+    <!-- Section 5: Team -->
+    <section id="team" class="demo-section demo-section-dark">
+        <div class="demo-content reveal">
+            <p class="demo-eyebrow">Your Leadership Team</p>
+            <h2 class="demo-headline">They've completed Signal Capture™</h2>
+            <p class="demo-body">Now it's your turn to add your signal alongside theirs.</p>
+
+            <div class="demo-team-grid">
+                {% for member in team_members %}
+                <div class="demo-team-member">
+                    <div class="demo-team-photo">
+                        <img src="{{ member.photo }}" alt="{{ member.name }}">
+                    </div>
+                    <div class="demo-team-name">{{ member.name }}</div>
+                    <div class="demo-team-role">{{ member.role }}</div>
+                    <div class="demo-team-bio">{{ member.bio }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="#begin" class="demo-scroll-cue" aria-label="Scroll down">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </a>
+    </section>
+
+    <!-- Section 6: Begin -->
+    <section id="begin" class="demo-section demo-section-muted">
+        <div class="demo-content reveal">
+            <p class="demo-eyebrow">Your Turn</p>
+            <p class="demo-body">Join your team. Experience the Signal Capture™ process that kicks off each 55meet.</p>
+
+            <a href="/demo/signal?seed={{ seed }}" class="demo-cta">
+                Add Your Signal
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+            </a>
+        </div>
+    </section>
+</main>
+
+<script>
+(function() {
+    // Clear demo sessionStorage when starting a new demo
+    // This ensures each demo run is fresh
+    const DEMO_STATE_KEY = 'the55-demo-response';
+    const SYNTHESIS_CACHE_KEY = 'the55-demo-synthesis';
+
+    // Clear on page load to ensure fresh start
+    sessionStorage.removeItem(DEMO_STATE_KEY);
+    sessionStorage.removeItem(SYNTHESIS_CACHE_KEY);
+    console.log('Demo sessionStorage cleared for fresh start');
+
+    // Reveal animation
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    reveals.forEach(el => observer.observe(el));
+})();
+</script>
 {% endblock %}

@@ -2,41 +2,82 @@
 
 {% block title %}Team Responses - Demo{% endblock %}
 
-{% block header %}
-<header class="demo-header">
-    <div class="container">
-        <h1><a href="/">The 55</a></h1>
-        <span class="demo-badge">Demo</span>
-    </div>
-</header>
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
 <style>
-    .demo-header {
-        background: var(--color-bg);
-        border-bottom: 1px solid var(--color-border-light);
-        padding: var(--space-4) 0;
-    }
-
-    .demo-header .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .demo-header h1 {
-        font-size: var(--text-xl);
+    .brand-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        left: var(--space-4);
+        color: var(--color-text);
+        font-size: var(--text-lg);
+        font-weight: 700;
+        text-decoration: none;
+        z-index: 100;
         letter-spacing: var(--tracking-snug);
     }
 
-    .demo-badge {
-        background: var(--color-primary-light);
+    .brand-badge-floating:hover {
         color: var(--color-primary);
+        text-decoration: none;
+    }
+
+    .demo-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-4);
+        background: var(--color-primary);
+        color: white;
         padding: var(--space-1) var(--space-3);
         border-radius: 9999px;
         font-size: var(--text-sm);
         font-weight: 600;
+        z-index: 100;
+        text-decoration: none;
+    }
+
+    .demo-badge-floating:hover {
+        background: var(--color-primary-dark);
+        text-decoration: none;
+    }
+
+    .demo-strategy-banner {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 8px;
+        padding: var(--space-4) var(--space-5);
+        margin-bottom: var(--space-2);
+    }
+
+    .strategy-label {
+        font-weight: 600;
+        color: var(--color-primary);
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-2);
+    }
+
+    .strategy-statement {
+        font-size: var(--text-base);
+        font-style: italic;
+        color: var(--color-text);
+        margin: 0;
+    }
+
+    .strategy-footnote {
+        font-size: var(--text-xs);
+        color: var(--color-text-tertiary);
+        margin: 0 0 var(--space-4) 0;
+    }
+
+    .strategy-footnote a {
+        color: var(--color-primary);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .strategy-footnote a:hover {
+        color: var(--color-primary-dark);
     }
 
     .demo-responses {
@@ -115,13 +156,40 @@
     .response-header {
         display: flex;
         justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
         margin-bottom: var(--space-3);
+    }
+
+    .response-person {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .response-photo {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--color-bg-tertiary);
+    }
+
+    .response-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .response-person-info {
+        display: flex;
+        flex-direction: column;
     }
 
     .response-name {
         font-weight: 700;
         font-size: var(--text-lg);
+        line-height: 1.2;
     }
 
     .response-role {
@@ -242,10 +310,23 @@
     }
 </style>
 
+<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/demo" class="demo-badge-floating">Demo</a>
+
 <div class="demo-responses">
+    <div class="demo-strategy-banner">
+        <div class="strategy-label">3AM Strategy* Statement</div>
+        <p class="strategy-statement">
+            {{ company.strategy }}
+        </p>
+    </div>
+    <p class="strategy-footnote">
+        *3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am, without reaching for a slide deck. <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a>
+    </p>
+
     <section class="responses-hero">
         <h2>Team Responses</h2>
-        <p>Here's what the {{ company.name }} leadership team shared.</p>
+        <p>Here's what you and your leadership team shared about executing against the strategy.</p>
     </section>
 
     <div class="responses-grid">
@@ -257,7 +338,7 @@
             <div class="response-content">
                 <div class="response-header">
                     <span class="response-name">You</span>
-                    <span class="response-role">Demo Participant</span>
+                    <span class="response-role">CEO</span>
                 </div>
                 <ul class="response-bullets">
                     <li>Loading your response...</li>
@@ -273,8 +354,15 @@
             </div>
             <div class="response-content">
                 <div class="response-header">
-                    <span class="response-name">{{ response.name }}</span>
-                    <span class="response-role">{{ response.role }}</span>
+                    <div class="response-person">
+                        <div class="response-photo">
+                            <img src="{{ response.photo_url }}" alt="{{ response.name }}">
+                        </div>
+                        <div class="response-person-info">
+                            <span class="response-name">{{ response.name }}</span>
+                            <span class="response-role">{{ response.role }}</span>
+                        </div>
+                    </div>
                 </div>
                 <ul class="response-bullets">
                     {% for bullet in response.bullets %}

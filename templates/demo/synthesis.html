@@ -2,60 +2,64 @@
 
 {% block title %}Synthesis Reveal - Demo - The 55{% endblock %}
 
-{% block header %}
-<header class="participant-header">
-    <div class="container">
-        <h1>The 55</h1>
-        <span class="team-badge demo-badge">Demo</span>
-    </div>
-</header>
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
+<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/demo" class="demo-badge-floating">Demo</a>
+
 <div class="synthesis-page demo-synthesis">
+    <div class="demo-strategy-banner">
+        <div class="strategy-label">3AM Strategy* Statement</div>
+        <p class="strategy-statement">
+            {{ company.strategy }}
+        </p>
+    </div>
+    <p class="strategy-footnote">
+        *3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am, without reaching for a slide deck. <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a>
+    </p>
+
     <div class="synthesis-header">
-        <h2>What We Found</h2>
-        <p class="synthesis-subtitle">{{ company.name }} Team Synthesis</p>
+        <h2>What Your Team Found</h2>
+        <p class="synthesis-subtitle">{{ company.name }} Synthesis</p>
     </div>
 
-    {% if synthesis_gap_type %}
-    <div class="synthesis-section gap-section">
+    <div class="synthesis-section gap-section" id="gap-section">
         <h3>Primary Gap</h3>
-        <div class="gap-indicator gap-{{ synthesis_gap_type|lower }}">
-            <span class="gap-type">{{ synthesis_gap_type }}</span>
+        <div class="gap-indicator" id="gap-indicator">
+            <span class="gap-type" id="gap-type">{{ synthesis_gap_type or 'Analyzing...' }}</span>
         </div>
-        <p class="gap-description">
+        <p class="gap-description" id="gap-description">
             {% if synthesis_gap_type == 'Direction' %}
-            The team may lack shared understanding of goals or priorities.
+            Your team may lack shared understanding of goals or priorities.
             {% elif synthesis_gap_type == 'Alignment' %}
-            The team's work may be disconnected or uncoordinated.
+            Your team's work may be disconnected or uncoordinated.
             {% elif synthesis_gap_type == 'Commitment' %}
             Individual interests may be overriding collective success.
+            {% else %}
+            Analyzing your team's responses...
             {% endif %}
         </p>
     </div>
-    {% endif %}
 
-    {% if synthesis_themes %}
     <div class="synthesis-section themes-section">
         <h3>Team Themes</h3>
-        <p class="themes-text">{{ synthesis_themes }}</p>
+        <p class="themes-text" id="themes-text">{{ synthesis_themes or 'Loading synthesis...' }}</p>
     </div>
-    {% endif %}
 
-    {% if synthesis_statements %}
     <div class="synthesis-section statements-section">
         <h3>Key Insights</h3>
-        <ul class="insights-list">
+        <ul class="insights-list" id="insights-list">
             {% for stmt in synthesis_statements %}
             <li class="insight-item">
                 <span class="insight-text">{{ stmt.statement }}</span>
                 <span class="insight-attribution">({{ stmt.participants|join(', ') }})</span>
             </li>
+            {% else %}
+            <li class="insight-item" style="color: var(--color-text-tertiary);">Loading insights...</li>
             {% endfor %}
         </ul>
     </div>
-    {% endif %}
 
     <div class="demo-cta-section">
         <h3>Ready to find your team's drag?</h3>
@@ -73,6 +77,82 @@
 </div>
 
 <style>
+/* Floating badges */
+.brand-badge-floating {
+    position: fixed;
+    top: var(--space-4);
+    left: var(--space-4);
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    text-decoration: none;
+    z-index: 100;
+    letter-spacing: var(--tracking-snug);
+}
+
+.brand-badge-floating:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.demo-badge-floating {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    background: var(--color-primary);
+    color: white;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 9999px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    z-index: 100;
+    text-decoration: none;
+}
+
+.demo-badge-floating:hover {
+    background: var(--color-primary-dark);
+    text-decoration: none;
+}
+
+/* Strategy banner styling */
+.demo-strategy-banner {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-2);
+}
+
+.strategy-label {
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-2);
+}
+
+.strategy-statement {
+    font-size: var(--text-base);
+    font-style: italic;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.strategy-footnote {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--space-4) 0;
+}
+
+.strategy-footnote a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.strategy-footnote a:hover {
+    color: var(--color-primary-dark);
+}
+
 /* Demo-specific CTA section styling */
 .demo-cta-section {
     margin-top: var(--spacing-8, 4rem);
@@ -118,12 +198,6 @@
     color: var(--color-text-secondary, #6e6e73);
 }
 
-/* Demo badge styling */
-.demo-badge {
-    background: var(--color-primary, #0066cc);
-    color: white;
-}
-
 /* Synthesis page refinements for demo */
 .demo-synthesis .synthesis-header h2 {
     font-size: var(--text-2xl, 2rem);
@@ -131,7 +205,77 @@
 </style>
 
 <script>
-// Clear demo state on synthesis page load (ready for next demo)
-sessionStorage.removeItem('the55-demo-response');
+(function() {
+    'use strict';
+
+    const SYNTHESIS_CACHE_KEY = 'the55-demo-synthesis';
+    const DEMO_STATE_KEY = 'the55-demo-response';
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    const gapDescriptions = {
+        'Direction': 'Your team may lack shared understanding of goals or priorities.',
+        'Alignment': "Your team's work may be disconnected or uncoordinated.",
+        'Commitment': 'Individual interests may be overriding collective success.'
+    };
+
+    // Load cached synthesis from layers page
+    function loadCachedSynthesis() {
+        try {
+            const cached = sessionStorage.getItem(SYNTHESIS_CACHE_KEY);
+            if (!cached) return;
+
+            const synthesis = JSON.parse(cached);
+
+            // Update gap type
+            const gapType = document.getElementById('gap-type');
+            const gapIndicator = document.getElementById('gap-indicator');
+            const gapDescription = document.getElementById('gap-description');
+            if (gapType && synthesis.gap_type) {
+                gapType.textContent = synthesis.gap_type;
+                gapIndicator.className = 'gap-indicator gap-' + synthesis.gap_type.toLowerCase();
+                gapDescription.textContent = synthesis.gap_reasoning || gapDescriptions[synthesis.gap_type] || '';
+            }
+
+            // Update themes
+            const themesText = document.getElementById('themes-text');
+            if (themesText && synthesis.themes) {
+                themesText.textContent = synthesis.themes;
+            }
+
+            // Update insights
+            const insightsList = document.getElementById('insights-list');
+            if (insightsList && synthesis.statements && synthesis.statements.length > 0) {
+                let html = '';
+                synthesis.statements.forEach(stmt => {
+                    const participants = stmt.participants.join(', ');
+                    html += `<li class="insight-item">
+                        <span class="insight-text">${escapeHtml(stmt.statement)}</span>
+                        <span class="insight-attribution">(${escapeHtml(participants)})</span>
+                    </li>`;
+                });
+                insightsList.innerHTML = html;
+            }
+
+        } catch (e) {
+            console.warn('Failed to load cached synthesis:', e);
+        }
+    }
+
+    // Load synthesis
+    loadCachedSynthesis();
+
+    // Clear cache only when user clicks "Restart Demo"
+    document.querySelectorAll('a[href="/demo"]').forEach(link => {
+        link.addEventListener('click', function() {
+            sessionStorage.removeItem(DEMO_STATE_KEY);
+            sessionStorage.removeItem(SYNTHESIS_CACHE_KEY);
+        });
+    });
+})();
 </script>
 {% endblock %}

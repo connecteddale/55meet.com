@@ -371,13 +371,25 @@
         bulletsJsonInput.value = JSON.stringify(bullets);
     }
 
+    function hasAtLeastTwoWords(text) {
+        // Split on whitespace and filter out empty strings
+        const words = text.trim().split(/\s+/).filter(word => {
+            // A "recognizable word" has at least 2 letters
+            return word.length >= 2 && /[a-zA-Z]{2,}/.test(word);
+        });
+        return words.length >= 2;
+    }
+
     function updateSubmitButton() {
         const hasImage = selectedImageId !== null;
-        const hasBullet = bulletInputs[0].value.trim().length > 0;
-        submitBtn.disabled = !(hasImage && hasBullet);
+        const bulletText = bulletInputs[0].value.trim();
+        const hasValidBullet = hasAtLeastTwoWords(bulletText);
+        submitBtn.disabled = !(hasImage && hasValidBullet);
 
-        if (hasImage && hasBullet) {
+        if (hasImage && hasValidBullet) {
             selectionHint.textContent = 'Ready to submit';
+        } else if (hasImage && bulletText.length > 0) {
+            selectionHint.textContent = 'Please enter at least two words';
         } else if (hasImage) {
             selectionHint.textContent = 'Enter at least one bullet point';
         } else {
@@ -413,9 +425,9 @@
         updateBulletsJson();
 
         const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
-        if (bullets.length === 0) {
+        if (bullets.length === 0 || !hasAtLeastTwoWords(bullets[0])) {
             e.preventDefault();
-            alert('Please enter at least one bullet point.');
+            alert('Please enter at least two words in your first bullet point.');
             return;
         }
 

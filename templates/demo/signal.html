@@ -2,61 +2,44 @@
 
 {% block title %}Signal Capture - Demo{% endblock %}
 
-{% block header %}
-<header class="demo-header">
-    <div class="container">
-        <h1><a href="/">The 55</a></h1>
-        <div class="demo-header-badges">
-            <span class="demo-badge">Demo</span>
-            <span class="company-badge">{{ company.name }}</span>
-        </div>
-    </div>
-</header>
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
 <style>
-    .demo-header {
-        background: var(--color-bg);
-        border-bottom: 1px solid var(--color-border-light);
-        padding: var(--space-4) 0;
-        view-transition-name: demo-header;
-    }
-
-    .demo-header .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .demo-header h1 {
-        font-size: var(--text-xl);
+    .brand-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        left: var(--space-4);
+        color: var(--color-text);
+        font-size: var(--text-lg);
+        font-weight: 700;
+        text-decoration: none;
+        z-index: 100;
         letter-spacing: var(--tracking-snug);
     }
 
-    .demo-header-badges {
-        display: flex;
-        gap: var(--space-2);
-        align-items: center;
+    .brand-badge-floating:hover {
+        color: var(--color-primary);
+        text-decoration: none;
     }
 
-    .demo-badge {
-        background: var(--color-primary-light);
-        color: var(--color-primary);
+    .demo-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-4);
+        background: var(--color-primary);
+        color: white;
         padding: var(--space-1) var(--space-3);
         border-radius: 9999px;
         font-size: var(--text-sm);
         font-weight: 600;
+        z-index: 100;
+        text-decoration: none;
     }
 
-    .company-badge {
-        background: var(--color-bg-secondary);
-        color: var(--color-text-secondary);
-        padding: var(--space-1) var(--space-3);
-        border-radius: 9999px;
-        font-size: var(--text-sm);
-        font-weight: 500;
-        border: 1px solid var(--color-border-light);
+    .demo-badge-floating:hover {
+        background: var(--color-primary-dark);
+        text-decoration: none;
     }
 
     .image-browser {
@@ -65,30 +48,42 @@
         view-transition-name: demo-content;
     }
 
-    .strategy-banner {
+    .demo-strategy-banner {
         background: var(--color-bg-secondary);
         border: 1px solid var(--color-border-light);
         border-radius: 8px;
-        padding: var(--space-4);
-        margin-bottom: var(--space-6);
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-2);
-        align-items: baseline;
+        padding: var(--space-4) var(--space-5);
+        margin-bottom: var(--space-2);
     }
 
-    .strategy-banner-label {
+    .strategy-label {
         font-weight: 600;
-        color: var(--color-text-secondary);
+        color: var(--color-primary);
         font-size: var(--text-sm);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        margin-bottom: var(--space-2);
     }
 
-    .strategy-banner-text {
+    .strategy-statement {
         font-size: var(--text-base);
-        color: var(--color-text);
         font-style: italic;
+        color: var(--color-text);
+        margin: 0;
+    }
+
+    .strategy-footnote {
+        font-size: var(--text-xs);
+        color: var(--color-text-tertiary);
+        margin: 0 0 var(--space-4) 0;
+    }
+
+    .strategy-footnote a {
+        color: var(--color-primary);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .strategy-footnote a:hover {
+        color: var(--color-primary-dark);
     }
 
     .image-browser-sticky {
@@ -106,86 +101,20 @@
         margin-bottom: var(--space-4);
     }
 
-    .browser-instruction h2 {
-        font-size: var(--text-2xl);
-        letter-spacing: var(--tracking-tight);
-        margin-bottom: var(--space-2);
-    }
-
     .browser-instruction p {
-        color: var(--color-text-secondary);
+        color: var(--color-text);
         font-size: var(--text-base);
-        max-width: 60ch;
+        max-width: 80ch;
         margin: 0 auto;
+        line-height: var(--leading-relaxed);
     }
 
     .pagination-header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: var(--space-4);
-    }
-
-    .pagination-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-1);
-        padding: var(--space-2) var(--space-4);
-        background: var(--color-bg-secondary);
-        border: 1px solid var(--color-border-light);
-        border-radius: 6px;
-        font-size: var(--text-sm);
-        font-weight: 500;
-        color: var(--color-text);
-        cursor: pointer;
-        transition: all var(--duration-fast) var(--ease-out);
-    }
-
-    .pagination-btn:hover:not(:disabled) {
-        background: var(--color-bg-tertiary);
-        border-color: var(--color-border);
-    }
-
-    .pagination-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .page-indicator {
-        font-size: var(--text-sm);
-        color: var(--color-text-secondary);
-        min-width: 100px;
-        text-align: center;
+        display: none;
     }
 
     .jump-to-selection {
-        text-align: center;
-        margin-top: var(--space-3);
-        opacity: 0;
-        height: 0;
-        overflow: hidden;
-        transition: opacity var(--duration-fast) var(--ease-out);
-    }
-
-    .jump-to-selection.visible {
-        opacity: 1;
-        height: auto;
-    }
-
-    .jump-to-selection button {
-        background: var(--color-primary-light);
-        color: var(--color-primary);
-        border: none;
-        padding: var(--space-2) var(--space-4);
-        border-radius: 6px;
-        font-size: var(--text-sm);
-        font-weight: 500;
-        cursor: pointer;
-    }
-
-    .jump-to-selection button:hover {
-        background: var(--color-primary);
-        color: white;
+        display: none;
     }
 
     .image-grid-container {
@@ -194,8 +123,8 @@
 
     .image-page {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: var(--space-4);
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: var(--space-3);
         opacity: 0;
         transition: opacity var(--duration-normal) var(--ease-out);
     }
@@ -262,6 +191,7 @@
         padding: var(--space-6);
         margin-bottom: var(--space-6);
         view-transition-name: bullet-section;
+        text-align: center;
     }
 
     .selected-image-preview {
@@ -306,6 +236,7 @@
         font-size: var(--text-base);
         width: 100%;
         background: var(--color-bg);
+        text-align: left;
         transition: border-color var(--duration-fast) var(--ease-out),
                     box-shadow var(--duration-fast) var(--ease-out);
     }
@@ -341,7 +272,7 @@
         view-transition-name: submit-section;
     }
 
-    .btn-submit {
+    .demo-cta {
         display: inline-flex;
         align-items: center;
         gap: var(--space-2);
@@ -353,22 +284,43 @@
         font-weight: 600;
         border: none;
         cursor: pointer;
-        transition: all var(--duration-fast) var(--ease-out);
+        text-decoration: none;
+        transition: background var(--duration-fast) var(--ease-out),
+                    box-shadow var(--duration-fast) var(--ease-out),
+                    transform var(--duration-fast) var(--ease-out);
     }
 
-    .btn-submit:hover:not(:disabled) {
+    .demo-cta:hover:not(:disabled) {
         background: var(--color-primary-dark);
         box-shadow: var(--shadow-md);
         transform: translateY(-1px);
+        text-decoration: none;
     }
 
-    .btn-submit:disabled {
+    .demo-cta:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .demo-cta:disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
 
-    .btn-submit.loading {
+    .demo-cta.loading {
         pointer-events: none;
+    }
+
+    .loading-spinner-small {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        vertical-align: middle;
+        margin-left: 8px;
     }
 
     .selection-hint {
@@ -379,8 +331,8 @@
 
     @media (max-width: 640px) {
         .image-page {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: var(--space-3);
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: var(--space-2);
         }
 
         .browser-instruction h2 {
@@ -395,17 +347,14 @@
     }
 </style>
 
-<div class="image-browser" data-seed="{{ seed }}" data-per-page="{{ per_page }}">
-    <div class="strategy-banner">
-        <span class="strategy-banner-label">Strategy:</span>
-        <span class="strategy-banner-text">"{{ company.strategy }}"</span>
-    </div>
+<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/demo" class="demo-badge-floating">Demo</a>
 
+<div class="image-browser" data-seed="{{ seed }}" data-per-page="{{ per_page }}">
     <!-- Sticky Header: Instructions + Pagination -->
     <div class="image-browser-sticky">
         <div class="browser-instruction">
-            <h2>Your Turn</h2>
-            <p>Select the image that best represents how this team is executing their strategy.</p>
+            <p>Select the image that best represents how your team is executing your strategy of:<br><strong>{{ company.strategy }}</strong></p>
         </div>
         <div class="pagination-header">
             <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
@@ -433,7 +382,7 @@
         <div class="selected-image-preview" id="selected-image-preview">
             <!-- Selected image shown here via JS -->
         </div>
-        <h3>Why did you choose this image?</h3>
+        <h3>You chose this image to represent the execution of your strategy. Why?</h3>
         <p>Enter at least one bullet point explaining your choice.</p>
 
         <div class="bullet-inputs">
@@ -467,7 +416,7 @@
 
     <!-- Submit Section -->
     <div class="submit-section" id="submit-section">
-        <button type="button" id="submit-btn" class="btn-submit" disabled>
+        <button type="button" id="submit-btn" class="demo-cta" disabled>
             See Team Responses
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -477,6 +426,6 @@
     </div>
 </div>
 
-<script src="/static/js/demo-signal.js"></script>
-<script src="/static/js/progressive-inputs.js"></script>
+<script src="/static/js/demo-signal.js?v={{ cache_bust }}"></script>
+<script src="/static/js/progressive-inputs.js?v={{ cache_bust }}"></script>
 {% endblock %}

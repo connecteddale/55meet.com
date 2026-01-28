@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Meet the Team - Demo{% endblock %}
+
+{% block header %}
+<header class="demo-header">
+    <div class="container">
+        <h1><a href="/">The 55</a></h1>
+        <div class="demo-header-badges">
+            <span class="demo-badge">Demo</span>
+            <span class="company-badge">{{ company.name }}</span>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<style>
+    .demo-header {
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border-light);
+        padding: var(--space-4) 0;
+    }
+
+    .demo-header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .demo-header h1 {
+        font-size: var(--text-xl);
+        letter-spacing: var(--tracking-snug);
+    }
+
+    .demo-header-badges {
+        display: flex;
+        gap: var(--space-2);
+        align-items: center;
+    }
+
+    .demo-badge {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 600;
+    }
+
+    .company-badge {
+        background: var(--color-bg-secondary);
+        color: var(--color-text-secondary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        border: 1px solid var(--color-border-light);
+    }
+
+    .demo-team {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: var(--space-8) var(--space-4);
+        view-transition-name: demo-content;
+    }
+
+    .team-hero {
+        text-align: center;
+        margin-bottom: var(--space-8);
+    }
+
+    .team-hero h2 {
+        font-size: var(--text-3xl);
+        letter-spacing: var(--tracking-tight);
+        margin-bottom: var(--space-3);
+    }
+
+    .team-hero p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-lg);
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-6);
+        margin-bottom: var(--space-10);
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .team-card {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 12px;
+        padding: var(--space-5);
+        text-align: center;
+        transition: box-shadow var(--duration-fast) var(--ease-out),
+                    transform var(--duration-fast) var(--ease-out);
+    }
+
+    .team-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .team-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto var(--space-4);
+        overflow: hidden;
+        background: var(--color-bg-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .team-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .team-photo-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+        color: white;
+        font-size: var(--text-2xl);
+        font-weight: 700;
+    }
+
+    .team-name {
+        font-weight: 700;
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-1);
+    }
+
+    .team-role {
+        color: var(--color-primary);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        margin-bottom: var(--space-3);
+    }
+
+    .team-bio {
+        color: var(--color-text-secondary);
+        font-size: var(--text-sm);
+        line-height: var(--leading-relaxed);
+    }
+
+    .context-note {
+        text-align: center;
+        margin-bottom: var(--space-8);
+        padding: var(--space-4);
+        background: var(--color-bg-secondary);
+        border-radius: 8px;
+    }
+
+    .context-note p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-base);
+        margin: 0;
+    }
+
+    .context-note strong {
+        color: var(--color-text);
+    }
+
+    .continue-section {
+        text-align: center;
+    }
+
+    .demo-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-4) var(--space-8);
+        border-radius: 8px;
+        font-size: var(--text-lg);
+        font-weight: 600;
+        text-decoration: none;
+        transition: background var(--duration-fast) var(--ease-out),
+                    box-shadow var(--duration-fast) var(--ease-out),
+                    transform var(--duration-fast) var(--ease-out);
+    }
+
+    .demo-cta:hover {
+        background: var(--color-primary-dark);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .demo-cta:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .demo-cta svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    @media (max-width: 640px) {
+        .team-hero h2 {
+            font-size: var(--text-2xl);
+        }
+
+        .team-grid {
+            gap: var(--space-4);
+            max-width: 100%;
+        }
+
+        .team-card {
+            padding: var(--space-4);
+        }
+
+        .team-photo {
+            width: 60px;
+            height: 60px;
+        }
+
+        .demo-header-badges {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-1);
+        }
+    }
+</style>
+
+<div class="demo-team">
+    <section class="team-hero">
+        <h2>Meet the {{ company.name }}<br>Leadership Team</h2>
+        <p>They've already started the meeting.</p>
+    </section>
+
+    <div class="team-grid">
+        {% for member in team_members %}
+        <div class="team-card">
+            <div class="team-photo">
+                <img src="{{ member.photo }}"
+                     alt="{{ member.name }}"
+                     onerror="this.parentElement.innerHTML='<div class=\'team-photo-fallback\'>{{ member.first_name[0] }}</div>'">
+            </div>
+            <div class="team-name">{{ member.name }}</div>
+            <div class="team-role">{{ member.role }}</div>
+            <div class="team-bio">{{ member.bio }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="context-note">
+        <p>They have completed Signal Capture™.<br><strong>Add your perspective to see how it works.</strong></p>
+    </div>
+
+    <section class="continue-section">
+        <a href="/demo/prepare?seed={{ seed }}" class="demo-cta">
+            Continue
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </a>
+    </section>
+</div>
+{% endblock %}

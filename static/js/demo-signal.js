@@ -12,7 +12,7 @@
     // ========================================
 
     const DEMO_STATE_KEY = 'the55-demo-response';
-    const MAX_PAGES = 3;  // Limits to 60 images total (3 pages x 20 per page)
+    const MAX_PAGES = 1;  // All 60 images on one page
 
     // Get configuration from DOM
     const imageBrowser = document.querySelector('.image-browser');
@@ -258,13 +258,25 @@
         });
     }
 
+    function hasAtLeastTwoWords(text) {
+        // Split on whitespace and filter out empty strings
+        const words = text.trim().split(/\s+/).filter(word => {
+            // A "recognizable word" has at least 2 letters
+            return word.length >= 2 && /[a-zA-Z]{2,}/.test(word);
+        });
+        return words.length >= 2;
+    }
+
     function updateSubmitButton() {
         const hasImage = selectedImageId !== null;
-        const hasBullet = bulletInputs[0].value.trim().length > 0;
-        submitBtn.disabled = !(hasImage && hasBullet);
+        const bulletText = bulletInputs[0].value.trim();
+        const hasValidBullet = hasAtLeastTwoWords(bulletText);
+        submitBtn.disabled = !(hasImage && hasValidBullet);
 
-        if (hasImage && hasBullet) {
+        if (hasImage && hasValidBullet) {
             selectionHint.textContent = 'Ready to see what the team chose';
+        } else if (hasImage && bulletText.length > 0) {
+            selectionHint.textContent = 'Please enter at least two words';
         } else if (hasImage) {
             selectionHint.textContent = 'Enter at least one bullet point';
         } else {
@@ -286,11 +298,11 @@
     // Navigation
     // ========================================
 
-    function navigateToResponses() {
+    async function navigateToResponses() {
         const bullets = getBullets();
 
-        // Validate at least 1 bullet
-        if (bullets.length === 0) {
+        // Validate at least 1 bullet with 2+ words
+        if (bullets.length === 0 || !hasAtLeastTwoWords(bullets[0])) {
             bulletInputs[0].focus();
             return;
         }
@@ -298,8 +310,35 @@
         // Save final state
         saveDemoState(selectedImageId, selectedImageUrl, bullets);
 
+        // Show loading state on button
+        const submitBtn = document.getElementById('submit-btn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = 'Analyzing responses... <span class="loading-spinner-small"></span>';
+        submitBtn.disabled = true;
+
+        // Pre-generate synthesis before navigating
+        try {
+            const response = await fetch('/demo/api/synthesize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    seed: seed,
+                    bullets: bullets,
+                    image_id: selectedImageId || null
+                })
+            });
+
+            if (response.ok) {
+                const synthesis = await response.json();
+                // Cache the result for the layers page
+                sessionStorage.setItem('the55-demo-synthesis', JSON.stringify(synthesis));
+            }
+        } catch (e) {
+            console.warn('Pre-synthesis failed, will generate on layers page:', e);
+        }
+
         // Navigate with View Transition if supported
-        const url = `/demo/responses?seed=${seed}`;
+        const url = `/demo/layers?seed=${seed}`;
 
         if (document.startViewTransition) {
             document.startViewTransition(() => {

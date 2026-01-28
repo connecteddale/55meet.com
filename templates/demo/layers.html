@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+
+{% block title %}Behind the Scenes - Demo{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<style>
+    .brand-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        left: var(--space-4);
+        color: var(--color-text);
+        font-size: var(--text-lg);
+        font-weight: 700;
+        text-decoration: none;
+        z-index: 100;
+        letter-spacing: var(--tracking-snug);
+    }
+
+    .brand-badge-floating:hover {
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+
+    .demo-badge-floating {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-4);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-1) var(--space-3);
+        border-radius: 9999px;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        z-index: 100;
+        text-decoration: none;
+    }
+
+    .demo-badge-floating:hover {
+        background: var(--color-primary-dark);
+        text-decoration: none;
+    }
+
+    .layers-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: var(--space-8) var(--space-4);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .slide {
+        display: none;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .slide.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-content {
+        text-align: center;
+        padding: var(--space-8) 0;
+    }
+
+    .slide-eyebrow {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--color-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-4);
+    }
+
+    .slide-headline {
+        font-size: var(--text-3xl);
+        letter-spacing: var(--tracking-tight);
+        margin-bottom: var(--space-6);
+        line-height: var(--leading-tight);
+    }
+
+    .slide-body {
+        font-size: var(--text-lg);
+        color: var(--color-text-secondary);
+        max-width: 60ch;
+        margin: 0 auto var(--space-6);
+        line-height: var(--leading-relaxed);
+    }
+
+    .layers-list {
+        text-align: left;
+        max-width: 500px;
+        margin: var(--space-8) auto;
+    }
+
+    .layer-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-4);
+        padding: var(--space-4) 0;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .layer-item:last-child {
+        border-bottom: none;
+    }
+
+    .layer-number {
+        background: var(--color-primary);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: var(--text-sm);
+        flex-shrink: 0;
+    }
+
+    .layer-info h3 {
+        font-size: var(--text-lg);
+        margin-bottom: var(--space-1);
+    }
+
+    .layer-info p {
+        color: var(--color-text-secondary);
+        font-size: var(--text-base);
+        margin: 0;
+    }
+
+    /* Layer content boxes */
+    .layer-content-box {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 12px;
+        padding: var(--space-6);
+        margin: var(--space-6) 0;
+        text-align: left;
+    }
+
+    .layer-content-box.highlight {
+        border-color: var(--color-primary);
+        background: var(--color-primary-light);
+    }
+
+    .insights-text {
+        font-size: var(--text-lg);
+        line-height: var(--leading-relaxed);
+        color: var(--color-text);
+    }
+
+    /* Attributed themes */
+    .theme-item {
+        padding: var(--space-4) 0;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .theme-item:last-child {
+        border-bottom: none;
+    }
+
+    .theme-statement {
+        font-size: var(--text-base);
+        margin-bottom: var(--space-2);
+        color: var(--color-text);
+    }
+
+    .theme-participants {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+    }
+
+    .participant-tag {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        padding: var(--space-1) var(--space-2);
+        border-radius: 4px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+    }
+
+    /* Individual comments preview */
+    .comments-preview {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+
+    .comment-card {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border-light);
+        border-radius: 8px;
+        padding: var(--space-4);
+    }
+
+    .comment-card.ceo-card {
+        border: 2px solid var(--color-primary);
+        background: var(--color-primary-light);
+    }
+
+    .comment-card.ceo-card .comment-name {
+        color: var(--color-primary);
+    }
+
+    .ceo-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: var(--text-lg);
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    .comment-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .comment-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .comment-name {
+        font-weight: 600;
+        font-size: var(--text-base);
+    }
+
+    .comment-role {
+        font-size: var(--text-sm);
+        color: var(--color-text-secondary);
+    }
+
+    .comment-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .comment-bullets li {
+        position: relative;
+        padding-left: var(--space-4);
+        font-size: var(--text-sm);
+        color: var(--color-text-secondary);
+        margin-bottom: var(--space-2);
+    }
+
+    .comment-bullets li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.5em;
+        width: 5px;
+        height: 5px;
+        background: var(--color-primary);
+        border-radius: 50%;
+    }
+
+    .comment-bullets li:last-child {
+        margin-bottom: 0;
+    }
+
+    /* CTA Button */
+    .slide-cta {
+        margin-top: var(--space-8);
+    }
+
+    .demo-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        background: var(--color-primary);
+        color: white;
+        padding: var(--space-4) var(--space-8);
+        border-radius: 8px;
+        font-size: var(--text-lg);
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background var(--duration-fast) var(--ease-out),
+                    box-shadow var(--duration-fast) var(--ease-out),
+                    transform var(--duration-fast) var(--ease-out);
+    }
+
+    .demo-cta:hover {
+        background: var(--color-primary-dark);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .demo-cta:active {
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .demo-cta svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    @media (max-width: 640px) {
+        .slide-headline {
+            font-size: var(--text-2xl);
+        }
+
+        .slide-body {
+            font-size: var(--text-base);
+        }
+
+        .comments-preview {
+            grid-template-columns: 1fr;
+        }
+
+        .demo-header-badges {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-1);
+        }
+    }
+</style>
+
+<a href="/" class="brand-badge-floating">55meet</a>
+<a href="/demo" class="demo-badge-floating">Demo</a>
+
+<div class="layers-container">
+    <!-- Slide 1: Introduction -->
+    <div class="slide active" data-slide="1">
+        <div class="slide-content">
+            <p class="slide-eyebrow">Behind the Scenes</p>
+            <h2 class="slide-headline">How we aggregate what the team shared</h2>
+            <p class="slide-body">We're now going to step behind the scenes to see how Signal Capture™ responses are processed into three layers of insight.</p>
+
+            <div class="layers-list">
+                <div class="layer-item">
+                    <span class="layer-number">1</span>
+                    <div class="layer-info">
+                        <h3>High Level Insights</h3>
+                        <p>The big picture synthesis</p>
+                    </div>
+                </div>
+                <div class="layer-item">
+                    <span class="layer-number">2</span>
+                    <div class="layer-info">
+                        <h3>Attributed Themes</h3>
+                        <p>Key themes with contributor names</p>
+                    </div>
+                </div>
+                <div class="layer-item">
+                    <span class="layer-number">3</span>
+                    <div class="layer-info">
+                        <h3>Individual Comments</h3>
+                        <p>What each person actually said</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="slide-body">In The 55, the facilitator guides the group through these layers, respecting each participant's choice about what to share.</p>
+
+            <div class="slide-cta">
+                <button type="button" class="demo-cta" data-next="2">
+                    See Layer 1
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Layer 1 - High Level Insights -->
+    <div class="slide" data-slide="2">
+        <div class="slide-content">
+            <p class="slide-eyebrow">Layer 1</p>
+            <h2 class="slide-headline">High Level Insights</h2>
+
+            <div class="layer-content-box highlight">
+                <p class="insights-text" id="synthesis-themes">{{ synthesis_themes }}</p>
+            </div>
+
+            <div class="slide-cta">
+                <button type="button" class="demo-cta" data-next="3">
+                    See Themes
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Layer 2 - Attributed Themes -->
+    <div class="slide" data-slide="3">
+        <div class="slide-content">
+            <p class="slide-eyebrow">Layer 2</p>
+            <h2 class="slide-headline">Attributed Themes</h2>
+            <p class="slide-body">These themes show not only what emerged, but importantly who contributed to each theme. Everyone will recognise how their comments have been themed.</p>
+
+            <div class="layer-content-box" id="themes-box">
+                {% for stmt in synthesis_statements %}
+                <div class="theme-item" data-theme-index="{{ loop.index0 }}">
+                    <p class="theme-statement">{{ stmt.statement }}</p>
+                    <div class="theme-participants">
+                        {% for name in stmt.participants %}
+                        <span class="participant-tag">{{ name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="slide-cta">
+                <button type="button" class="demo-cta" data-next="4">
+                    Individual Comments
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Layer 3 - Individual Comments -->
+    <div class="slide" data-slide="4">
+        <div class="slide-content">
+            <p class="slide-eyebrow">Layer 3</p>
+            <h2 class="slide-headline">Individual Comments</h2>
+            <p class="slide-body">Some teams prefer not to share exactly what everybody said, while others are completely candid and transparent. The choice belongs to the team, and the facilitator respects their wish.</p>
+
+            <div class="layer-content-box">
+                <div class="comments-preview">
+                    <!-- CEO (You) card - populated by JavaScript -->
+                    <div class="comment-card ceo-card" id="ceo-comment-card">
+                        <div class="comment-header">
+                            <div class="ceo-avatar">Y</div>
+                            <div>
+                                <div class="comment-name">You</div>
+                                <div class="comment-role">CEO</div>
+                            </div>
+                        </div>
+                        <ul class="comment-bullets" id="ceo-bullets">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                    {% for response in team_responses %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <div class="comment-photo">
+                                <img src="{{ response.photo_url }}" alt="{{ response.name }}">
+                            </div>
+                            <div>
+                                <div class="comment-name">{{ response.first_name }}</div>
+                                <div class="comment-role">{{ response.role }}</div>
+                            </div>
+                        </div>
+                        <ul class="comment-bullets">
+                            {% for bullet in response.bullets %}
+                            <li>{{ bullet }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="slide-cta">
+                <button type="button" class="demo-cta" data-next="5">
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: The Gap -->
+    <div class="slide" data-slide="5">
+        <div class="slide-content">
+            <p class="slide-eyebrow">The Outcome</p>
+            <h2 class="slide-headline">Finding the gap</h2>
+            <p class="slide-body">Using these three layers, the facilitator guides the team to identify the underlying gap — the root cause of the drag they're experiencing.</p>
+            <p class="slide-body">For ClearBrief, here's what emerged...</p>
+
+            <div class="slide-cta">
+                <a href="/demo/synthesis?seed={{ seed }}" class="demo-cta">
+                    See The Gap
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    const DEMO_STATE_KEY = 'the55-demo-response';
+    const SYNTHESIS_CACHE_KEY = 'the55-demo-synthesis';
+    const slides = document.querySelectorAll('.slide');
+    const buttons = document.querySelectorAll('[data-next]');
+    const seed = {{ seed }};
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function loadCeoComments() {
+        const ceoBullets = document.getElementById('ceo-bullets');
+        if (!ceoBullets) return;
+
+        try {
+            const saved = sessionStorage.getItem(DEMO_STATE_KEY);
+            if (!saved) {
+                ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+                return;
+            }
+
+            const data = JSON.parse(saved);
+            if (!data.bullets || data.bullets.length === 0) {
+                ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+                return;
+            }
+
+            const html = data.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+            ceoBullets.innerHTML = html;
+        } catch (e) {
+            console.warn('Failed to load CEO comments:', e);
+            ceoBullets.innerHTML = '<li style="color: var(--color-text-tertiary);">No response recorded</li>';
+        }
+    }
+
+    function showSlide(slideNum) {
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            if (parseInt(slide.dataset.slide) === slideNum) {
+                slide.classList.add('active');
+            }
+        });
+        document.querySelector('.layers-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            const nextSlide = parseInt(this.dataset.next);
+            showSlide(nextSlide);
+        });
+    });
+
+    // Load CEO comments
+    loadCeoComments();
+
+    // Load pre-generated synthesis from cache (generated on signal page)
+    function loadSynthesis() {
+        const cached = sessionStorage.getItem(SYNTHESIS_CACHE_KEY);
+        if (cached) {
+            try {
+                const synthesis = JSON.parse(cached);
+                console.log('Loading cached synthesis:', synthesis);
+                updateSynthesisUI(synthesis);
+                // Show indicator that AI synthesis loaded
+                const indicator = document.createElement('div');
+                indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:#10b981;color:white;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;';
+                indicator.textContent = 'AI Synthesis Loaded';
+                document.body.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 3000);
+            } catch (e) {
+                console.error('Failed to parse cached synthesis:', e);
+            }
+        } else {
+            console.warn('No cached synthesis found - using server-rendered fallback');
+            // Show indicator that fallback is being used
+            const indicator = document.createElement('div');
+            indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:#f59e0b;color:white;padding:8px 12px;border-radius:6px;font-size:12px;z-index:9999;';
+            indicator.textContent = 'Using Fallback (no cache)';
+            document.body.appendChild(indicator);
+        }
+    }
+
+    function updateSynthesisUI(synthesis) {
+        // Update themes (Layer 1)
+        const themesEl = document.getElementById('synthesis-themes');
+        if (themesEl && synthesis.themes) {
+            themesEl.textContent = synthesis.themes;
+        }
+
+        // Update attributed themes (Layer 2)
+        const themesBox = document.getElementById('themes-box');
+        if (themesBox && synthesis.statements) {
+            let html = '';
+            synthesis.statements.forEach(stmt => {
+                html += `<div class="theme-item">
+                    <p class="theme-statement">${escapeHtml(stmt.statement)}</p>
+                    <div class="theme-participants">
+                        ${stmt.participants.map(p => `<span class="participant-tag">${escapeHtml(p)}</span>`).join('')}
+                    </div>
+                </div>`;
+            });
+            themesBox.innerHTML = html;
+        }
+
+        // Store gap type for synthesis page
+        if (synthesis.gap_type) {
+            const synthCache = JSON.parse(sessionStorage.getItem(SYNTHESIS_CACHE_KEY) || '{}');
+            synthCache.gap_type = synthesis.gap_type;
+            synthCache.gap_reasoning = synthesis.gap_reasoning;
+            synthCache.suggested_recalibrations = synthesis.suggested_recalibrations;
+            sessionStorage.setItem(SYNTHESIS_CACHE_KEY, JSON.stringify(synthCache));
+        }
+    }
+
+    // Load pre-generated synthesis on page load
+    loadSynthesis();
+})();
+</script>
+{% endblock %}

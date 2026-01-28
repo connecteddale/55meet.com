@@ -1,0 +1,39 @@
+{# Reusable ARR metrics display for demo pages #}
+<div class="arr-metrics">
+    <span class="arr-current">{{ company.current_arr }}</span>
+    <span class="arr-arrow">&rarr;</span>
+    <span class="arr-target">{{ company.target_arr }} by {{ target_year }}</span>
+</div>
+
+<style>
+    .arr-metrics {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: var(--space-6);
+    }
+
+    .arr-current {
+        color: var(--color-text-secondary);
+    }
+
+    .arr-arrow {
+        color: var(--color-primary);
+        font-size: var(--text-xl);
+    }
+
+    .arr-target {
+        color: var(--color-primary);
+    }
+
+    @media (max-width: 640px) {
+        .arr-metrics {
+            font-size: var(--text-base);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>

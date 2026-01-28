@@ -1,0 +1,69 @@
+{# Reusable 3AM Strategy Banner for demo pages #}
+<div class="demo-strategy-banner">
+    <p class="strategy-statement">
+        {{ company.strategy }}
+    </p>
+    <span class="strategy-label">3AM Strategy*</span>
+</div>
+<p class="strategy-footnote">
+    *3AM Strategy: Can each member of your team describe the strategy if woken at 3am, without reaching for a slide deck.
+</p>
+
+<style>
+    .demo-strategy-banner {
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: 8px;
+        padding: var(--space-4) var(--space-5);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-2);
+    }
+
+    .strategy-statement {
+        font-size: var(--text-lg);
+        font-style: italic;
+        color: var(--color-text);
+        margin: 0;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .strategy-label {
+        font-weight: 600;
+        color: var(--color-primary);
+        font-size: var(--text-sm);
+        white-space: nowrap;
+    }
+
+    .strategy-footnote {
+        font-size: var(--text-xs);
+        color: var(--color-text-tertiary);
+        margin: 0 0 var(--space-6) 0;
+    }
+
+    .strategy-footnote a {
+        color: var(--color-primary);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .strategy-footnote a:hover {
+        color: var(--color-primary-dark);
+    }
+
+    @media (max-width: 640px) {
+        .demo-strategy-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--space-2);
+        }
+
+        .strategy-statement {
+            font-size: var(--text-base);
+        }
+    }
+</style>
