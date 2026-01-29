@@ -9,22 +9,22 @@ Requirements for POC Ready milestone. Each maps to roadmap phases.
 
 ### Landing Page Trust Signals
 
-- [ ] **LAND-01**: Landing page has "What finding the drag looks like" section
-- [ ] **LAND-02**: Section displays 3 client example cards with concrete scenarios
-- [ ] **LAND-03**: Cards show before/after transformation (problem → outcome)
-- [ ] **LAND-04**: Card design matches existing design system (Inter font, Apple colors)
+- [x] **LAND-01**: Landing page has "What finding the drag looks like" section
+- [x] **LAND-02**: Section displays 3 client example cards with concrete scenarios
+- [x] **LAND-03**: Cards show before/after transformation (problem → outcome)
+- [x] **LAND-04**: Card design matches existing design system (Inter font, Apple colors)
 
 ### Landing Page Outcomes
 
-- [ ] **LAND-05**: Landing page has benefit-focused outcomes section
-- [ ] **LAND-06**: Outcomes describe what changes after finding the drag
-- [ ] **LAND-07**: Language is specific (faster execution, clearer priorities, less wasted work)
+- [x] **LAND-05**: Landing page has benefit-focused outcomes section
+- [x] **LAND-06**: Outcomes describe what changes after finding the drag
+- [x] **LAND-07**: Language is specific (faster execution, clearer priorities, less wasted work)
 
 ### Landing Page CTA
 
-- [ ] **LAND-08**: Final CTA section uses "You've felt the drag. Now find it"
-- [ ] **LAND-09**: Demo button prominent as primary action
-- [ ] **LAND-10**: Secondary email link to Dale (connectedworld@gmail.com)
+- [x] **LAND-08**: Final CTA section uses "You've felt the drag. Now find it"
+- [x] **LAND-09**: Demo button prominent as primary action
+- [x] **LAND-10**: Secondary email link to Dale (connectedworld@gmail.com)
 
 ### Demo Ending Experience
 
@@ -36,23 +36,23 @@ Requirements for POC Ready milestone. Each maps to roadmap phases.
 
 ### Snapshot™ Rebrand
 
-- [ ] **SNAP-01**: All "Signal Capture" references renamed to "Snapshot™" across entire app
-- [ ] **SNAP-02**: Landing page links to connecteddale.com/releases/Snapshot.html article
-- [ ] **SNAP-03**: Demo intro explains Snapshot™ (perception capture before filtering)
-- [ ] **SNAP-04**: Consistent trademark notation (Snapshot™ on first use, Snapshot thereafter)
+- [x] **SNAP-01**: All "Signal Capture" references renamed to "Snapshot™" across entire app
+- [x] **SNAP-02**: Landing page links to connecteddale.com/releases/Snapshot.html article
+- [x] **SNAP-03**: Demo intro explains Snapshot™ (perception capture before filtering)
+- [x] **SNAP-04**: Consistent trademark notation (Snapshot™ on first use, Snapshot thereafter)
 
 ### SEO/Meta
 
-- [ ] **META-01**: Landing page meta description mentions Snapshot™
-- [ ] **META-02**: Meta description mentions three gap types (Direction, Alignment, Commitment)
+- [x] **META-01**: Landing page meta description mentions Snapshot™
+- [x] **META-02**: Meta description mentions three gap types (Direction, Alignment, Commitment)
 
 ### Conversion Tracking
 
-- [ ] **TRACK-01**: ConversionEvent SQLite model logs CTA interactions
-- [ ] **TRACK-02**: Demo completion events logged (reached synthesis page)
-- [ ] **TRACK-03**: Email CTA click events logged
-- [ ] **TRACK-04**: Landing page → demo click events logged
-- [ ] **TRACK-05**: Admin can query conversion metrics (direct SQLite or simple endpoint)
+- [x] **TRACK-01**: ConversionEvent SQLite model logs CTA interactions
+- [x] **TRACK-02**: Demo completion events logged (reached synthesis page)
+- [x] **TRACK-03**: Email CTA click events logged
+- [x] **TRACK-04**: Landing page → demo click events logged
+- [x] **TRACK-05**: Admin can query conversion metrics (direct SQLite or simple endpoint)
 
 ## Future Requirements
 
@@ -88,32 +88,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LAND-01 | Phase 26 | Pending |
-| LAND-02 | Phase 26 | Pending |
-| LAND-03 | Phase 26 | Pending |
-| LAND-04 | Phase 26 | Pending |
-| LAND-05 | Phase 26 | Pending |
-| LAND-06 | Phase 26 | Pending |
-| LAND-07 | Phase 26 | Pending |
-| LAND-08 | Phase 26 | Pending |
-| LAND-09 | Phase 26 | Pending |
-| LAND-10 | Phase 26 | Pending |
+| LAND-01 | Phase 26 | Complete |
+| LAND-02 | Phase 26 | Complete |
+| LAND-03 | Phase 26 | Complete |
+| LAND-04 | Phase 26 | Complete |
+| LAND-05 | Phase 26 | Complete |
+| LAND-06 | Phase 26 | Complete |
+| LAND-07 | Phase 26 | Complete |
+| LAND-08 | Phase 26 | Complete |
+| LAND-09 | Phase 26 | Complete |
+| LAND-10 | Phase 26 | Complete |
 | DEMO-22 | Phase 27 | Complete |
 | DEMO-23 | Phase 27 | Complete |
 | DEMO-24 | Phase 27 | Complete |
 | DEMO-25 | Phase 27 | Complete |
 | DEMO-26 | Phase 27 | Complete |
-| SNAP-01 | Phase 26 | Pending |
-| SNAP-02 | Phase 26 | Pending |
+| SNAP-01 | Phase 26 | Complete |
+| SNAP-02 | Phase 26 | Complete |
 | SNAP-03 | Phase 27 | Complete |
-| SNAP-04 | Phase 26 | Pending |
-| META-01 | Phase 28 | Pending |
-| META-02 | Phase 28 | Pending |
-| TRACK-01 | Phase 28 | Pending |
-| TRACK-02 | Phase 28 | Pending |
-| TRACK-03 | Phase 28 | Pending |
-| TRACK-04 | Phase 28 | Pending |
-| TRACK-05 | Phase 28 | Pending |
+| SNAP-04 | Phase 26 | Complete |
+| META-01 | Phase 28 | Complete |
+| META-02 | Phase 28 | Complete |
+| TRACK-01 | Phase 28 | Complete |
+| TRACK-02 | Phase 28 | Complete |
+| TRACK-03 | Phase 28 | Complete |
+| TRACK-04 | Phase 28 | Complete |
+| TRACK-05 | Phase 28 | Complete |
 
 **Coverage:**
 - v2.6 requirements: 26 total
@@ -123,4 +123,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-28*
-*Last updated: 2026-01-29 after Phase 27 completion*
+*Last updated: 2026-01-29 — v2.6 POC Ready milestone complete (all 26 requirements)*
