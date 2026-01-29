@@ -4,16 +4,18 @@ The 55 App - FastAPI entry point
 A real-time facilitation tool for leadership alignment diagnostics.
 """
 
+import json
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.db.database import Base, engine
+from app.db.database import Base, engine, get_db
 from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router, demo_router
 
 
@@ -108,6 +110,27 @@ def root(request: Request):
     template_path = TEMPLATES_DIR / "landing.html"
     html_content = template_path.read_text()
     return HTMLResponse(content=html_content)
+
+
+@app.post("/api/track-email")
+async def track_email_click(request: Request, db: Session = Depends(get_db)):
+    """Track email CTA click before mailto opens."""
+    from app.db.models import ConversionEvent, EventType
+
+    # Try to parse request body for source context
+    try:
+        body = await request.json()
+        source = body.get("source", "unknown")
+    except:
+        source = "unknown"
+
+    event = ConversionEvent(
+        event_type=EventType.EMAIL_CLICK,
+        event_data=json.dumps({"source": source})
+    )
+    db.add(event)
+    db.commit()
+    return {"status": "tracked"}
 
 
 @app.get("/health")

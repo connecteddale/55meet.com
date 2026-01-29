@@ -11,14 +11,17 @@ import time
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from anthropic import AsyncAnthropic
 from app.schemas import SynthesisOutput
+from app.db.database import get_db
+from app.db.models import ConversionEvent, EventType
 
 router = APIRouter(prefix="/demo", tags=["demo"])
 templates = Jinja2Templates(directory="templates")
@@ -122,8 +125,17 @@ def get_shuffled_team(seed: int) -> list:
 
 
 @router.get("")
-async def demo_intro(request: Request):
+async def demo_intro(request: Request, db: Session = Depends(get_db)):
     """Demo intro page - combined scrolling intro with company, team, and Snapshot explanation."""
+    # Log DEMO_CLICK event
+    referrer = request.headers.get("referer", "")
+    event = ConversionEvent(
+        event_type=EventType.DEMO_CLICK,
+        event_data=json.dumps({"referrer": referrer})
+    )
+    db.add(event)
+    db.commit()
+
     seed = get_demo_seed(request)
     team_members = get_shuffled_team(seed)
 
@@ -664,7 +676,7 @@ async def demo_synthesize_api(request_body: DemoSynthesisRequest):
 
 
 @router.get("/synthesis")
-async def demo_synthesis(request: Request):
+async def demo_synthesis(request: Request, db: Session = Depends(get_db)):
     """Demo Synthesis page - reveals the Alignment gap with pre-baked analysis.
 
     Requires seed parameter for consistent team names.
@@ -680,6 +692,14 @@ async def demo_synthesis(request: Request):
         seed = int(seed_param)
     except (ValueError, TypeError):
         return RedirectResponse(url="/demo", status_code=302)
+
+    # Log DEMO_COMPLETION event
+    event = ConversionEvent(
+        event_type=EventType.DEMO_COMPLETION,
+        event_data=json.dumps({"seed": seed})
+    )
+    db.add(event)
+    db.commit()
 
     # Get shuffled team to map role -> first_name
     team_members = get_shuffled_team(seed)
