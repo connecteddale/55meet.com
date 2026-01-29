@@ -93,3 +93,20 @@ class Response(Base):
 
     session = relationship("Session", back_populates="responses")
     member = relationship("Member", back_populates="responses")
+
+
+class EventType(enum.Enum):
+    """Conversion event types for funnel tracking."""
+    DEMO_CLICK = "demo_click"
+    DEMO_COMPLETION = "demo_completion"
+    EMAIL_CLICK = "email_click"
+
+
+class ConversionEvent(Base):
+    """Privacy-first conversion tracking for CTA interactions."""
+    __tablename__ = "conversion_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(Enum(EventType), nullable=False, index=True)
+    event_data = Column(Text, nullable=True)  # JSON object for context like referrer, page
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
