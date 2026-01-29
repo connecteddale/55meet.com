@@ -135,7 +135,10 @@
         {% endif %}
 
         <div class="conversion-cta-container">
-            <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20-%20{{ synthesis_gap_type }}%20Gap%20Demo" class="conversion-cta-primary">
+            <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20-%20{{ synthesis_gap_type }}%20Gap%20Demo"
+               class="conversion-cta-primary"
+               onclick="navigator.sendBeacon('/api/track-email', JSON.stringify({source:'synthesis',gap:'{{ synthesis_gap_type }}'}))"
+            >
                 Email Dale about my {{ synthesis_gap_type }} gap
             </a>
             <p class="conversion-cta-helper">Dale facilitates The 55 monthly alignment diagnostic</p>

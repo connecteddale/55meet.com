@@ -226,7 +226,7 @@
             <div class="landing-content reveal">
                 <h2 class="landing-section-headline">You've felt the drag.<br>Now find it.</h2>
                 <a href="/demo" class="btn btn-primary btn-large landing-cta">Try the Demo</a>
-                <p class="landing-cta-secondary">Or <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20for%20my%20team">email Dale</a> to learn more</p>
+                <p class="landing-cta-secondary">Or <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20for%20my%20team" onclick="navigator.sendBeacon('/api/track-email', JSON.stringify({source:'landing'}))">email Dale</a> to learn more</p>
             </div>
         </section>
     </main>
