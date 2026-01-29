@@ -133,10 +133,12 @@ Plans:
   3. Admin can query conversion metrics via direct SQLite or simple endpoint (landing → demo → completion → inquiry funnel)
   4. Privacy-first tracking without external analytics dependencies (no cookies, no third-party scripts, data ownership)
 
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 28-01: TBD (to be defined during plan-phase)
+- [ ] 28-01-PLAN.md — Add SEO meta tags to landing page
+- [ ] 28-02-PLAN.md — Create ConversionEvent model and funnel tracking
+- [ ] 28-03-PLAN.md — Add admin analytics endpoint
 
 ## Progress
 
@@ -148,8 +150,8 @@ Phases execute in numeric order: 26 → 27 → 28
 | 1-25 | v2.0-v2.5 | - | Complete | 2026-01-27 |
 | 26. Landing Page Trust & Outcomes | v2.6 | 3/3 | Complete | 2026-01-29 |
 | 27. Demo Ending Personalization | v2.6 | 2/2 | Complete | 2026-01-29 |
-| 28. SEO & Conversion Tracking | v2.6 | 0/TBD | Not started | - |
+| 28. SEO & Conversion Tracking | v2.6 | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-28*
-*Last updated: 2026-01-29 after Phase 27 execution complete*
+*Last updated: 2026-01-29 after Phase 28 planning complete*
