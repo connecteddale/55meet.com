@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-28)
 
 **Core value:** The 55 catches alignment problems before they become execution problems. 55 minutes. Once a month. The truth about where the team actually is.
-**Current focus:** v2.6 POC Ready - Phase 26 (Landing Page Trust & Outcomes)
+**Current focus:** v2.6 POC Ready - Phase 27 (Demo Ending Personalization)
 
 ## Current Position
 
-Phase: 26 of 28 (Landing Page Trust & Outcomes) — COMPLETE
-Plan: 3 of 3 completed
-Status: Phase 26 complete, ready for Phase 27
-Last activity: 2026-01-29 — Phase 26 verified and complete
+Phase: 27 of 28 (Demo Ending Personalization) — IN PROGRESS
+Plan: 1 of 2 completed
+Status: Executing Phase 27
+Last activity: 2026-01-29 — Completed 27-01-PLAN.md
 
-Progress: [██████████████████████████████░░] 57/61 plans completed (93%)
+Progress: [███████████████████████████████░] 58/61 plans completed (95%)
 
 ## Current Milestone: v2.6 POC Ready
 
@@ -51,7 +51,7 @@ Progress: [███████████████████████
 - Total phases shipped: 25
 
 **v2.6 Progress:**
-- Plans completed: 3
+- Plans completed: 4
 - Phases completed: 1 (Phase 26)
 
 ## Accumulated Context
@@ -81,6 +81,12 @@ Recent decisions affecting v2.6:
 - Three specific benefits: faster execution, clearer priorities, less wasted work
 - Dual CTA pattern: primary demo button + secondary email link with pre-filled subject
 - Demo button text "Try the Demo" more action-oriented than "See how it works"
+
+**Phase 27-01 (Demo Intro Snapshot™ Explanation):**
+- WHY/HOW/WHEN framework for explaining Snapshot™ perception capture process
+- Enhanced explanation: bypasses internal editor, image+bullets, first 5 minutes, blind
+- Trademark pattern: ™ on first use (headline), plain "Snapshot" thereafter
+- Education-before-action pattern: visitors understand mechanism before participating
 
 ### Pending Todos
 
@@ -117,8 +123,8 @@ Three client vignettes for "What finding the drag looks like" section:
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Phase 26 complete, ready for Phase 27
+Stopped at: Completed 27-01-PLAN.md
 Resume file: None
 
 ---
-*Updated: 2026-01-29 after Phase 26 verified complete*
+*Updated: 2026-01-29 after completing 27-01-PLAN.md*
