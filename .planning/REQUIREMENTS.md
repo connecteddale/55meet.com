@@ -98,14 +98,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LAND-08 | Phase 26 | Pending |
 | LAND-09 | Phase 26 | Pending |
 | LAND-10 | Phase 26 | Pending |
-| DEMO-22 | Phase 27 | Pending |
-| DEMO-23 | Phase 27 | Pending |
-| DEMO-24 | Phase 27 | Pending |
-| DEMO-25 | Phase 27 | Pending |
-| DEMO-26 | Phase 27 | Pending |
+| DEMO-22 | Phase 27 | Complete |
+| DEMO-23 | Phase 27 | Complete |
+| DEMO-24 | Phase 27 | Complete |
+| DEMO-25 | Phase 27 | Complete |
+| DEMO-26 | Phase 27 | Complete |
 | SNAP-01 | Phase 26 | Pending |
 | SNAP-02 | Phase 26 | Pending |
-| SNAP-03 | Phase 27 | Pending |
+| SNAP-03 | Phase 27 | Complete |
 | SNAP-04 | Phase 26 | Pending |
 | META-01 | Phase 28 | Pending |
 | META-02 | Phase 28 | Pending |
@@ -123,4 +123,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-28*
-*Last updated: 2026-01-28 after roadmap creation (traceability section)*
+*Last updated: 2026-01-29 after Phase 27 completion*
