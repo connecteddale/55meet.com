@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 ## Current Position
 
 Phase: 28 of 28 (SEO & Conversion Tracking) — IN PROGRESS
-Plan: 1 of 3 completed
+Plan: 2 of 3 completed
 Status: Phase 28 in progress
-Last activity: 2026-01-29 — Completed 28-01-PLAN.md
+Last activity: 2026-01-29 — Completed 28-02-PLAN.md
 
-Progress: [████████████████████████████████] 60/61 plans completed (98%)
+Progress: [████████████████████████████████] 61/62 plans completed (98%)
 
 ## Current Milestone: v2.6 POC Ready
 
@@ -51,9 +51,9 @@ Progress: [███████████████████████
 - Total phases shipped: 25
 
 **v2.6 Progress:**
-- Plans completed: 6
+- Plans completed: 7
 - Phases completed: 2 (Phases 26, 27)
-- Phase 28: 1 of 3 plans completed
+- Phase 28: 2 of 3 plans completed
 
 ## Accumulated Context
 
@@ -103,6 +103,15 @@ Recent decisions affecting v2.6:
 - Trademark symbol (™) used directly in meta tags, consistent with Phase 26 pattern
 - Open Graph image placeholder: /static/images/og-share.jpg (image creation not in Phase 28-01 scope)
 
+**Phase 28-02 (Conversion Event Tracking):**
+- ConversionEvent SQLAlchemy model with EventType enum (DEMO_CLICK, DEMO_COMPLETION, EMAIL_CLICK)
+- Privacy-first design: SQLite local storage, no cookies, no PII, no session fingerprinting
+- Server-side logging in /demo route (DEMO_CLICK) and /demo/synthesis route (DEMO_COMPLETION)
+- Client-side tracking via navigator.sendBeacon for email CTA clicks (synthesis + landing page)
+- Fire-and-forget pattern: sendBeacon fires reliably even if page unloads immediately
+- Selective event logging: Only intentional CTA actions, not landing page views
+- Session_hash field deferred per research (unclear value for mobile networks)
+
 ### Pending Todos
 
 None — cleared at milestone start.
@@ -138,8 +147,8 @@ Three client vignettes for "What finding the drag looks like" section:
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 28-01-PLAN.md
+Stopped at: Completed 28-02-PLAN.md
 Resume file: None
 
 ---
-*Updated: 2026-01-29 after completing 28-01-PLAN.md*
+*Updated: 2026-01-29 after completing 28-02-PLAN.md*
