@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 
 ## Current Position
 
-Phase: 27 of 28 (Demo Ending Personalization) — IN PROGRESS
-Plan: 1 of 2 completed
-Status: Executing Phase 27
-Last activity: 2026-01-29 — Completed 27-01-PLAN.md
+Phase: 27 of 28 (Demo Ending Personalization) — COMPLETE
+Plan: 2 of 2 completed
+Status: Phase 27 complete, ready for Phase 28
+Last activity: 2026-01-29 — Phase 27 verified and complete
 
-Progress: [███████████████████████████████░] 58/61 plans completed (95%)
+Progress: [███████████████████████████████░] 59/61 plans completed (97%)
 
 ## Current Milestone: v2.6 POC Ready
 
@@ -51,8 +51,8 @@ Progress: [███████████████████████
 - Total phases shipped: 25
 
 **v2.6 Progress:**
-- Plans completed: 4
-- Phases completed: 1 (Phase 26)
+- Plans completed: 5
+- Phases completed: 2 (Phases 26, 27)
 
 ## Accumulated Context
 
@@ -87,6 +87,14 @@ Recent decisions affecting v2.6:
 - Enhanced explanation: bypasses internal editor, image+bullets, first 5 minutes, blind
 - Trademark pattern: ™ on first use (headline), plain "Snapshot" thereafter
 - Education-before-action pattern: visitors understand mechanism before participating
+
+**Phase 27-02 (Synthesis Conversion Personalization):**
+- Email CTA as primary conversion action (connectedworld@gmail.com)
+- Gap-type personalized conversion section replaces generic footer
+- Three distinct challenges: Direction ("pulling in same direction"), Alignment ("work fitting together"), Commitment ("rowing same boat")
+- Visceral personal question: "What would finding YOUR [gap] drag be worth? A quarter? Two?"
+- Removes competing CTAs (calendar link, More about Dale, Back to top)
+- Single clear action after peak emotional moment (gap reveal)
 
 ### Pending Todos
 
@@ -123,8 +131,8 @@ Three client vignettes for "What finding the drag looks like" section:
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 27-01-PLAN.md
+Stopped at: Phase 27 complete, ready for Phase 28
 Resume file: None
 
 ---
-*Updated: 2026-01-29 after completing 27-01-PLAN.md*
+*Updated: 2026-01-29 after Phase 27 verified complete*
