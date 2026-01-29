@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-28)
 
 **Core value:** The 55 catches alignment problems before they become execution problems. 55 minutes. Once a month. The truth about where the team actually is.
-**Current focus:** v2.6 POC Ready - Phase 27 (Demo Ending Personalization)
+**Current focus:** v2.6 POC Ready - COMPLETE
 
 ## Current Position
 
-Phase: 28 of 28 (SEO & Conversion Tracking) — IN PROGRESS
-Plan: 2 of 3 completed
-Status: Phase 28 in progress
-Last activity: 2026-01-29 — Completed 28-02-PLAN.md
+Phase: 28 of 28 (SEO & Conversion Tracking) — COMPLETE
+Plan: 3 of 3 completed
+Status: Milestone v2.6 POC Ready COMPLETE
+Last activity: 2026-01-29 — Completed 28-03-PLAN.md
 
-Progress: [████████████████████████████████] 61/62 plans completed (98%)
+Progress: [████████████████████████████████] 62/62 plans completed (100%)
 
 ## Current Milestone: v2.6 POC Ready
 
@@ -41,7 +41,7 @@ Progress: [███████████████████████
 | v2.3 | PDF Export | 20 | 2026-01-22 |
 | v2.4 | Effortless | 21-24 | 2026-01-24 |
 | v2.5 | Interactive Demo | 25 | 2026-01-27 |
-| v2.6 | POC Ready | 26-28 | In progress |
+| v2.6 | POC Ready | 26-28 | 2026-01-29 |
 
 ## Performance Metrics
 
@@ -51,9 +51,9 @@ Progress: [███████████████████████
 - Total phases shipped: 25
 
 **v2.6 Progress:**
-- Plans completed: 7
-- Phases completed: 2 (Phases 26, 27)
-- Phase 28: 2 of 3 plans completed
+- Plans completed: 8
+- Phases completed: 3 (Phases 26, 27, 28)
+- Phase 28: 3 of 3 plans completed ✓
 
 ## Accumulated Context
 
@@ -112,6 +112,14 @@ Recent decisions affecting v2.6:
 - Selective event logging: Only intentional CTA actions, not landing page views
 - Session_hash field deferred per research (unclear value for mobile networks)
 
+**Phase 28-03 (Admin Analytics Endpoints):**
+- Analytics router at /admin/analytics with funnel and recent events endpoints
+- Funnel endpoint returns counts for demo_click, demo_completion, email_click with conversion rates
+- Dual access pattern: HTTP JSON endpoints + direct SQLite query for admin flexibility
+- SQLite Enum fix: Added native_enum=False to EventType column for SQLite compatibility
+- Default 30-day query period with configurable range (1-365 days)
+- Conversion rates rounded to 1 decimal place for readability
+
 ### Pending Todos
 
 None — cleared at milestone start.
@@ -147,8 +155,8 @@ Three client vignettes for "What finding the drag looks like" section:
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 28-02-PLAN.md
+Stopped at: Completed 28-03-PLAN.md - Milestone v2.6 POC Ready SHIPPED
 Resume file: None
 
 ---
-*Updated: 2026-01-29 after completing 28-02-PLAN.md*
+*Updated: 2026-01-29 after completing 28-03-PLAN.md*
