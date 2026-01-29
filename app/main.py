@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.db.database import Base, engine, get_db
-from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router, demo_router
+from app.routers import images_router, auth_router, admin_router, teams_router, members_router, sessions_router, participant_router, qr_router, demo_router, analytics_router
 
 
 # Define paths
@@ -65,6 +65,7 @@ app.include_router(images_router)
 app.include_router(participant_router)
 app.include_router(qr_router)
 app.include_router(demo_router)
+app.include_router(analytics_router)
 
 
 # Custom exception handlers
