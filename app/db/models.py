@@ -107,6 +107,6 @@ class ConversionEvent(Base):
     __tablename__ = "conversion_events"
 
     id = Column(Integer, primary_key=True, index=True)
-    event_type = Column(Enum(EventType), nullable=False, index=True)
+    event_type = Column(Enum(EventType, native_enum=False, values_callable=lambda x: [e.value for e in x]), nullable=False, index=True)
     event_data = Column(Text, nullable=True)  # JSON object for context like referrer, page
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
