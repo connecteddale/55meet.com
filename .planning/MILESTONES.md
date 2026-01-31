@@ -6,6 +6,38 @@ None active — ready for next milestone
 
 ## Milestone History
 
+### v2.6 POC Ready (Shipped 2026-01-31)
+
+**Goal:** Convert landing page visitors into client inquiries through trust signals, personalized demo ending, and friction-free contact CTAs.
+
+**Key Results:**
+- Rebranded "Signal Capture" to "Snapshot™" with trademark notation pattern
+- Added outcomes section: "One gap diagnosed. One owned fix. Checkable in 30 days."
+- Enhanced CTA: "You've felt the drag. Now find it"
+- Demo intro explains Snapshot™ perception capture mechanism
+- Understated synthesis ending with "Talk to Dale" contact link
+- SEO meta tags with Snapshot™ and three gap types
+- Privacy-first conversion tracking (SQLite, no cookies)
+- Admin analytics endpoint for funnel metrics
+
+**Phases:** 26-28 (3 phases, 8 plans)
+
+**Archive:** See `.planning/milestones/v2.6-ROADMAP.md` and `.planning/milestones/v2.6-REQUIREMENTS.md`
+
+### v2.5 Interactive Demo (Shipped 2026-01-27)
+
+**Goal:** Self-guided demo experience for landing page visitors
+
+**Key Results:**
+- Fictional company context: ClearBrief ($65M legal tech SaaS)
+- Pre-defined strategy statement and 4 fictional team members
+- Visitor completes real Snapshot (image selection + bullets)
+- Visitor's response shown alongside pre-baked team responses
+- Real AI synthesis call with visitor validation
+- Matches existing app UX patterns and design system
+
+**Phases:** 25 (1 phase, 4 plans)
+
 ### v2.4 Effortless (Shipped 2026-01-24)
 
 **Goal:** Reduce participant friction to absolute minimum
@@ -74,10 +106,10 @@ None active — ready for next milestone
 ## Next Milestone Candidates
 
 Based on pending todos and deferred features:
-- Interactive demo for marketing
-- Landing page refinements
-- Additional capture techniques (Score, Three Questions, etc.)
+- Additional capture techniques (Score, Three Questions, Headline, One Word)
 - Multi-facilitator support architecture
+- Trend visualization across sessions
+- Benchmarking across teams
 
 ---
-*Updated: 2026-01-25 after GSD reorganization*
+*Updated: 2026-01-31 after v2.6 POC Ready shipped*

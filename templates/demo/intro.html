@@ -324,7 +324,6 @@
 </style>
 
 <a href="/" class="brand-badge-floating">The 55</a>
-<a href="/demo" class="demo-badge-floating">Demo</a>
 
 <main>
     <!-- Section 1: Hero -->
@@ -344,8 +343,8 @@
         <div class="demo-content reveal">
             <p class="demo-eyebrow">Your Company</p>
             <h2 class="demo-headline">{{ company.name }}</h2>
-            <p class="demo-body">A LegalTech SaaS business you've built over 6 years. Team of 85, revenue of $53m last year.</p>
-            <p class="demo-body">You have ambitious plans. But lately, something feels off.</p>
+            <p class="demo-body">LegalTech SaaS. 85 people. $53m last year.</p>
+            <p class="demo-body">Ambitious plans. But lately, something feels off.</p>
         </div>
         <a href="#strategy" class="demo-scroll-cue" aria-label="Scroll down">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -369,9 +368,9 @@
             </div>
 
             <div class="demo-strategy-banner">
-                <div class="strategy-label">3AM Strategy* Statement</div>
+                <div class="strategy-label">3AM Strategy*</div>
                 <p class="strategy-statement">{{ company.strategy }}</p>
-                <p class="strategy-footnote">*3AM Strategy: The succinct and consistent way that each member of your team would describe your strategy when woken at 3am (without reaching for a slide deck). <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a></p>
+                <p class="strategy-footnote">*The way your team describes your strategy when woken at 3am (without slides). <a href="https://www.connecteddale.com/releases/The_3am_Test.html" target="_blank" rel="noopener">Learn more</a></p>
             </div>
 
             </div>
@@ -384,7 +383,7 @@
     <section id="question" class="demo-section demo-section-dark">
         <div class="demo-content reveal">
             <h2 class="demo-headline">Your strategy is clear.</h2>
-            <p class="demo-body">But are you going as fast as you should?</p>
+            <p class="demo-body">So why does everything feel like dragging through mud?</p>
         </div>
         <a href="#process" class="demo-scroll-cue" aria-label="Scroll down">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -395,21 +394,21 @@
     <section id="process" class="demo-section">
         <div class="demo-content reveal">
             <p class="demo-eyebrow">The Process</p>
-            <h2 class="demo-headline">Snapshot™ Perception Capture</h2>
-            <p class="demo-body">Snapshot is how The 55 captures what your team actually thinks—before the internal editor kicks in, before the meeting-safe answers, before consensus softens the truth.</p>
-            <p class="demo-body">You select an image that represents your current state, then explain why in bullet points. No presentations. No filtering. Just signal.</p>
-            <p class="demo-body">This happens in the first 5 minutes, before anyone knows what anyone else said.</p>
+            <h2 class="demo-headline">Snapshot™</h2>
+            <p class="demo-body">Before the internal editor kicks in.<br>Before the meeting-safe answers.<br>Before consensus softens the truth.</p>
+            <p class="demo-body">Snapshot captures what your team actually thinks.</p>
+            <p class="demo-body">No filtering. Just signal.</p>
         </div>
         <a href="#team" class="demo-scroll-cue" aria-label="Scroll down">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </a>
     </section>
 
-    <!-- Section 5: Team -->
+    <!-- Section 6: Team -->
     <section id="team" class="demo-section demo-section-dark">
         <div class="demo-content reveal">
             <p class="demo-eyebrow">Your ClearBrief Inc. Leadership Team</p>
-            <h2 class="demo-headline">They've completed Snapshot</h2>
+            <h2 class="demo-headline">They've already shared their signal.</h2>
 
             <div class="demo-team-grid">
                 {% for member in team_members %}
@@ -424,7 +423,7 @@
                 {% endfor %}
             </div>
 
-            <p class="demo-body">Now it's your turn to add your signal alongside theirs.</p>
+            <p class="demo-body">Now add yours—and see what they said.</p>
 
             <a href="/demo/signal?seed={{ seed }}" class="demo-cta">
                 Add Your Signal

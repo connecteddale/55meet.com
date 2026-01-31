@@ -106,21 +106,21 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 - Visitor ("You") validated/injected to appear in attributed themes — v2.5
 - Matches existing app UX patterns and design system — v2.5
 
+**v2.6 POC Ready:**
+- Snapshot™ rebrand across entire app (replacing Signal Capture) — v2.6
+- Landing page outcomes section with specific benefits — v2.6
+- Enhanced CTA: "You've felt the drag. Now find it" — v2.6
+- Demo intro explains Snapshot™ perception capture mechanism — v2.6
+- Understated synthesis ending with contact link — v2.6
+- SEO meta tags with Snapshot™ and three gap types — v2.6
+- Privacy-first conversion tracking (SQLite, no cookies) — v2.6
+- Admin analytics endpoint for funnel metrics — v2.6
+
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-**v2.6 POC Ready:**
-- Rebrand "Signal Capture" to "Snapshot™" across entire app
-- Landing page "What finding the drag looks like" section with 3 client example cards
-- Benefit-focused language showing outcomes after finding the drag
-- Strengthened final CTA: "You've felt the drag. Now find it"
-- Demo end experience: visceral "Now imagine your team" challenge
-- Personal urgency: what would finding YOUR drag be worth?
-- Email CTA to connectedworld@gmail.com
-- Link to Snapshot™ article (connecteddale.com/releases/Snapshot.html)
-- Updated meta description with Snapshot™ and three gap types
-- Conversion tracking (SQLite event logging)
+(No active milestone — ready for `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -138,18 +138,19 @@ A digital companion for monthly leadership alignment diagnostics. The 55 capture
 
 ## Context
 
-**Current state (post-v2.5):**
+**Current state (post-v2.6):**
 - Full facilitation tool at 55.connecteddale.com / 55meet.com
 - Automated lifecycle: close → synthesize → reveal (no manual steps)
 - Participant flow: 4 screens (QR scan → name → browse+select → waiting → results)
-- Interactive demo: ClearBrief scenario with real AI synthesis
+- Interactive demo: ClearBrief scenario with real AI synthesis (Snapshot™ branded)
 - View Transitions API: smooth animated page transitions throughout
 - Touch-optimized: card grids, scale animations, progressive inputs
 - Live feedback: waiting screen shows member names, meeting view has control strip
 - PDF export: Presentation-ready session reports with fpdf2/Inter font
 - Design system: Inter font, Apple-inspired colors, fluid typography
 - WCAG 2.1 AA accessibility compliant
-- ~10,000 LOC across Python/HTML/CSS/JS
+- Privacy-first conversion tracking with SQLite
+- ~16,750 LOC across Python/HTML/CSS/JS
 
 **The 55 background:**
 - Monthly alignment diagnostic Dale facilitates with leadership teams
@@ -233,4 +234,4 @@ Original phases (10-29, 34-37) renumbered to 1-24:
 | 37 | 24 | meeting-view-live-feedback |
 
 ---
-*Last updated: 2026-01-28 after v2.6 POC Ready milestone started*
+*Last updated: 2026-01-31 after v2.6 POC Ready milestone shipped*

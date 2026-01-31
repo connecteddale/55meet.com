@@ -6,7 +6,6 @@
 
 {% block content %}
 <a href="/" class="brand-badge-floating">The 55</a>
-<a href="/demo" class="demo-badge-floating">Demo</a>
 
 <div class="facilitator-tools-page">
     <header class="tools-header">
@@ -114,40 +113,17 @@
         </p>
     </section>
 
-    <!-- Conversion Section - Personalized by Gap Type -->
-    <section class="demo-conversion-section">
-        {% if synthesis_gap_type == 'Direction' %}
-            <h2 class="conversion-headline">Imagine your team pulling in the same direction.</h2>
-            <p class="conversion-challenge">What would finding YOUR direction drag be worth? A quarter? Two?</p>
-            <p class="conversion-body">Right now, your team may lack shared understanding of goals or priorities. The 55 catches this drift before it compounds.</p>
-        {% elif synthesis_gap_type == 'Alignment' %}
-            <h2 class="conversion-headline">Imagine your team's work actually fitting together.</h2>
-            <p class="conversion-challenge">What would finding YOUR alignment drag be worth? A quarter? Two?</p>
-            <p class="conversion-body">Right now, your team's work may be disconnected or uncoordinated. The 55 catches this drift before it compounds.</p>
-        {% elif synthesis_gap_type == 'Commitment' %}
-            <h2 class="conversion-headline">Imagine everyone rowing the same boat.</h2>
-            <p class="conversion-challenge">What would finding YOUR commitment drag be worth? A quarter? Two?</p>
-            <p class="conversion-body">Right now, individual interests may be overriding collective success. The 55 catches this drift before it compounds.</p>
-        {% else %}
-            <h2 class="conversion-headline">Imagine finding your team's drag.</h2>
-            <p class="conversion-challenge">What would that be worth? A quarter? Two?</p>
-            <p class="conversion-body">The 55 catches alignment drift before it compounds.</p>
-        {% endif %}
-
-        <div class="conversion-cta-container">
-            <a href="mailto:connectedworld@gmail.com?subject=About%20The%2055%20-%20{{ synthesis_gap_type }}%20Gap%20Demo"
-               class="conversion-cta-primary"
+    <!-- Understated closing -->
+    <footer class="demo-closing">
+        <p class="closing-text">This is what The 55 surfaces — in 55 minutes, once a month.</p>
+        <div class="closing-links">
+            <a href="https://www.connecteddale.com/contact.html"
+               class="closing-link"
                onclick="navigator.sendBeacon('/api/track-email', JSON.stringify({source:'synthesis',gap:'{{ synthesis_gap_type }}'}))"
-            >
-                Email Dale about my {{ synthesis_gap_type }} gap
-            </a>
-            <p class="conversion-cta-helper">Dale facilitates The 55 monthly alignment diagnostic</p>
+            >Talk to Dale</a>
+            <span class="closing-separator">·</span>
+            <a href="/demo" class="closing-link">Start over</a>
         </div>
-    </section>
-
-    <!-- Subtle secondary navigation -->
-    <footer class="demo-conversion-footer">
-        <a href="/demo" class="conversion-link-subtle">Start a new demo</a>
     </footer>
 </div>
 
@@ -442,89 +418,39 @@
     text-align: left;
 }
 
-/* Conversion Section */
-.demo-conversion-section {
-    padding: var(--space-10) var(--space-5);
+/* Understated closing */
+.demo-closing {
     text-align: center;
-    background: linear-gradient(135deg, var(--color-bg-secondary) 0%, rgba(0, 102, 204, 0.05) 100%);
-    border-radius: 12px;
-    margin-bottom: var(--space-6);
+    padding: var(--space-10) 0 var(--space-8);
 }
 
-.conversion-headline {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    letter-spacing: var(--tracking-tight);
-    margin-bottom: var(--space-3);
-    color: var(--color-text);
-}
-
-.conversion-challenge {
-    font-size: var(--text-xl);
-    font-weight: 600;
-    color: var(--color-primary);
+.closing-text {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
     margin-bottom: var(--space-4);
 }
 
-.conversion-body {
-    font-size: var(--text-base);
-    color: var(--color-text-secondary);
-    max-width: 480px;
-    margin: 0 auto var(--space-6);
-    line-height: var(--leading-relaxed);
-}
-
-.conversion-cta-container {
-    margin-top: var(--space-6);
-}
-
-.conversion-cta-primary {
-    display: inline-flex;
+.closing-links {
+    display: flex;
     align-items: center;
-    gap: var(--space-2);
-    background: var(--color-primary);
-    color: white;
-    padding: var(--space-4) var(--space-8);
-    border-radius: 8px;
-    font-size: var(--text-lg);
-    font-weight: 600;
-    text-decoration: none;
-    transition: background var(--duration-fast) var(--ease-out),
-                box-shadow var(--duration-fast) var(--ease-out),
-                transform var(--duration-fast) var(--ease-out);
+    justify-content: center;
+    gap: var(--space-3);
 }
 
-.conversion-cta-primary:hover {
-    background: var(--color-primary-dark);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-    text-decoration: none;
-}
-
-.conversion-cta-helper {
-    font-size: var(--text-sm);
-    color: var(--color-text-tertiary);
-    margin-top: var(--space-3);
-}
-
-/* Subtle footer for restart */
-.demo-conversion-footer {
-    padding-top: var(--space-8);
-    text-align: center;
-}
-
-.conversion-link-subtle {
+.closing-link {
     font-size: var(--text-sm);
     color: var(--color-text-tertiary);
     text-decoration: none;
-    padding: var(--space-2) var(--space-4);
-    border-radius: 6px;
-    transition: color var(--duration-fast) var(--ease-out);
 }
 
-.conversion-link-subtle:hover {
+.closing-link:hover {
     color: var(--color-text-secondary);
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.closing-separator {
+    color: var(--color-border);
 }
 
 /* Responsive */
@@ -541,13 +467,6 @@
         grid-template-columns: 1fr;
     }
 
-    .conversion-headline {
-        font-size: var(--text-xl);
-    }
-
-    .conversion-challenge {
-        font-size: var(--text-lg);
-    }
 }
 </style>
 

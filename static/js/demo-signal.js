@@ -52,6 +52,7 @@
         document.getElementById('bullet-5')
     ];
     const readyText = document.getElementById('ready-text');
+    const submitSection = document.getElementById('submit-section');
 
     // ========================================
     // State Management (sessionStorage)
@@ -221,6 +222,7 @@
 
         // Show bullet section and scroll to show the selected image preview
         bulletSection.style.display = 'block';
+        submitSection.classList.add('sticky-bottom');
         setTimeout(() => {
             selectedImagePreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
@@ -348,6 +350,17 @@
 
     bulletInputs.forEach(input => {
         input.addEventListener('input', onBulletInput);
+        input.addEventListener('focus', function() {
+            // Scroll input into view above the sticky button
+            setTimeout(() => {
+                const rect = this.getBoundingClientRect();
+                const submitRect = submitSection.getBoundingClientRect();
+                // If input is behind or too close to the sticky button, scroll it up
+                if (rect.bottom > submitRect.top - 20) {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
+        });
     });
 
     submitBtn.addEventListener('click', navigateToResponses);
@@ -364,18 +377,16 @@
             selectedImageId = savedState.imageId;
             selectedImageUrl = savedState.imageUrl;
 
-            // Restore bullets
+            // Restore bullets if any
             if (savedState.bullets && savedState.bullets.length > 0) {
                 setBullets(savedState.bullets);
+            }
 
-                // Show bullet section
+            // Show bullet section and sticky submit if image was selected
+            if (selectedImageUrl) {
                 bulletSection.style.display = 'block';
-
-                // Update preview
-                if (selectedImageUrl) {
-                    selectedImagePreview.innerHTML = `<img src="${selectedImageUrl}" alt="Your selected image">`;
-                }
-
+                submitSection.classList.add('sticky-bottom');
+                selectedImagePreview.innerHTML = `<img src="${selectedImageUrl}" alt="Your selected image">`;
                 updateSubmitButton();
             }
 
