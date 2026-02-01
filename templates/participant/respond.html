@@ -468,6 +468,13 @@
                 }, 0);
             }
         });
+
+        // Scroll into view when focusing (for keyboard navigation)
+        input.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        });
     });
 
     // Clear responses button handler - keeps image, clears only bullet text
