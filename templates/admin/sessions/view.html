@@ -107,6 +107,9 @@
                     </svg>
                 </button>
             </form>
+            {% if error %}
+            <div class="member-error" id="member-error">{{ error }}</div>
+            {% endif %}
 
             <div class="member-list" id="member-status-list">
                 {% for member in member_status %}
@@ -235,10 +238,20 @@
 
 {% block scripts %}
 <script>
-// Focus add-member input on page load (for quick successive adds)
 document.addEventListener('DOMContentLoaded', function() {
+    // Focus add-member input on page load (for quick successive adds)
     const input = document.getElementById('add-member-input');
     if (input) input.focus();
+
+    // Auto-dismiss error after 3 seconds
+    const error = document.getElementById('member-error');
+    if (error) {
+        setTimeout(function() {
+            error.style.opacity = '0';
+            error.style.transition = 'opacity 0.3s ease';
+            setTimeout(function() { error.remove(); }, 300);
+        }, 3000);
+    }
 });
 </script>
 

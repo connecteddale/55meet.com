@@ -133,7 +133,7 @@ async def session_history(request: Request, auth: AuthDep, db: DbDep):
 
 
 @router.get("/{session_id}")
-async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbDep):
+async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbDep, error: str = None):
     """View session details and control panel."""
     from app.services.images import get_image_library
 
@@ -230,7 +230,8 @@ async def view_session(request: Request, session_id: int, auth: AuthDep, db: DbD
             "suggested_recalibrations": suggested_recalibrations,
             "synthesis_pending": synthesis_pending,
             "synthesis_generating": synthesis_generating,
-            "participant_responses": participant_responses
+            "participant_responses": participant_responses,
+            "error": error
         }
     )
 
@@ -340,12 +341,16 @@ async def add_member_from_session(
     # Check member limit
     member_count = db.query(Member).filter(Member.team_id == team.id).count()
     if member_count >= 55:
-        raise HTTPException(status_code=400, detail="Maximum 55 members per team")
+        from urllib.parse import quote
+        return RedirectResponse(
+            url=f"/admin/sessions/{session_id}?error={quote('Maximum 55 members per team')}",
+            status_code=303
+        )
 
     # Add member
     name = name.strip()
     if not name:
-        raise HTTPException(status_code=400, detail="Name is required")
+        return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
     # Check for duplicate name (case-insensitive)
     from sqlalchemy import func
@@ -354,7 +359,11 @@ async def add_member_from_session(
         func.lower(Member.name) == name.lower()
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail=f"'{name}' already exists on this team")
+        from urllib.parse import quote
+        return RedirectResponse(
+            url=f"/admin/sessions/{session_id}?error={quote(f'{name} already exists')}",
+            status_code=303
+        )
 
     member = Member(team_id=team.id, name=name)
     db.add(member)
