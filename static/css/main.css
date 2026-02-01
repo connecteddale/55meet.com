@@ -4005,7 +4005,7 @@ button[type="submit"].btn-loading::after {
 .member-row {
     display: flex;
     align-items: center;
-    padding: var(--space-2) 0;
+    padding: 4px 0;
     border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -4015,13 +4015,13 @@ button[type="submit"].btn-loading::after {
 
 .member-row .member-name {
     flex: 1;
-    font-weight: 500;
+    font-size: var(--text-sm);
 }
 
 .member-row .member-status {
-    width: 24px;
+    width: 20px;
     text-align: center;
-    font-size: var(--text-lg);
+    font-size: var(--text-base);
 }
 
 .member-row .member-status.done {

@@ -98,8 +98,8 @@
             </div>
 
             {# Add member form #}
-            <form method="post" action="/admin/sessions/{{ session.id }}/members/add" class="add-member-inline">
-                <input type="text" name="name" placeholder="Add participant..." required autocomplete="off">
+            <form method="post" action="/admin/sessions/{{ session.id }}/members/add" class="add-member-inline" id="add-member-form">
+                <input type="text" name="name" id="add-member-input" placeholder="Add participant..." required autocomplete="off">
                 <button type="submit" class="btn-add" title="Add participant">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -234,6 +234,14 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+// Focus add-member input on page load (for quick successive adds)
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('add-member-input');
+    if (input) input.focus();
+});
+</script>
+
 {% if session.state.value == 'capturing' %}
 <script src="/static/js/polling.js?v=4"></script>
 {% endif %}
