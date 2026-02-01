@@ -257,6 +257,19 @@
         box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
+    .input-error-message {
+        color: var(--color-error);
+        font-size: var(--text-sm);
+        margin-top: calc(-1 * var(--space-2));
+        margin-bottom: var(--space-2);
+        display: none;
+        text-align: left;
+    }
+
+    .input-error-message.visible {
+        display: block;
+    }
+
     .bullet-input-hidden {
         display: none;
     }
@@ -285,10 +298,15 @@
     .submit-section.sticky-bottom {
         position: fixed;
         bottom: 0;
-        left: 0;
-        right: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - var(--space-4) * 2);
+        max-width: 1200px;
         background: var(--color-bg);
         border-top: 1px solid var(--color-border-light);
+        border-left: 1px solid var(--color-border-light);
+        border-right: 1px solid var(--color-border-light);
+        border-radius: 12px 12px 0 0;
         padding: var(--space-4);
         z-index: 100;
         box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
@@ -418,26 +436,31 @@
                    id="bullet-1"
                    placeholder="Bullet point 1 (required)"
                    maxlength="500">
+            <span class="input-error-message" id="bullet-1-error">at least 2 words</span>
             <input type="text"
                    class="bullet-input bullet-input-hidden"
                    id="bullet-2"
                    placeholder="Bullet point 2 (optional)"
                    maxlength="500">
+            <span class="input-error-message" id="bullet-2-error">at least 2 words</span>
             <input type="text"
                    class="bullet-input bullet-input-hidden"
                    id="bullet-3"
                    placeholder="Bullet point 3 (optional)"
                    maxlength="500">
+            <span class="input-error-message" id="bullet-3-error">at least 2 words</span>
             <input type="text"
                    class="bullet-input bullet-input-hidden"
                    id="bullet-4"
                    placeholder="Bullet point 4 (optional)"
                    maxlength="500">
+            <span class="input-error-message" id="bullet-4-error">at least 2 words</span>
             <input type="text"
                    class="bullet-input bullet-input-hidden"
                    id="bullet-5"
                    placeholder="Bullet point 5 (optional)"
                    maxlength="500">
+            <span class="input-error-message" id="bullet-5-error">at least 2 words</span>
         </div>
     </div>
 

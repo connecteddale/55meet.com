@@ -79,21 +79,25 @@
                        id="bullet-2"
                        placeholder="Bullet point 2 (optional)"
                        maxlength="500">
+                <span class="input-error-message" id="bullet-2-error">at least 2 words</span>
                 <input type="text"
                        class="bullet-input bullet-input-hidden"
                        id="bullet-3"
                        placeholder="Bullet point 3 (optional)"
                        maxlength="500">
+                <span class="input-error-message" id="bullet-3-error">at least 2 words</span>
                 <input type="text"
                        class="bullet-input bullet-input-hidden"
                        id="bullet-4"
                        placeholder="Bullet point 4 (optional)"
                        maxlength="500">
+                <span class="input-error-message" id="bullet-4-error">at least 2 words</span>
                 <input type="text"
                        class="bullet-input bullet-input-hidden"
                        id="bullet-5"
                        placeholder="Bullet point 5 (optional)"
                        maxlength="500">
+                <span class="input-error-message" id="bullet-5-error">at least 2 words</span>
             </div>
             <button type="button" id="clear-btn" class="clear-response-btn">Clear responses</button>
         </div>
@@ -394,19 +398,21 @@
         const hasImage = selectedImageId !== null;
         const bulletText = bulletInputs[0].value.trim();
         const hasValidBullet = hasAtLeastTwoWords(bulletText);
-        submitBtn.disabled = !(hasImage && hasValidBullet);
 
-        // Inline validation for first bullet input
-        if (hasImage && bulletText.length > 0 && !hasValidBullet) {
-            bulletInputs[0].classList.add('input-error');
-            bullet1Error.classList.add('visible');
-        } else {
-            bulletInputs[0].classList.remove('input-error');
-            bullet1Error.classList.remove('visible');
+        // Also check all filled bullets have 2 words
+        let allBulletsValid = true;
+        for (let i = 0; i < bulletInputs.length; i++) {
+            const text = bulletInputs[i].value.trim();
+            if (text.length > 0 && !hasAtLeastTwoWords(text)) {
+                allBulletsValid = false;
+                break;
+            }
         }
 
+        submitBtn.disabled = !(hasImage && hasValidBullet && allBulletsValid);
+
         // Update bottom hint
-        if (hasImage && hasValidBullet) {
+        if (hasImage && hasValidBullet && allBulletsValid) {
             selectionHint.style.display = 'none';
         } else if (!hasImage) {
             selectionHint.style.display = '';
@@ -445,19 +451,22 @@
         });
     });
 
-    // Blur validation for first bullet - must have 2 words to leave
-    bulletInputs[0].addEventListener('blur', function(e) {
-        const text = this.value.trim();
-        // Only validate if they've started typing (not empty)
-        if (text.length > 0 && !hasAtLeastTwoWords(text)) {
-            // Show error state
-            this.classList.add('input-error');
-            bullet1Error.classList.add('visible');
-            // Refocus to prevent leaving
-            setTimeout(() => {
-                this.focus();
-            }, 0);
-        }
+    // Blur validation for ALL bullet inputs - must have 2 words if any text entered
+    bulletInputs.forEach((input, idx) => {
+        input.addEventListener('blur', function(e) {
+            const text = this.value.trim();
+            const errorMsg = document.getElementById(this.id + '-error');
+            // Only validate if they've started typing (not empty)
+            if (text.length > 0 && !hasAtLeastTwoWords(text)) {
+                // Show error state
+                this.classList.add('input-error');
+                if (errorMsg) errorMsg.classList.add('visible');
+                // Refocus to prevent leaving
+                setTimeout(() => {
+                    this.focus();
+                }, 0);
+            }
+        });
     });
 
     // Clear responses button handler - keeps image, clears only bullet text
@@ -468,12 +477,14 @@
             bulletInputs.forEach((input, idx) => {
                 input.value = '';
                 input.classList.remove('input-error');
+                // Clear error message for this input
+                const errorMsg = document.getElementById(input.id + '-error');
+                if (errorMsg) errorMsg.classList.remove('visible');
                 if (idx > 0) {
                     input.classList.add('bullet-input-hidden');
                     input.classList.remove('bullet-input-reveal');
                 }
             });
-            bullet1Error.classList.remove('visible');
 
             // Update bullets JSON to empty
             bulletsJsonInput.value = '[]';
@@ -496,10 +507,25 @@
         updateBulletsJson();
 
         const bullets = bulletInputs.map(input => input.value.trim()).filter(b => b);
+
+        // Check first bullet exists and has 2 words
         if (bullets.length === 0 || !hasAtLeastTwoWords(bullets[0])) {
             e.preventDefault();
-            alert('Please enter at least two words in your first bullet point.');
+            bulletInputs[0].focus();
             return;
+        }
+
+        // Check ALL filled bullets have at least 2 words
+        for (let i = 0; i < bulletInputs.length; i++) {
+            const text = bulletInputs[i].value.trim();
+            if (text.length > 0 && !hasAtLeastTwoWords(text)) {
+                e.preventDefault();
+                bulletInputs[i].classList.add('input-error');
+                const errorMsg = document.getElementById(bulletInputs[i].id + '-error');
+                if (errorMsg) errorMsg.classList.add('visible');
+                bulletInputs[i].focus();
+                return;
+            }
         }
 
         submitBtn.disabled = true;
