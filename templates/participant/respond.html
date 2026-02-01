@@ -19,10 +19,11 @@
             {% if team.image_prompt %}
             <p>{{ team.image_prompt }}</p>
             {% elif team.strategy_statement %}
-            <p>Select an image, {{ member.name }}.<br>Choose the one that best represents how your team is executing your strategy:</p>
-            <p style="font-style: italic; font-weight: 700; font-size: 1.1em; margin-top: var(--space-2);">{{ team.strategy_statement }}</p>
+            <p style="margin-bottom: var(--space-2);">Your team's strategy:</p>
+            <p style="font-style: italic; font-weight: 700; font-size: 1.1em; margin-bottom: var(--space-3);">{{ team.strategy_statement }}</p>
+            <p>{{ member.name }}, pick the image that shows how you see the team executing against it.</p>
             {% else %}
-            <p>Select an image, {{ member.name }}. Choose the one that best represents how your team is working together right now.</p>
+            <p>{{ member.name }}, pick the image that best represents how your team is working together right now.</p>
             {% endif %}
             <a href="/join/{{ team.code }}/session/{{ session.id }}/name"
                class="not-me-link">Not {{ member.name }}?</a>
