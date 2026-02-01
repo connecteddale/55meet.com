@@ -4584,29 +4584,45 @@ button[type="submit"].btn-loading::after {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     padding: 0;
     background: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
-    transition: border-color var(--duration-fast) var(--ease-out),
-                color var(--duration-fast) var(--ease-out);
+    transition: color var(--duration-fast) var(--ease-out);
 }
 
 .settings-icon-btn:hover {
-    border-color: var(--color-primary);
     color: var(--color-primary);
 }
 
 .settings-icon-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
 
 .settings-icon-btn.settings-icon-active {
-    border-color: var(--color-primary);
     color: var(--color-primary);
+}
+
+/* Back navigation link */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    margin-bottom: var(--space-4);
+}
+
+.back-link:hover {
+    color: var(--color-primary);
+}
+
+.back-link svg {
+    width: 16px;
+    height: 16px;
 }
