@@ -708,7 +708,7 @@ async def get_participant_status(
                 "image_url": image_url,
                 "bullets": bullets,
                 "strategy_statement": team.strategy_statement or "",
-                "image_prompt": "You chose this image to best represent how you see the team executing our strategy.",
+                "image_prompt": "You chose this image to best represent how you see the team executing the strategy.",
                 "bullet_prompt": "And you described why you chose this image"
             }
 
