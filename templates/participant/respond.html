@@ -13,31 +13,27 @@
 
 {% block content %}
 <div class="image-browser">
-    {% if team.strategy_statement %}
-    <div class="strategy-banner">
-        <span class="strategy-banner-label">Our Strategy:</span>
-        <span class="strategy-banner-text">{{ team.strategy_statement }}</span>
-    </div>
-    {% endif %}
-
-    <!-- Sticky Header: Instructions + Pagination -->
+    <!-- Sticky Header: Instructions -->
     <div class="image-browser-sticky">
         <div class="browser-instruction">
-            <h2>Select an Image, {{ member.name }}</h2>
-            <p>{{ team.image_prompt or "Choose the image that best represents how you as a team are executing your strategy." }}</p>
+            {% if team.image_prompt %}
+            <p>{{ team.image_prompt }}</p>
+            {% elif team.strategy_statement %}
+            <p>Select an image, {{ member.name }}.<br>Choose the one that best represents how your team is executing your strategy:</p>
+            <p style="font-style: italic; font-weight: 700; font-size: 1.1em; margin-top: var(--space-2);">{{ team.strategy_statement }}</p>
+            {% else %}
+            <p>Select an image, {{ member.name }}. Choose the one that best represents how your team is working together right now.</p>
+            {% endif %}
+            <a href="/join/{{ team.code }}/session/{{ session.id }}/name"
+               class="not-me-link">Not {{ member.name }}?</a>
         </div>
-        <div class="pagination-header">
-            <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
-                <span class="pagination-arrow">&larr;</span> Prev
-            </button>
+        <!-- Hidden pagination elements (required by JS) -->
+        <div class="pagination-header" style="display: none;">
+            <button type="button" id="prev-btn" class="pagination-btn" disabled>Prev</button>
             <span class="page-indicator" id="page-indicator">Page 1 of 1</span>
-            <button type="button" id="next-btn" class="pagination-btn" aria-label="Next page">
-                Next <span class="pagination-arrow">&rarr;</span>
-            </button>
+            <button type="button" id="next-btn" class="pagination-btn">Next</button>
         </div>
-        <div class="jump-to-selection" id="jump-to-selection">
-            <button type="button" onclick="jumpToSelection()">Jump to your selection</button>
-        </div>
+        <div class="jump-to-selection" id="jump-to-selection" style="display: none;"></div>
     </div>
 
     <form id="respond-form" method="POST" action="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond">
@@ -57,7 +53,13 @@
             <div class="selected-image-preview" id="selected-image-preview">
                 <!-- Selected image shown here via JS -->
             </div>
-            <h3>{{ team.bullet_prompt or "Describe why this image describes how you are executing your strategy" }}</h3>
+            {% if team.bullet_prompt %}
+            <h3>{{ team.bullet_prompt }}</h3>
+            {% elif team.strategy_statement %}
+            <h3>Why does this image represent how you're executing your strategy?</h3>
+            {% else %}
+            <h3>Why does this image represent your team right now?</h3>
+            {% endif %}
             <p>Enter at least one bullet point explaining your choice.</p>
 
             {% if error %}
@@ -71,6 +73,7 @@
                        placeholder="Bullet point 1 (required)"
                        maxlength="500"
                        required>
+                <span class="input-error-message" id="bullet-1-error">at least 2 words</span>
                 <input type="text"
                        class="bullet-input bullet-input-hidden"
                        id="bullet-2"
@@ -92,12 +95,13 @@
                        placeholder="Bullet point 5 (optional)"
                        maxlength="500">
             </div>
+            <button type="button" id="clear-btn" class="clear-response-btn">Clear responses</button>
         </div>
 
         <!-- Submit Button -->
         <div class="submit-section" id="submit-section">
             <button type="submit" id="submit-btn" class="btn-submit" disabled>
-                Submit Response
+                Capture Snapshot
             </button>
             <p class="selection-hint" id="selection-hint">Select an image to continue</p>
         </div>
@@ -112,7 +116,7 @@
     const sessionId = {{ session.id }};
     const memberId = {{ member.id }};
     const teamCode = "{{ team.code }}";
-    const perPage = {{ per_page }};
+    const perPage = 60;  // Show all 60 images on single page
 
     // State
     let currentPage = 1;
@@ -143,6 +147,7 @@
         document.getElementById('bullet-4'),
         document.getElementById('bullet-5')
     ];
+    const bullet1Error = document.getElementById('bullet-1-error');
     const respondForm = document.getElementById('respond-form');
 
     // ========================================
@@ -340,10 +345,14 @@
             selectedImagePreview.innerHTML = `<img src="${selectedImageUrl}" alt="Your selected image">`;
         }
 
-        // Show bullet section and scroll to show the selected image preview
+        // Show bullet section, scroll to it, and focus the first input
         bulletSection.style.display = 'block';
         setTimeout(() => {
-            selectedImagePreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Focus the first bullet input after scrolling
+            setTimeout(() => {
+                bulletInputs[0].focus();
+            }, 300);
         }, 100);
 
         updateSubmitButton();
@@ -372,10 +381,11 @@
     }
 
     function hasAtLeastTwoWords(text) {
-        // Split on whitespace and filter out empty strings
+        // Rule: at least 1 letter, space, at least 1 letter
+        // "I am" (1 letter + 2 letters) is fine, "a b" (1+1) is fine
+        // Split on whitespace and filter for words with at least 1 letter
         const words = text.trim().split(/\s+/).filter(word => {
-            // A "recognizable word" has at least 2 letters
-            return word.length >= 2 && /[a-zA-Z]{2,}/.test(word);
+            return word.length >= 1 && /[a-zA-Z]/.test(word);
         });
         return words.length >= 2;
     }
@@ -386,14 +396,23 @@
         const hasValidBullet = hasAtLeastTwoWords(bulletText);
         submitBtn.disabled = !(hasImage && hasValidBullet);
 
-        if (hasImage && hasValidBullet) {
-            selectionHint.textContent = 'Ready to submit';
-        } else if (hasImage && bulletText.length > 0) {
-            selectionHint.textContent = 'Please enter at least two words';
-        } else if (hasImage) {
-            selectionHint.textContent = 'Enter at least one bullet point';
+        // Inline validation for first bullet input
+        if (hasImage && bulletText.length > 0 && !hasValidBullet) {
+            bulletInputs[0].classList.add('input-error');
+            bullet1Error.classList.add('visible');
         } else {
+            bulletInputs[0].classList.remove('input-error');
+            bullet1Error.classList.remove('visible');
+        }
+
+        // Update bottom hint
+        if (hasImage && hasValidBullet) {
+            selectionHint.style.display = 'none';
+        } else if (!hasImage) {
+            selectionHint.style.display = '';
             selectionHint.textContent = 'Select an image to continue';
+        } else {
+            selectionHint.style.display = 'none';
         }
     }
 
@@ -415,11 +434,63 @@
 
     bulletInputs.forEach(input => {
         input.addEventListener('input', function() {
+            // Clear error state when typing
+            this.classList.remove('input-error');
+            const errorMsg = document.getElementById(this.id + '-error');
+            if (errorMsg) errorMsg.classList.remove('visible');
+
             updateBulletsJson();
             updateSubmitButton();
             saveDraft();
         });
     });
+
+    // Blur validation for first bullet - must have 2 words to leave
+    bulletInputs[0].addEventListener('blur', function(e) {
+        const text = this.value.trim();
+        // Only validate if they've started typing (not empty)
+        if (text.length > 0 && !hasAtLeastTwoWords(text)) {
+            // Show error state
+            this.classList.add('input-error');
+            bullet1Error.classList.add('visible');
+            // Refocus to prevent leaving
+            setTimeout(() => {
+                this.focus();
+            }, 0);
+        }
+    });
+
+    // Clear responses button handler - keeps image, clears only bullet text
+    const clearBtn = document.getElementById('clear-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            // Clear all bullet inputs and reset error state
+            bulletInputs.forEach((input, idx) => {
+                input.value = '';
+                input.classList.remove('input-error');
+                if (idx > 0) {
+                    input.classList.add('bullet-input-hidden');
+                    input.classList.remove('bullet-input-reveal');
+                }
+            });
+            bullet1Error.classList.remove('visible');
+
+            // Update bullets JSON to empty
+            bulletsJsonInput.value = '[]';
+
+            // Keep the image selected - do NOT clear selectedImageId, selectedImageInput, etc.
+            // Image preview stays visible
+
+            // Save draft with cleared bullets but same image
+            saveDraft();
+
+            // Reset submit button (needs valid bullet to enable)
+            submitBtn.disabled = true;
+
+            // Focus the first bullet input
+            bulletInputs[0].focus();
+        });
+    }
 
     respondForm.addEventListener('submit', function(e) {
         updateBulletsJson();

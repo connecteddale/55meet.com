@@ -220,11 +220,15 @@
         // Update the preview with selected image
         selectedImagePreview.innerHTML = `<img src="${imageUrl}" alt="Your selected image">`;
 
-        // Show bullet section and scroll to show the selected image preview
+        // Show bullet section and scroll to it, then focus first input
         bulletSection.style.display = 'block';
         submitSection.classList.add('sticky-bottom');
         setTimeout(() => {
-            selectedImagePreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            bulletSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Focus the first bullet input after scrolling
+            setTimeout(() => {
+                bulletInputs[0].focus();
+            }, 300);
         }, 100);
 
         // Save state with current bullets
@@ -262,10 +266,11 @@
     }
 
     function hasAtLeastTwoWords(text) {
-        // Split on whitespace and filter out empty strings
+        // Rule: at least 1 letter, space, at least 1 letter
+        // "I am" (1 letter + 2 letters) is fine, "a b" (1+1) is fine
+        // Split on whitespace and filter for words with at least 1 letter
         const words = text.trim().split(/\s+/).filter(word => {
-            // A "recognizable word" has at least 2 letters
-            return word.length >= 2 && /[a-zA-Z]{2,}/.test(word);
+            return word.length >= 1 && /[a-zA-Z]/.test(word);
         });
         return words.length >= 2;
     }
@@ -349,18 +354,38 @@
     jumpBtn.addEventListener('click', jumpToSelection);
 
     bulletInputs.forEach(input => {
-        input.addEventListener('input', onBulletInput);
+        input.addEventListener('input', function() {
+            // Clear error state when typing
+            this.classList.remove('input-error');
+            onBulletInput();
+        });
         input.addEventListener('focus', function() {
-            // Scroll input into view above the sticky button
+            // Scroll input into view above the fixed button
             setTimeout(() => {
                 const rect = this.getBoundingClientRect();
                 const submitRect = submitSection.getBoundingClientRect();
-                // If input is behind or too close to the sticky button, scroll it up
+                // If input is behind or too close to the fixed button, scroll it up
                 if (rect.bottom > submitRect.top - 20) {
                     this.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 50);
         });
+    });
+
+    // Blur validation for first bullet - must have 2 words to leave
+    bulletInputs[0].addEventListener('blur', function(e) {
+        const text = this.value.trim();
+        // Only validate if they've started typing (not empty)
+        if (text.length > 0 && !hasAtLeastTwoWords(text)) {
+            // Show error state
+            this.classList.add('input-error');
+            selectionHint.textContent = 'at least 2 words';
+            selectionHint.style.display = 'block';
+            // Refocus to prevent leaving
+            setTimeout(() => {
+                this.focus();
+            }, 0);
+        }
     });
 
     submitBtn.addEventListener('click', navigateToResponses);
