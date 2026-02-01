@@ -1568,7 +1568,7 @@ input[type="month"] {
 
 /* Add padding to form to prevent content being hidden behind fixed button */
 .image-browser form {
-    padding-bottom: 120px;
+    padding-bottom: 80px;
 }
 
 .btn-submit {
@@ -4209,23 +4209,20 @@ button[type="submit"].btn-loading::after {
    ======================================== */
 
 .clear-response-btn {
-    display: block;
-    width: 100%;
-    margin-top: var(--space-4);
-    padding: var(--space-2) var(--space-3);
+    display: inline-block;
+    margin-top: var(--space-3);
+    padding: 0;
     font-size: var(--text-sm);
     color: var(--color-text-muted);
     background: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border: none;
+    text-decoration: underline;
     cursor: pointer;
-    transition: color var(--duration-fast) var(--ease-out),
-                border-color var(--duration-fast) var(--ease-out);
+    transition: color var(--duration-fast) var(--ease-out);
 }
 
 .clear-response-btn:hover {
-    color: var(--color-error);
-    border-color: var(--color-error);
+    color: var(--color-primary);
 }
 
 /* ========================================
