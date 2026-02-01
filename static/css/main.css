@@ -1715,7 +1715,7 @@ input[type="month"] {
    ======================================== */
 
 .synthesis-page {
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     padding: var(--space-4);
 }
@@ -4305,8 +4305,14 @@ button[type="submit"].btn-loading::after {
 
 .responses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+    .responses-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .response-card {
