@@ -323,9 +323,9 @@ async def clear_member_submission(
 @router.post("/{session_id}/members/add")
 async def add_member_from_session(
     session_id: int,
-    name: str = Form(...),
-    auth: AuthDep = None,
-    db: DbDep = None
+    auth: AuthDep,
+    db: DbDep,
+    name: str = Form(...)
 ):
     """Add a new member to the team from the session view."""
     session = db.query(Session).filter(Session.id == session_id).first()
@@ -358,8 +358,8 @@ async def add_member_from_session(
 async def remove_member_from_session(
     session_id: int,
     member_id: int,
-    auth: AuthDep = None,
-    db: DbDep = None
+    auth: AuthDep,
+    db: DbDep
 ):
     """Remove a member from the team from the session view."""
     session = db.query(Session).filter(Session.id == session_id).first()
