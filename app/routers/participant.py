@@ -629,7 +629,8 @@ async def view_synthesis(
 async def get_participant_status(
     code: str,
     session_id: int,
-    db: DbDep
+    member_id: int = None,
+    db: Session = Depends(get_db)
 ):
     """Get session status for participant polling (JSON endpoint)."""
     code = code.strip().upper()
@@ -688,6 +689,24 @@ async def get_participant_status(
         if m.id not in submitted_ids
     ]
 
+    # Build member's own response data when closed (for display on waiting screen)
+    my_response = None
+    if member_id and session.state == SessionState.CLOSED:
+        response = db.query(Response).filter(
+            Response.session_id == session_id,
+            Response.member_id == member_id
+        ).first()
+        if response:
+            import json
+            bullets = json.loads(response.bullets) if response.bullets else []
+            my_response = {
+                "image_url": f"/images/full/{response.image_id}.webp",
+                "bullets": bullets,
+                "strategy_statement": team.strategy_statement or "",
+                "image_prompt": team.image_prompt or "Choose the image that best represents how you as a team are executing your strategy.",
+                "bullet_prompt": team.bullet_prompt or "Describe why this image describes how you are executing your strategy"
+            }
+
     return JSONResponse({
         "session_id": session_id,
         "state": session.state.value,
@@ -696,5 +715,6 @@ async def get_participant_status(
         "submitted_members": submitted_members,
         "unsubmitted_members": unsubmitted_members,
         "can_edit": session.state == SessionState.CAPTURING,
-        "synthesis_progress": synthesis_progress
+        "synthesis_progress": synthesis_progress,
+        "my_response": my_response
     })

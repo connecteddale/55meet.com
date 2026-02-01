@@ -13,7 +13,8 @@
 
 {% block content %}
 <div class="waiting-page" data-session-id="{{ session.id }}" data-team-code="{{ team.code }}" data-member-id="{{ member.id }}">
-    <div class="waiting-card">
+    <!-- Waiting state view -->
+    <div class="waiting-card" id="waiting-card">
         <div class="waiting-icon">
             <svg viewBox="0 0 24 24" width="64" height="64" class="spinner">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="31.4 31.4" />
@@ -61,6 +62,36 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- My response view (shown when closed) -->
+    <div class="my-response-card" id="my-response-card" style="display: none;">
+        <div class="my-response-header">
+            <h2>{{ member.name }}'s Response</h2>
+            <span class="status-badge state-closed">Capture Closed</span>
+        </div>
+
+        <div class="my-response-strategy" id="my-response-strategy" style="display: none;">
+            <p class="strategy-label">Strategy:</p>
+            <p class="strategy-text" id="strategy-text"></p>
+        </div>
+
+        <div class="my-response-prompt" id="my-response-prompt">
+            <p class="prompt-text" id="prompt-text"></p>
+        </div>
+
+        <div class="my-response-image">
+            <img id="my-image" src="" alt="Your chosen image">
+        </div>
+
+        <div class="my-response-bullets">
+            <p class="bullets-label" id="bullets-label"></p>
+            <ul id="my-bullets"></ul>
+        </div>
+
+        <p class="my-response-footer">
+            Your facilitator will share the team results.
+        </p>
+    </div>
 </div>
 {% endblock %}
 
@@ -72,10 +103,44 @@
     const sessionId = container.dataset.sessionId;
     const teamCode = container.dataset.teamCode;
     const memberId = container.dataset.memberId;
+    let responseShown = false;
+
+    function showMyResponse(data) {
+        if (responseShown) return;
+        responseShown = true;
+
+        const waitingCard = document.getElementById('waiting-card');
+        const responseCard = document.getElementById('my-response-card');
+
+        // Populate response data
+        const resp = data.my_response;
+        if (resp.strategy_statement) {
+            document.getElementById('my-response-strategy').style.display = 'block';
+            document.getElementById('strategy-text').textContent = resp.strategy_statement;
+        }
+
+        document.getElementById('prompt-text').textContent = resp.image_prompt;
+        document.getElementById('my-image').src = resp.image_url;
+        document.getElementById('bullets-label').textContent = resp.bullet_prompt + ':';
+
+        const bulletsList = document.getElementById('my-bullets');
+        bulletsList.innerHTML = resp.bullets.map(b => `<li>${b}</li>`).join('');
+
+        // Transition between cards
+        if (document.startViewTransition) {
+            document.startViewTransition(() => {
+                waitingCard.style.display = 'none';
+                responseCard.style.display = 'block';
+            });
+        } else {
+            waitingCard.style.display = 'none';
+            responseCard.style.display = 'block';
+        }
+    }
 
     async function checkStatus() {
         try {
-            const response = await fetch(`/join/${teamCode}/session/${sessionId}/status`);
+            const response = await fetch(`/join/${teamCode}/session/${sessionId}/status?member_id=${memberId}`);
             if (!response.ok) return;
 
             const data = await response.json();
@@ -118,11 +183,15 @@
                 }
                 return;
             } else if (data.state === 'closed') {
-                messageEl.textContent = 'Capture Closed';
-                // Show submessage and hide edit button when closed
-                const submessageEl = document.getElementById('waiting-submessage');
-                if (submessageEl) submessageEl.style.display = 'block';
-                actionsEl.innerHTML = '';
+                // Show member's own response when closed
+                if (data.my_response) {
+                    showMyResponse(data);
+                } else {
+                    messageEl.textContent = 'Capture Closed';
+                    const submessageEl = document.getElementById('waiting-submessage');
+                    if (submessageEl) submessageEl.style.display = 'block';
+                    actionsEl.innerHTML = '';
+                }
             } else if (data.state === 'capturing') {
                 messageEl.textContent = `Waiting for others (${data.submitted_count}/${data.total_members})...`;
                 // Hide submessage and ensure edit button is visible
@@ -139,6 +208,8 @@
 
     // Poll every 3 seconds
     setInterval(checkStatus, POLL_INTERVAL);
+    // Check immediately on load
+    checkStatus();
 })();
 </script>
 {% endblock %}
