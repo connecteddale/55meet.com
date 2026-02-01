@@ -297,11 +297,11 @@
             selectionHint.style.display = 'none';
         } else {
             readyText.style.display = 'none';
-            selectionHint.style.display = 'block';
-            if (hasImage) {
-                selectionHint.textContent = 'Enter at least one bullet point';
-            } else {
+            if (!hasImage) {
+                selectionHint.style.display = 'block';
                 selectionHint.textContent = 'Select an image to continue';
+            } else {
+                selectionHint.style.display = 'none';
             }
         }
     }

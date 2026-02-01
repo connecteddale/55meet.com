@@ -300,13 +300,10 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: calc(100% - var(--space-4) * 2);
+        width: 100%;
         max-width: 1200px;
         background: var(--color-bg);
         border-top: 1px solid var(--color-border-light);
-        border-left: 1px solid var(--color-border-light);
-        border-right: 1px solid var(--color-border-light);
-        border-radius: 12px 12px 0 0;
         padding: var(--space-4);
         z-index: 100;
         box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
@@ -399,7 +396,7 @@
     <div class="image-browser-sticky">
         <div class="browser-instruction">
             <p>How is your team executing this strategy?<br><strong>{{ company.strategy }}</strong></p>
-            <p style="margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-text-tertiary);">Pick the image that shows the truth.</p>
+            <p style="margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-text-tertiary);">Pick the image that best shows what you think.</p>
         </div>
         <div class="pagination-header">
             <button type="button" id="prev-btn" class="pagination-btn" disabled aria-label="Previous page">
