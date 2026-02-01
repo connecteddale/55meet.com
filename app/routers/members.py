@@ -14,7 +14,7 @@ from app.db.models import Team, Member
 router = APIRouter(prefix="/admin/teams", tags=["members"])
 templates = Jinja2Templates(directory="templates")
 
-MAX_MEMBERS = 25
+MAX_MEMBERS = 1000
 
 
 @router.get("/{team_id}/members")

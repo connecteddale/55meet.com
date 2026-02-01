@@ -340,10 +340,10 @@ async def add_member_from_session(
 
     # Check member limit
     member_count = db.query(Member).filter(Member.team_id == team.id).count()
-    if member_count >= 55:
+    if member_count >= 1000:
         from urllib.parse import quote
         return RedirectResponse(
-            url=f"/admin/sessions/{session_id}?error={quote('Maximum 55 members per team')}",
+            url=f"/admin/sessions/{session_id}?error={quote('Maximum 1000 members per team')}",
             status_code=303
         )
 
