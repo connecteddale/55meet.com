@@ -708,8 +708,8 @@ async def get_participant_status(
                 "image_url": image_url,
                 "bullets": bullets,
                 "strategy_statement": team.strategy_statement or "",
-                "image_prompt": team.image_prompt or "Choose the image that best represents how you as a team are executing your strategy.",
-                "bullet_prompt": team.bullet_prompt or "Describe why this image describes how you are executing your strategy"
+                "image_prompt": "You chose this image to best represent how you see the team executing our strategy.",
+                "bullet_prompt": "And you described why you chose this image"
             }
 
     return JSONResponse({
