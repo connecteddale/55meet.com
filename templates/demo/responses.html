@@ -349,7 +349,7 @@
         {% for response in team_responses %}
         <div class="response-card">
             <div class="response-image">
-                <img src="{{ response.image_url }}" alt="Selected image by {{ response.first_name }}">
+                <img src="{{ response.image_url }}" alt="Selected image by {{ response.first_name }}" class="zoomable">
             </div>
             <div class="response-content">
                 <div class="response-header">
@@ -418,7 +418,7 @@
 
             // Populate visitor card
             const imageContainer = visitorCard.querySelector('.response-image');
-            imageContainer.innerHTML = `<img src="${escapeHtml(data.imageUrl)}" alt="Your selected image">`;
+            imageContainer.innerHTML = `<img src="${escapeHtml(data.imageUrl)}" alt="Your selected image" class="zoomable">`;
 
             const bulletsList = visitorCard.querySelector('.response-bullets');
             bulletsList.innerHTML = data.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('');

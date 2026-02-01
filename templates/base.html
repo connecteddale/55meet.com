@@ -30,6 +30,61 @@
 
     {% block footer %}{% endblock %}
 
+    <!-- Image Lightbox Modal -->
+    <div id="image-lightbox" class="lightbox" aria-hidden="true">
+        <div class="lightbox-backdrop"></div>
+        <div class="lightbox-content">
+            <img src="" alt="Zoomed image">
+        </div>
+    </div>
+
+    <script>
+    // Image lightbox functionality
+    (function() {
+        const lightbox = document.getElementById('image-lightbox');
+        if (!lightbox) return;
+
+        const lightboxImg = lightbox.querySelector('img');
+        const backdrop = lightbox.querySelector('.lightbox-backdrop');
+
+        function openLightbox(src, alt) {
+            lightboxImg.src = src;
+            lightboxImg.alt = alt || 'Zoomed image';
+            lightbox.classList.add('active');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightbox.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        // Close on backdrop click
+        backdrop.addEventListener('click', closeLightbox);
+
+        // Close on image click
+        lightboxImg.addEventListener('click', closeLightbox);
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // Attach click handlers to zoomable images
+        document.addEventListener('click', function(e) {
+            const img = e.target.closest('img.zoomable, .zoomable img');
+            if (img) {
+                e.preventDefault();
+                openLightbox(img.src, img.alt);
+            }
+        });
+    })();
+    </script>
+
     {% block scripts %}{% endblock %}
 </body>
 </html>
