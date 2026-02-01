@@ -4398,3 +4398,8 @@ button[type="submit"].btn-loading::after {
     width: 18px;
     height: 18px;
 }
+
+.settings-icon-btn.settings-icon-active {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
