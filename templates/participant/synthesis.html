@@ -57,6 +57,31 @@
     </div>
     {% endif %}
 
+    {% if individual_responses %}
+    <div class="synthesis-section responses-section">
+        <h3>Individual Responses</h3>
+        <div class="responses-grid">
+            {% for resp in individual_responses %}
+            <div class="response-card">
+                <div class="response-header">
+                    <span class="response-name">{{ resp.name }}</span>
+                </div>
+                {% if resp.image_url %}
+                <div class="response-image">
+                    <img src="{{ resp.image_url }}" alt="Selected image">
+                </div>
+                {% endif %}
+                <ul class="response-bullets">
+                    {% for bullet in resp.bullets %}
+                    <li>{{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     {% if not synthesis_themes %}
     <div class="synthesis-section empty-section">
         <p>Synthesis results are not yet available.</p>

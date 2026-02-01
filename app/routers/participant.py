@@ -84,7 +84,7 @@ async def join_team(
     if not team:
         return templates.TemplateResponse(
             "participant/join.html",
-            {"request": request, "error": "Team code not found. Please check and try again."}
+            {"request": request, "error": "Team code not found. Please check and try again.", "prefill_code": code}
         )
 
     # Get sessions in CAPTURING state
@@ -96,7 +96,7 @@ async def join_team(
     if not active_sessions:
         return templates.TemplateResponse(
             "participant/join.html",
-            {"request": request, "error": "No active sessions for this team. Please wait for your facilitator."}
+            {"request": request, "error": "No active sessions for this team. Please wait for your facilitator.", "prefill_code": code}
         )
 
     # Auto-skip month picker if only one session active
@@ -591,6 +591,26 @@ async def view_synthesis(
         except json.JSONDecodeError:
             synthesis_statements = []
 
+    # Fetch individual responses with member names and images
+    responses = db.query(Response).filter(Response.session_id == session_id).all()
+    image_library = get_image_library()
+    individual_responses = []
+    for resp in responses:
+        member = db.query(Member).filter(Member.id == resp.member_id).first()
+        if member:
+            try:
+                bullets = json.loads(resp.bullets) if resp.bullets else []
+            except json.JSONDecodeError:
+                bullets = []
+            # Get image URL from image_id
+            filename = image_library.get_filename_by_id(resp.image_id)
+            image_url = f"/static/images/library/reducedlive/{filename}" if filename else None
+            individual_responses.append({
+                "name": member.name,
+                "image_url": image_url,
+                "bullets": bullets
+            })
+
     return templates.TemplateResponse(
         "participant/synthesis.html",
         {
@@ -599,7 +619,8 @@ async def view_synthesis(
             "session": session,
             "synthesis_themes": session.synthesis_themes,
             "synthesis_statements": synthesis_statements,
-            "synthesis_gap_type": session.synthesis_gap_type
+            "synthesis_gap_type": session.synthesis_gap_type,
+            "individual_responses": individual_responses
         }
     )
 
@@ -660,12 +681,20 @@ async def get_participant_status(
         if m.id in submitted_ids
     ]
 
+    # Build unsubmitted member names
+    unsubmitted_members = [
+        {"name": m.name}
+        for m in members
+        if m.id not in submitted_ids
+    ]
+
     return JSONResponse({
         "session_id": session_id,
         "state": session.state.value,
         "total_members": len(members),
         "submitted_count": len(responses),
         "submitted_members": submitted_members,
+        "unsubmitted_members": unsubmitted_members,
         "can_edit": session.state == SessionState.CAPTURING,
         "synthesis_progress": synthesis_progress
     })

@@ -6,7 +6,8 @@ Protected dashboard routes for facilitator.
 
 from datetime import datetime
 
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, Query
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import joinedload
 
@@ -107,3 +108,104 @@ async def change_password(
         "admin/settings.html",
         {"request": request, "success": "Password updated successfully. Changes take effect on next restart.", "error": None}
     )
+
+
+@router.get("/api/companies")
+async def api_companies(auth: AuthDep, db: DbDep):
+    """Get unique company names with their teams, alphabetically sorted."""
+    from sqlalchemy.orm import joinedload as jl
+    teams = db.query(Team).options(jl(Team.members)).order_by(Team.company_name, Team.team_name).all()
+
+    # Group teams by company
+    companies = {}
+    for team in teams:
+        company_name = team.company_name or "Unknown"
+        if company_name not in companies:
+            companies[company_name] = []
+        companies[company_name].append({
+            "id": team.id,
+            "team_name": team.team_name,
+            "code": team.code,
+            "member_count": len(team.members) if team.members else 0
+        })
+
+    # Convert to sorted list
+    result = [
+        {"name": name, "teams": teams}
+        for name, teams in sorted(companies.items())
+    ]
+
+    return JSONResponse(result)
+
+
+@router.get("/api/teams")
+async def api_teams(
+    auth: AuthDep,
+    db: DbDep,
+    search: str = Query(default="", description="Search term for filtering teams")
+):
+    """Get all teams, alphabetically sorted, with optional search."""
+    from sqlalchemy.orm import joinedload as jl
+    query = db.query(Team).options(jl(Team.members)).order_by(Team.company_name, Team.team_name)
+
+    teams = query.all()
+
+    # Filter by search term if provided
+    if search:
+        search_lower = search.lower()
+        teams = [
+            t for t in teams
+            if search_lower in (t.company_name or '').lower()
+            or search_lower in (t.team_name or '').lower()
+            or search_lower in (t.code or '').lower()
+        ]
+
+    result = [
+        {
+            "id": team.id,
+            "company_name": team.company_name or '',
+            "team_name": team.team_name or '',
+            "code": team.code or '',
+            "member_count": len(team.members) if team.members else 0
+        }
+        for team in teams
+    ]
+
+    return JSONResponse(result)
+
+
+@router.get("/api/sessions")
+async def api_sessions(
+    auth: AuthDep,
+    db: DbDep,
+    search: str = Query(default="", description="Search term for filtering sessions")
+):
+    """Get all sessions, sorted by created_at DESC, with optional search."""
+    sessions = db.query(Session).options(
+        joinedload(Session.team)
+    ).order_by(Session.created_at.desc()).all()
+
+    # Filter by search term if provided
+    if search:
+        search_lower = search.lower()
+        sessions = [
+            s for s in sessions
+            if search_lower in (s.team.company_name or '').lower()
+            or search_lower in (s.team.team_name or '').lower()
+            or search_lower in (s.month or '')
+        ]
+
+    result = [
+        {
+            "id": session.id,
+            "month": session.month or '',
+            "state": session.state.value if session.state else 'draft',
+            "company_name": session.team.company_name if session.team else '',
+            "team_name": session.team.team_name if session.team else '',
+            "team_id": session.team.id if session.team else None,
+            "created_at": session.created_at.isoformat() if session.created_at else None
+        }
+        for session in sessions
+    ]
+
+    return JSONResponse(result)

@@ -263,12 +263,12 @@ async def close_capture(session_id: int, background_tasks: BackgroundTasks, auth
 
 @router.post("/{session_id}/reopen")
 async def reopen_capture(session_id: int, auth: AuthDep, db: DbDep):
-    """Transition session from closed to capturing (for latecomers)."""
+    """Transition session from closed or revealed back to capturing (for latecomers)."""
     session = db.query(Session).filter(Session.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    if session.state != SessionState.CLOSED:
+    if session.state not in (SessionState.CLOSED, SessionState.REVEALED):
         raise HTTPException(
             status_code=400,
             detail=f"Cannot reopen. Session is in '{session.state.value}' state."

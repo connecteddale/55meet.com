@@ -5,7 +5,7 @@
 {% block nav %}
 <nav class="admin-nav">
     <div class="nav-links">
-        <a href="/admin" class="nav-link">AlignHQ</a>
+        <a href="/admin" class="nav-link">Dashboard</a>
         <a href="/admin/settings" class="nav-link">Settings</a>
     </div>
     <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
@@ -14,9 +14,6 @@
 
 {% block content %}
 <div class="card">
-    <div class="page-header" style="margin-bottom: var(--space-4);">
-        <a href="/admin" class="breadcrumb-link" style="color: var(--color-text-secondary); font-size: var(--text-sm);">← Dashboard</a>
-    </div>
     <h2>Create Team</h2>
 
     {% if error %}
@@ -28,27 +25,30 @@
         <div class="form-group">
             <label for="company_name">Company Name</label>
             <input type="text" id="company_name" name="company_name" required
-                   placeholder="Acme Corporation">
+                   placeholder="Acme Corporation"
+                   value="{{ form_data.company_name or '' }}">
         </div>
 
         <div class="form-group">
             <label for="team_name">Team Name</label>
             <input type="text" id="team_name" name="team_name" required
-                   placeholder="Leadership Team">
+                   placeholder="Leadership Team"
+                   value="{{ form_data.team_name or '' }}">
         </div>
 
         <div class="form-group">
             <label for="code">Team Code (optional - will be auto-generated)</label>
             <input type="text" id="code" name="code" maxlength="20"
                    placeholder="ACME01" pattern="[A-Za-z0-9]+"
-                   style="text-transform: uppercase;">
+                   style="text-transform: uppercase;"
+                   value="{{ form_data.code or '' }}">
             <small>6-character code participants use to join. Leave blank to auto-generate.</small>
         </div>
 
         <div class="form-group">
             <label for="strategy_statement">Strategy Statement (3AM Test)</label>
             <textarea id="strategy_statement" name="strategy_statement" rows="3"
-                      placeholder="Our strategy is to..."></textarea>
+                      placeholder="Our strategy is to...">{{ form_data.strategy_statement or '' }}</textarea>
             <small>The strategy participants should keep in mind when selecting their image.</small>
         </div>
 

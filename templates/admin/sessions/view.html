@@ -5,7 +5,7 @@
 {% block nav %}
 <nav class="admin-nav">
     <div class="nav-links">
-        <a href="/admin" class="nav-link">AlignHQ</a>
+        <a href="/admin" class="nav-link">Dashboard</a>
         <a href="/admin/settings" class="nav-link">Settings</a>
     </div>
     <a href="/admin/logout" class="btn btn-ghost btn-small">Logout</a>
@@ -16,7 +16,6 @@
 <div class="session-view" data-session-id="{{ session.id }}">
     {# Header - Team info and state #}
     <div class="session-view-header">
-        <a href="/admin" class="back-link">&larr; AlignHQ</a>
         <div class="session-title">
             <h1>{{ team.team_name }}</h1>
             <span class="session-meta">{{ team.company_name }} &middot; {{ session.month }}</span>

@@ -26,10 +26,13 @@
             {% if session.state.value == 'capturing' %}
             Your response has been saved. You can edit until the facilitator closes capture.
             {% elif session.state.value == 'closed' %}
-            Capture is closed. Waiting for facilitator to reveal synthesis.
+            Capture Closed
             {% else %}
             Please wait while the facilitator reveals the results...
             {% endif %}
+        </p>
+        <p class="waiting-submessage" id="waiting-submessage" style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: var(--space-2); {% if session.state.value != 'closed' %}display: none;{% endif %}">
+            Your facilitator will share results.
         </p>
 
         <div class="waiting-status">
@@ -44,10 +47,15 @@
             </ul>
         </div>
 
-        <div class="waiting-actions" id="waiting-actions">
+        <div class="unsubmitted-names" id="unsubmitted-names" style="display: none; margin-top: 1rem; text-align: left; width: 100%; max-width: 320px; margin-left: auto; margin-right: auto;">
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">Still to submit:</p>
+            <ul id="unsubmitted-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem;"></ul>
+        </div>
+
+        <div class="waiting-actions" id="waiting-actions" style="margin-top: var(--space-6);">
             {% if session.state.value == 'capturing' %}
             <a href="/join/{{ team.code }}/session/{{ session.id }}/member/{{ member.id }}/respond"
-               class="btn btn-secondary" id="edit-btn">
+               class="btn btn-primary" id="edit-btn">
                 Edit Response
             </a>
             {% endif %}
@@ -87,6 +95,17 @@
                 document.getElementById('submitted-names').style.display = 'none';
             }
 
+            // Update unsubmitted names list
+            const unsubmittedList = document.getElementById('unsubmitted-list');
+            if (unsubmittedList && data.unsubmitted_members && data.unsubmitted_members.length > 0) {
+                document.getElementById('unsubmitted-names').style.display = 'block';
+                unsubmittedList.innerHTML = data.unsubmitted_members.map(m =>
+                    `<li style="background: var(--color-bg-secondary, #f1f5f9); color: var(--color-text-muted, #64748b); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 500;">${m.name}</li>`
+                ).join('');
+            } else if (unsubmittedList) {
+                document.getElementById('unsubmitted-names').style.display = 'none';
+            }
+
             if (data.state === 'revealed') {
                 // Redirect to synthesis view with View Transition
                 const url = `/join/${teamCode}/session/${sessionId}/synthesis`;
@@ -99,14 +118,18 @@
                 }
                 return;
             } else if (data.state === 'closed') {
-                messageEl.textContent = 'Capture is closed. Waiting for facilitator to reveal synthesis.';
-                // Hide edit button when closed
+                messageEl.textContent = 'Capture Closed';
+                // Show submessage and hide edit button when closed
+                const submessageEl = document.getElementById('waiting-submessage');
+                if (submessageEl) submessageEl.style.display = 'block';
                 actionsEl.innerHTML = '';
             } else if (data.state === 'capturing') {
                 messageEl.textContent = `Waiting for others (${data.submitted_count}/${data.total_members})...`;
-                // Ensure edit button is visible
+                // Hide submessage and ensure edit button is visible
+                const submessageEl = document.getElementById('waiting-submessage');
+                if (submessageEl) submessageEl.style.display = 'none';
                 if (!document.getElementById('edit-btn')) {
-                    actionsEl.innerHTML = `<a href="/join/${teamCode}/session/${sessionId}/member/${memberId}/respond" class="btn btn-secondary" id="edit-btn">Edit Response</a>`;
+                    actionsEl.innerHTML = `<a href="/join/${teamCode}/session/${sessionId}/member/${memberId}/respond" class="btn btn-primary" id="edit-btn">Edit Response</a>`;
                 }
             }
         } catch (err) {

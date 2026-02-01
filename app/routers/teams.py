@@ -43,7 +43,7 @@ async def create_team_form(request: Request, auth: AuthDep):
     """Show create team form."""
     return templates.TemplateResponse(
         "admin/teams/create.html",
-        {"request": request, "error": None}
+        {"request": request, "error": None, "form_data": {}}
     )
 
 
@@ -70,7 +70,16 @@ async def create_team(
     if existing:
         return templates.TemplateResponse(
             "admin/teams/create.html",
-            {"request": request, "error": f"Team code '{code}' already exists"}
+            {
+                "request": request,
+                "error": f"Team code '{code}' already exists. Please choose a different code.",
+                "form_data": {
+                    "company_name": company_name,
+                    "team_name": team_name,
+                    "code": code,
+                    "strategy_statement": strategy_statement or ""
+                }
+            }
         )
 
     # Create team
@@ -126,9 +135,16 @@ async def update_team(
         Team.id != team_id
     ).first()
     if existing:
+        # Preserve form values in a modified team object
+        team.company_name = company_name
+        team.team_name = team_name
+        team.code = code
+        team.strategy_statement = strategy_statement
+        team.image_prompt = image_prompt
+        team.bullet_prompt = bullet_prompt
         return templates.TemplateResponse(
             "admin/teams/edit.html",
-            {"request": request, "team": team, "error": f"Team code '{code}' already exists"}
+            {"request": request, "team": team, "error": f"Team code '{code}' already exists. Please choose a different code."}
         )
 
     # Update team
