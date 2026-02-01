@@ -698,9 +698,14 @@ async def get_participant_status(
         ).first()
         if response:
             import json
+            from app.services.images import get_image_library
             bullets = json.loads(response.bullets) if response.bullets else []
+            # Get actual filename from opaque ID
+            image_library = get_image_library()
+            filename = image_library.get_filename_by_id(response.image_id)
+            image_url = f"/static/images/library/reducedlive/{filename}" if filename else None
             my_response = {
-                "image_url": f"/images/full/{response.image_id}.webp",
+                "image_url": image_url,
                 "bullets": bullets,
                 "strategy_statement": team.strategy_statement or "",
                 "image_prompt": team.image_prompt or "Choose the image that best represents how you as a team are executing your strategy.",
