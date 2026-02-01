@@ -4058,6 +4058,102 @@ button[type="submit"].btn-loading::after {
     display: block;
 }
 
+/* Participants header */
+.participants-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.participants-header h2 {
+    margin: 0;
+}
+
+.participants-header .member-count {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+/* Add member inline form */
+.add-member-inline {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.add-member-inline input {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.add-member-inline input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.btn-add {
+    background: var(--color-primary);
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: background-color 0.15s ease;
+}
+
+.btn-add:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Member actions container */
+.member-actions {
+    display: flex;
+    gap: var(--space-1);
+    margin-left: var(--space-2);
+}
+
+.member-actions .clear-form,
+.member-actions .remove-form {
+    margin: 0;
+}
+
+/* Remove member button */
+.btn-remove {
+    background: none;
+    border: none;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    padding: var(--space-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    opacity: 0.5;
+}
+
+.member-row:hover .btn-remove {
+    opacity: 1;
+}
+
+.btn-remove:hover {
+    color: var(--color-error);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.btn-remove svg {
+    display: block;
+}
+
 /* Synthesis results */
 .synthesis-results {
     display: grid;

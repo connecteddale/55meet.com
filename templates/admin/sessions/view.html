@@ -92,7 +92,22 @@
 
         {# Right column: Member status #}
         <div class="session-right-col">
-            <h2>Participants</h2>
+            <div class="participants-header">
+                <h2>Participants</h2>
+                <span class="member-count">{{ member_status|length }}/55</span>
+            </div>
+
+            {# Add member form #}
+            <form method="post" action="/admin/sessions/{{ session.id }}/members/add" class="add-member-inline">
+                <input type="text" name="name" placeholder="Add participant..." required autocomplete="off">
+                <button type="submit" class="btn-add" title="Add participant">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </form>
+
             <div class="member-list" id="member-status-list">
                 {% for member in member_status %}
                 <div class="member-row" data-member-id="{{ member.id }}">
@@ -100,17 +115,28 @@
                     <span class="member-status {% if member.submitted %}done{% else %}waiting{% endif %}">
                         {% if member.submitted %}&#10003;{% else %}&hellip;{% endif %}
                     </span>
-                    {% if session.state.value == 'capturing' and member.submitted %}
-                    <form method="post" action="/admin/sessions/{{ session.id }}/member/{{ member.id }}/clear"
-                          onsubmit="return confirm('Clear {{ member.name }}\'s submission?');" class="clear-form">
-                        <button type="submit" class="btn-clear" title="Clear submission">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
-                    </form>
-                    {% endif %}
+                    <div class="member-actions">
+                        {% if session.state.value == 'capturing' and member.submitted %}
+                        <form method="post" action="/admin/sessions/{{ session.id }}/member/{{ member.id }}/clear"
+                              onsubmit="return confirm('Clear {{ member.name }}\'s submission?');" class="clear-form">
+                            <button type="submit" class="btn-clear" title="Clear submission">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form method="post" action="/admin/sessions/{{ session.id }}/members/{{ member.id }}/remove"
+                              onsubmit="return confirm('Remove {{ member.name }} from the team?');" class="remove-form">
+                            <button type="submit" class="btn-remove" title="Remove from team">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 {% endfor %}
             </div>

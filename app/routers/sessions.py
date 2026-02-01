@@ -320,6 +320,72 @@ async def clear_member_submission(
     return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
 
 
+@router.post("/{session_id}/members/add")
+async def add_member_from_session(
+    session_id: int,
+    name: str = Form(...),
+    auth: AuthDep = None,
+    db: DbDep = None
+):
+    """Add a new member to the team from the session view."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get the team
+    team = db.query(Team).filter(Team.id == session.team_id).first()
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+
+    # Check member limit
+    member_count = db.query(Member).filter(Member.team_id == team.id).count()
+    if member_count >= 55:
+        raise HTTPException(status_code=400, detail="Maximum 55 members per team")
+
+    # Add member
+    name = name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required")
+
+    member = Member(team_id=team.id, name=name)
+    db.add(member)
+    db.commit()
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
+@router.post("/{session_id}/members/{member_id}/remove")
+async def remove_member_from_session(
+    session_id: int,
+    member_id: int,
+    auth: AuthDep = None,
+    db: DbDep = None
+):
+    """Remove a member from the team from the session view."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    member = db.query(Member).filter(
+        Member.id == member_id,
+        Member.team_id == session.team_id
+    ).first()
+
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    # Also delete any responses for this member in this session
+    db.query(ResponseModel).filter(
+        ResponseModel.session_id == session_id,
+        ResponseModel.member_id == member_id
+    ).delete()
+
+    db.delete(member)
+    db.commit()
+
+    return RedirectResponse(url=f"/admin/sessions/{session_id}", status_code=303)
+
+
 @router.post("/{session_id}/reveal")
 async def reveal_synthesis(session_id: int, auth: AuthDep, db: DbDep):
     """Transition session from closed to revealed."""
