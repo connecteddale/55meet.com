@@ -347,6 +347,15 @@ async def add_member_from_session(
     if not name:
         raise HTTPException(status_code=400, detail="Name is required")
 
+    # Check for duplicate name (case-insensitive)
+    from sqlalchemy import func
+    existing = db.query(Member).filter(
+        Member.team_id == team.id,
+        func.lower(Member.name) == name.lower()
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail=f"'{name}' already exists on this team")
+
     member = Member(team_id=team.id, name=name)
     db.add(member)
     db.commit()

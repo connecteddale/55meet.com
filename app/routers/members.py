@@ -72,11 +72,12 @@ async def add_member(
             }
         )
 
-    # Check for duplicate name in team
+    # Check for duplicate name in team (case-insensitive)
+    from sqlalchemy import func
     name = name.strip()
     existing = db.query(Member).filter(
         Member.team_id == team_id,
-        Member.name == name
+        func.lower(Member.name) == name.lower()
     ).first()
     if existing:
         members = db.query(Member).filter(Member.team_id == team_id).order_by(Member.name).all()
