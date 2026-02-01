@@ -79,20 +79,24 @@
                     <p>Synthesizing responses...</p>
                     <p class="hint">Results will appear automatically (30-60 seconds)</p>
                 </div>
+                <form method="post" action="/admin/sessions/{{ session.id }}/reopen"
+                      onsubmit="return confirm('Reopen engagement?\n\nParticipants will be able to submit or resubmit.');">
+                    <button type="submit" class="btn btn-ghost btn-block">Reopen Engagement</button>
+                </form>
                 {% elif synthesis_themes %}
-                {# Export buttons after synthesis is generated #}
-                <a href="/admin/sessions/{{ session.id }}/export/pdf" class="btn btn-primary btn-block">Export PDF</a>
-                <a href="/admin/sessions/{{ session.id }}/export" class="btn btn-secondary btn-block">Export JSON</a>
-                <a href="/admin/sessions/{{ session.id }}/export/markdown" class="btn btn-secondary btn-block">Export Markdown</a>
+                {# Controls after synthesis is generated #}
+                <form method="post" action="/admin/sessions/{{ session.id }}/reopen"
+                      onsubmit="return confirm('Reopen engagement?\n\nWARNING: This will clear the current synthesis. You will need to regenerate it after closing again.');">
+                    <button type="submit" class="btn btn-ghost btn-block">Reopen Engagement</button>
+                </form>
                 <form method="post" action="/admin/sessions/{{ session.id }}/synthesize/retry" id="regenerate-form"
                       onsubmit="return confirm('Regenerate synthesis? This will replace the current analysis.');">
                     <button type="submit" class="btn btn-ghost btn-block" id="regenerate-btn">Regenerate Synthesis</button>
                 </form>
+                <div class="export-links">
+                    Export <a href="/admin/sessions/{{ session.id }}/export/pdf">PDF</a> <a href="/admin/sessions/{{ session.id }}/export">JSON</a> <a href="/admin/sessions/{{ session.id }}/export/markdown">Markdown</a>
+                </div>
                 {% endif %}
-                <form method="post" action="/admin/sessions/{{ session.id }}/reopen"
-                      onsubmit="return confirm('Reopen engagement?\n\n{% if synthesis_themes %}WARNING: This will clear the current synthesis. You will need to regenerate it after closing again.{% else %}Participants will be able to submit or resubmit.{% endif %}');">
-                    <button type="submit" class="btn btn-ghost btn-block">Reopen Engagement</button>
-                </form>
                 {% endif %}
             </div>
         </div>

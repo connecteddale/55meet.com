@@ -4058,6 +4058,24 @@ button[type="submit"].btn-loading::after {
     display: block;
 }
 
+/* Export links inline */
+.export-links {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-3);
+    text-align: center;
+}
+
+.export-links a {
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-left: var(--space-2);
+}
+
+.export-links a:hover {
+    text-decoration: underline;
+}
+
 /* Participants header */
 .participants-header {
     display: flex;
